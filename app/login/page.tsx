@@ -7,10 +7,12 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { loginTraveller } from "@/lib/api"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+
+// Import the CustomInput component at the top of the file
+import { CustomInput } from "@/components/ui/custom-input"
 
 export default function Login() {
   const router = useRouter()
@@ -24,6 +26,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -32,6 +35,12 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setAttemptedSubmit(true)
+
+    if (!formData.email || !formData.password) {
+      return
+    }
+
     setLoading(true)
     setError("")
 
@@ -55,7 +64,7 @@ export default function Login() {
   return (
     <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-10">
       <div className="w-full max-w-md">
-        <Card>
+        <Card className="shadow-z1">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Sign in to your account</CardTitle>
             <CardDescription className="text-center">
@@ -70,7 +79,7 @@ export default function Login() {
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
+                  <CustomInput
                     id="email"
                     name="email"
                     type="email"
@@ -78,6 +87,8 @@ export default function Login() {
                     className="pl-10"
                     value={formData.email}
                     onChange={handleInputChange}
+                    error={attemptedSubmit && !formData.email ? "Email is required" : ""}
+                    success={formData.email !== "" && /\S+@\S+\.\S+/.test(formData.email)}
                     required
                   />
                 </div>
@@ -92,13 +103,15 @@ export default function Login() {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
+                  <CustomInput
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     className="pl-10"
                     value={formData.password}
                     onChange={handleInputChange}
+                    error={attemptedSubmit && !formData.password ? "Password is required" : ""}
+                    success={formData.password !== ""}
                     required
                   />
                   <Button
@@ -114,7 +127,11 @@ export default function Login() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full bg-[#E4002B] hover:bg-[#c00025]" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#ea6e00] hover:bg-[#ff7800] active:bg-[#b55500]"
+                disabled={loading}
+              >
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>

@@ -1,3 +1,17 @@
+/*
+Typography System:
+- Font Family: Inter (primary), Albert Sans (secondary)
+- Headings: heading-1 through heading-5
+- Body Text: body-large, body-default, body-small
+- Utility Classes: caption, label
+- Font Weights: font-regular, font-medium, font-semibold, font-bold, font-extrabold
+
+Usage Examples:
+<h1 class="heading-1">Page Title</h1>
+<p class="body-default">Regular paragraph text</p>
+<span class="caption">Small caption text</span>
+<label class="label">Form label</label>
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,20 +24,21 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 25 100% 51%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 25 100% 51%;
+    --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 25 100% 51%;
+    --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    --omantel-orange: 25 100% 46%;
   }
 
   .dark {
@@ -33,19 +48,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 25 100% 51%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 25 100% 51%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 25 100% 51%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -56,13 +71,278 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* FS Albert Typography System */
+
+  /* Heading XL */
+  .heading-xl {
+    font-size: 2rem; /* 32px */
+    line-height: 2.5rem; /* 40px */
+    letter-spacing: 0;
+    margin-bottom: 1.875rem; /* 30px - paragraph spacing */
+  }
+  .heading-xl-regular {
+    @apply heading-xl font-normal;
+  }
+  .heading-xl-bold {
+    @apply heading-xl font-bold;
+  }
+  .heading-xl-extrabold {
+    @apply heading-xl font-extrabold;
+  }
+
+  /* Heading L */
+  .heading-l {
+    font-size: 1.75rem; /* 28px */
+    line-height: 2.25rem; /* 36px */
+    letter-spacing: 0;
+    margin-bottom: 1.625rem; /* 26px - paragraph spacing */
+  }
+  .heading-l-regular {
+    @apply heading-l font-normal;
+  }
+  .heading-l-bold {
+    @apply heading-l font-bold;
+  }
+  .heading-l-extrabold {
+    @apply heading-l font-extrabold;
+  }
+
+  /* Heading M */
+  .heading-m {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+    letter-spacing: 0;
+    margin-bottom: 1.5rem; /* 24px - paragraph spacing */
+  }
+  .heading-m-regular {
+    @apply heading-m font-normal;
+  }
+  .heading-m-bold {
+    @apply heading-m font-bold;
+  }
+  .heading-m-extrabold {
+    @apply heading-m font-extrabold;
+  }
+
+  /* Heading S */
+  .heading-s {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+    letter-spacing: 0;
+    margin-bottom: 1.25rem; /* 20px - paragraph spacing */
+  }
+  .heading-s-regular {
+    @apply heading-s font-normal;
+  }
+  .heading-s-bold {
+    @apply heading-s font-bold;
+  }
+  .heading-s-extrabold {
+    @apply heading-s font-extrabold;
+  }
+
+  /* Body L */
+  .body-l {
+    font-size: 1.06rem; /* 17px */
+    line-height: 1.66rem; /* 26px */
+    letter-spacing: 0;
+    margin-bottom: 1rem; /* 16px - paragraph spacing */
+  }
+  .body-l-regular {
+    @apply body-l font-normal;
+  }
+  .body-l-bold {
+    @apply body-l font-bold;
+  }
+  .body-l-extrabold {
+    @apply body-l font-extrabold;
+  }
+
+  /* Body S */
+  .body-s {
+    font-size: 0.94rem; /* 15px */
+    line-height: 1.375rem; /* 22px */
+    letter-spacing: 0;
+    margin-bottom: 0.875rem; /* 14px - paragraph spacing */
+  }
+  .body-s-regular {
+    @apply body-s font-normal;
+  }
+  .body-s-bold {
+    @apply body-s font-bold;
+  }
+  .body-s-extrabold {
+    @apply body-s font-extrabold;
+  }
+
+  /* Label L */
+  .label-l {
+    font-size: 0.812rem; /* 13px */
+    line-height: 1.125rem; /* 18px */
+    letter-spacing: 0;
+    margin-bottom: 0.75rem; /* 12px - paragraph spacing */
+  }
+  .label-l-regular {
+    @apply label-l font-normal;
+  }
+  .label-l-bold {
+    @apply label-l font-bold;
+  }
+  .label-l-extrabold {
+    @apply label-l font-extrabold;
+  }
+
+  /* Legacy typography styles - keeping for backward compatibility */
+  .text-display-l-800 {
+    @apply heading-xl-extrabold;
+  }
+
+  .text-display-l-700 {
+    @apply heading-xl-bold;
+  }
+
+  .text-heading-2xl-800 {
+    @apply heading-l-extrabold;
+  }
+
+  .text-heading-2xl-700 {
+    @apply heading-l-bold;
+  }
+
+  .text-heading-2xl-400 {
+    @apply heading-l-regular;
+  }
+
+  .text-paragraph-l-800 {
+    @apply body-l-extrabold;
+  }
+
+  .text-paragraph-l-700 {
+    @apply body-l-bold;
+  }
+
+  .text-paragraph-l-400 {
+    @apply body-l-regular;
+  }
+
+  .text-paragraph-m-800 {
+    @apply body-l-extrabold;
+  }
+
+  .text-paragraph-m-700 {
+    @apply body-l-bold;
+  }
+
+  .text-paragraph-m-400 {
+    @apply body-l-regular;
+  }
+
+  .text-paragraph-s-800 {
+    @apply body-s-extrabold;
+  }
+
+  .text-paragraph-s-700 {
+    @apply body-s-bold;
+  }
+
+  .text-paragraph-s-400 {
+    @apply body-s-regular;
+  }
+
+  .text-paragraph-xs-800 {
+    @apply label-l-extrabold;
+  }
+
+  .text-paragraph-xs-700 {
+    @apply label-l-bold;
+  }
+
+  .text-paragraph-xs-400 {
+    @apply label-l-regular;
+  }
+
+  .text-caption-800 {
+    @apply label-l-extrabold;
+  }
+
+  .text-caption-700 {
+    @apply label-l-bold;
+  }
+
+  .text-caption-400 {
+    @apply label-l-regular;
+  }
 }
 
 @layer components {
+  /* Heading System */
+  .heading-1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+
+  .heading-2 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .heading-3 {
+    @apply text-2xl font-bold;
+  }
+
+  .heading-4 {
+    @apply text-xl font-bold;
+  }
+
+  .heading-5 {
+    @apply text-lg font-bold;
+  }
+
+  /* Body Text System */
+  .body-large {
+    @apply text-lg leading-relaxed;
+  }
+
+  .body-default {
+    @apply text-base leading-relaxed;
+  }
+
+  .body-small {
+    @apply text-sm leading-relaxed;
+  }
+
+  /* Caption/Label Text */
+  .caption {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .label {
+    @apply text-sm font-medium;
+  }
+
+  /* Font Weight Utilities */
+  .font-regular {
+    font-weight: 400;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .font-semibold {
+    font-weight: 600;
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+
+  .font-extrabold {
+    font-weight: 800;
+  }
   .omantel-btn {
-    @apply bg-omantel-orange;
-    @apply hover:bg-omantel-orange;
-    @apply active:bg-omantel-dark;
+    @apply bg-[#ea6e00];
+    @apply hover:bg-[#ff7800];
+    @apply active:bg-[#b55500];
     @apply text-white;
     @apply font-medium;
     @apply py-3;
@@ -74,9 +354,13 @@
   .omantel-btn-secondary {
     @apply bg-white;
     @apply border;
-    @apply border-omantel-orange;
-    @apply text-omantel-orange;
-    @apply hover:bg-[#fff8f0];
+    @apply border-[#ea6e00];
+    @apply text-[#ea6e00];
+    @apply hover:bg-gray-100;
+    @apply hover:border-[#ff7800];
+    @apply hover:text-[#ff7800];
+    @apply active:border-[#b55500];
+    @apply active:text-[#b55500];
     @apply font-medium;
     @apply py-3;
     @apply px-6;
@@ -86,25 +370,25 @@
 
   .omantel-input {
     @apply border;
-    @apply border-gray-300;
+    @apply border-gray-400;
     @apply rounded-lg;
     @apply px-4;
     @apply py-3;
     @apply focus:outline-none;
     @apply focus:ring-2;
-    @apply focus:ring-omantel-orange;
+    @apply focus:ring-[#ea6e00];
     @apply focus:border-transparent;
   }
 
   .omantel-select {
     @apply border;
-    @apply border-gray-300;
+    @apply border-gray-400;
     @apply rounded-lg;
     @apply px-4;
     @apply py-3;
     @apply focus:outline-none;
     @apply focus:ring-2;
-    @apply focus:ring-omantel-orange;
+    @apply focus:ring-[#ea6e00];
     @apply focus:border-transparent;
   }
 
@@ -112,7 +396,7 @@
     @apply w-12;
     @apply h-12;
     @apply rounded-full;
-    @apply bg-omantel-dark;
+    @apply bg-[#b55500];
     @apply flex;
     @apply items-center;
     @apply justify-center;
@@ -125,7 +409,7 @@
     @apply border-white;
     @apply border-t-transparent;
     @apply rounded-full;
-    @apply animate-spinner;
+    @apply animate-spin;
   }
 
   .omantel-card {
@@ -145,17 +429,17 @@
   }
 
   .omantel-progress-step-active {
-    @apply bg-omantel-orange;
+    @apply bg-[#ea6e00];
     @apply text-white;
   }
 
   .omantel-progress-step-completed {
-    @apply bg-omantel-orange;
+    @apply bg-[#ea6e00];
     @apply text-white;
   }
 
   .omantel-progress-step-inactive {
-    @apply bg-gray-200;
+    @apply bg-gray-300;
     @apply text-gray-600;
   }
 
@@ -166,10 +450,98 @@
   }
 
   .omantel-progress-line-active {
-    @apply bg-omantel-orange;
+    @apply bg-[#ea6e00];
   }
 
   .omantel-progress-line-inactive {
-    @apply bg-gray-200;
+    @apply bg-gray-300;
   }
+}
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 640px) {
+  .heading-xl {
+    font-size: 1.75rem; /* 28px */
+    line-height: 2.25rem; /* 36px */
+  }
+
+  .heading-l {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+  }
+
+  .heading-m {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Adjust spacing for mobile */
+  .py-6xl {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .px-4xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .gap-4xl {
+    gap: 1.5rem;
+  }
+}
+
+/* Touch-friendly adjustments */
+@media (max-width: 640px) {
+  button,
+  .button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px; /* Minimum touch target size */
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+}
+
+/* Update font-family references to use the new Albert Sans variable */
+.font-albert-sans {
+  font-family: var(--font-albert-sans), system-ui, sans-serif;
+}
+
+/* Global button styles */
+button,
+.btn,
+[type="button"],
+[type="submit"],
+[type="reset"] {
+  @apply rounded-2xl px-4;
+}
+
+/* Ensure shadcn Button component styling is consistent */
+.button,
+button[class*="Button_"],
+[class*="button-"] {
+  border-radius: 16px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* Exception for icon-only buttons to maintain their square shape */
+button.size-icon,
+.btn-icon,
+button[class*="icon-only"] {
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -1,17 +1,30 @@
 import type React from "react"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import Footer from "@/components/footer"
 import ApiInitializer from "@/components/api-initializer"
 import ApiStorageManager from "@/components/api-storage-manager"
-import Image from "next/image"
+import ApiDebugPanel from "@/components/api-debug-panel"
+import { Inter, Albert_Sans } from "next/font/google"
 
-const inter = Inter({ subsets: ["latin"] })
+// Use Inter font from Google Fonts as primary font
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+})
+
+// Use Albert Sans as secondary font
+const albertSans = Albert_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-albert-sans",
+})
 
 export const metadata = {
-  title: "Omantel Visa Application",
-  description: "Apply for visas with Omantel",
+  title: "Visa Application Service",
+  description: "Apply for visas online with ease",
     generator: 'v0.dev'
 }
 
@@ -23,19 +36,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="theme-color" content="#ea6e00" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={inter.className}>
+      <body
+        className={`${inter.variable} ${albertSans.variable} font-sans font-normal text-base leading-normal text-foreground bg-background`}
+      >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ApiInitializer />
-          <header className="w-full bg-white border-b border-gray-200 py-3 px-4 shadow-sm z-10">
-            <div className="container mx-auto flex items-center">
-              <Image src="/omantel-logo.png" alt="Omantel Logo" width={150} height={40} priority />
-            </div>
-          </header>
           <main className="min-h-screen">{children}</main>
-          <Footer />
           <ApiStorageManager />
+          <ApiDebugPanel />
         </ThemeProvider>
       </body>
     </html>

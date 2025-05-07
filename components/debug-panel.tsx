@@ -87,7 +87,7 @@ export default function DebugPanel({ logs, onClose, onClear, onSaveResponse }: D
 
   return (
     <>
-      <div className="fixed right-0 top-0 h-full bg-white border-l border-gray-200 shadow-lg w-96 z-50 flex flex-col">
+      <div className="fixed right-0 top-0 h-full bg-white border-l border-gray-200 shadow-z2 w-96 z-50 flex flex-col">
         <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gray-100">
           <div className="flex items-center">
             <h3 className="font-semibold">API Debug Panel</h3>
