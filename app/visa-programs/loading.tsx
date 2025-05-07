@@ -1,3 +1,5 @@
+import LoadingIndicator from "@/components/loading-indicator"
+
 export default function Loading() {
-  return null
+  return <LoadingIndicator fullScreen text="Loading visa programs..." size="large" />
 }

@@ -162,7 +162,7 @@ export default function ApiStorageManager() {
           Stored API Data
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col shadow-z2">
         <DialogHeader>
           <DialogTitle>Stored API Responses</DialogTitle>
         </DialogHeader>

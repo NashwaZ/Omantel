@@ -45,9 +45,9 @@ export default function VisaConfirmation() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* API Status Indicator */}
-      {/* <div className="container mx-auto px-4 mb-4 mt-4">
+      <div className="container mx-auto px-4 mb-4 mt-4">
         <ApiStatusIndicator showDetails={true} className="w-full" />
-      </div> */}
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-12">

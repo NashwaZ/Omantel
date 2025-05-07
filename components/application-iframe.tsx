@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Home } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import LoadingIndicator from "@/components/loading-indicator"
 
 interface ApplicationIframeProps {
   iframeUrl: string
@@ -23,15 +24,24 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
   useEffect(() => {
     if (iframeUrl) {
       try {
-        sessionStorage.setItem(
-          "deeplink",
-          JSON.stringify({
-            result: { iframe_deeplink_url: iframeUrl },
-          }),
-        )
+        // Only store if it's a valid iframe_deeplink_url
+        if (iframeUrl.includes("simplevisa.net")) {
+          sessionStorage.setItem(
+            "deeplink",
+            JSON.stringify({
+              result: { iframe_deeplink_url: iframeUrl },
+            }),
+          )
+        } else {
+          console.error("Invalid iframe URL format:", iframeUrl)
+          setError("Backend issue: Invalid iframe URL format. Please try again later.")
+        }
       } catch (error) {
         console.error("Error storing deeplink in session storage:", error)
+        setError("Error storing application data. Please try again later.")
       }
+    } else {
+      setError("Backend issue: Missing iframe URL. Please try again later.")
     }
   }, [iframeUrl])
 
@@ -98,7 +108,7 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
 
     const handleError = () => {
       console.error("Iframe failed to load")
-      setError("Failed to load the application form. Please try again.")
+      setError("Backend issue: Failed to load the application form. Please try again later.")
     }
 
     iframe.addEventListener("load", handleLoad)
@@ -127,7 +137,7 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
   if (formSubmitted) {
     return (
       <div className="min-h-screen flex flex-col">
-        {/* <div className="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div className="bg-white shadow-sm p-4 flex justify-between items-center">
           <div className="flex items-center">
             <Image src="/images/logo.png" alt="Omantel Logo" width={120} height={32} className="h-8 w-auto" />
             <h1 className="ml-4 text-xl font-semibold text-blue-600">Visa Application</h1>
@@ -136,7 +146,7 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
             <Home className="mr-2 h-4 w-4" />
             Home
           </Button>
-        </div> */}
+        </div>
 
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -161,12 +171,7 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
     <div className="min-h-screen flex flex-col">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
-          <div className="flex flex-col items-center">
-            <div className="omantel-loading mb-4">
-              <div className="omantel-loading-spinner"></div>
-            </div>
-            <p className="text-gray-600">Loading visa application form...</p>
-          </div>
+          <LoadingIndicator size="large" text="Loading visa application form..." />
         </div>
       )}
 

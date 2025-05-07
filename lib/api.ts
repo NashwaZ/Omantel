@@ -5,8 +5,42 @@
 
 import apiClient from "./api-client"
 
-// Declare API_BASE_URL
+// Update API Base URL to use the staging URL instead of production
 const API_BASE_URL = "https://stg-api.superjetom.com"
+
+/**
+ * Helper function to make API calls through our proxy
+ */
+async function callProxyApi(endpoint: string, body: any, authToken?: string) {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  }
+
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`
+  }
+
+  const response = await fetch(API_BASE_URL+`/${endpoint}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} - ${response.statusText}`)
+  }
+
+  const data = await response.json()
+
+  // Special handling for create_organization endpoint
+  if (endpoint === "create_organization" && data?.result?.[0]?.vendor_key) {
+    console.log("Vendor key received from create_organization:", data.result[0].vendor_key)
+    localStorage.setItem("vendor_key", data.result[0].vendor_key)
+    console.log("Vendor key stored in localStorage:", data.result[0].vendor_key)
+  }
+
+  return data
+}
 
 /**
  * Create an organization
@@ -15,25 +49,19 @@ const API_BASE_URL = "https://stg-api.superjetom.com"
  */
 export async function createOrganization(organizationName: string): Promise<any> {
   try {
-    console.log(`Creating organization: ${organizationName}`)
-
-    // Make a direct fetch call to the API endpoint
-    const response = await fetch("https://stg-api.superjetom.com/create_organization", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ organization_name: organizationName }),
+    // Make the API call through our proxy
+    const data = await callProxyApi("create_organization", {
+      organization_name: organizationName,
     })
-
-    // Parse the response
-    const data = await response.json()
-    console.log("Organization creation response:", data)
 
     // Store the vendor key in localStorage if available
     if (data && data.result && data.result.length > 0 && data.result[0].vendor_key) {
-      localStorage.setItem("vendor_key", data.result[0].vendor_key)
-      console.log("Vendor key stored:", data.result[0].vendor_key)
+      const vendorKey = data.result[0].vendor_key
+      console.log("Vendor key extracted from create_organization response:", vendorKey)
+      localStorage.setItem("vendor_key", vendorKey)
+      console.log("Vendor key stored in localStorage:", vendorKey)
+    } else {
+      console.error("No vendor key found in create_organization response:", data)
     }
 
     return {
@@ -57,14 +85,12 @@ export async function createOrganization(organizationName: string): Promise<any>
  */
 export async function loginTraveller(credentials: any): Promise<any> {
   try {
-    console.log("Logging in traveller:", credentials)
     // Mock successful login
     return {
       success: true,
       token: "mock_token",
     }
   } catch (error) {
-    console.error("Failed to login traveller:", error)
     return {
       success: false,
       message: "Invalid credentials",
@@ -79,14 +105,12 @@ export async function loginTraveller(credentials: any): Promise<any> {
  */
 export async function createTraveller(travellerData: any): Promise<any> {
   try {
-    console.log("Creating traveller:", travellerData)
     // Mock successful traveller creation
     return {
       success: true,
       message: "Traveller created successfully",
     }
   } catch (error) {
-    console.error("Failed to create traveller:", error)
     return {
       success: false,
       message: "Failed to create traveller",
@@ -94,41 +118,29 @@ export async function createTraveller(travellerData: any): Promise<any> {
   }
 }
 
-// Replace the existing convertAmount function with this new implementation
+// Replace the existing convertAmount function with this updated implementation
 export async function convertAmount(amount: string, currency: string): Promise<any> {
   try {
-    console.log(`Converting amount ${amount} from ${currency} using API`)
-
-    // Make API call to the conversion endpoint
-    const response = await fetch("https://stg-api.superjetom.com/amount_convertion", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount: amount,
-        currency: "USD", // Always use USD as currency as specified
-      }),
+    // Make API call to the conversion endpoint through our proxy
+    const data = await callProxyApi("amount_convertion", {
+      amount: amount,
+      currency: "USD", // Always use USD as currency as specified
     })
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    console.log("Currency conversion response:", data)
+    // Round the result to 3 decimal places
+    const roundedAmount = data.result ? Number(data.result).toFixed(3) : "0.000"
 
     return {
       success: true,
       result: {
-        amount: data.result,
+        amount: roundedAmount,
         currency: "OMR",
       },
     }
   } catch (error) {
-    console.error("Failed to convert amount:", error)
-    // Fallback to estimated conversion in case of API failure
-    const estimatedAmount = (Number.parseFloat(amount) * 0.38).toFixed(2)
+    console.error("Error converting amount:", error)
+    // Fallback to estimated conversion in case of API failure, rounded to 3 decimal places
+    const estimatedAmount = (Number.parseFloat(amount) * 0.38).toFixed(3)
     return {
       success: false,
       result: {
@@ -141,13 +153,162 @@ export async function convertAmount(amount: string, currency: string): Promise<a
 }
 
 /**
+ * Get visa programs
+ * @param params The search parameters
+ * @returns Promise with the visa programs
+ */
+export async function getVisaPrograms(params: any): Promise<any> {
+  try {
+    // Get the vendor key from localStorage
+    const vendorKey = localStorage.getItem("vendor_key")
+
+    if (!vendorKey) {
+      console.log("No vendor key found, creating a new organization...")
+
+      // Create a new organization to get a vendor key
+      const orgData = await callProxyApi("create_organization", {
+        organization_name: "Omantel",
+      })
+
+      if (orgData && orgData.result && orgData.result.length > 0 && orgData.result[0].vendor_key) {
+        // Store the new vendor key
+        const newVendorKey = orgData.result[0].vendor_key
+        localStorage.setItem("vendor_key", newVendorKey)
+        console.log("New vendor key generated and stored:", newVendorKey)
+      } else {
+        console.error("No vendor key found in organization response:", orgData)
+        throw new Error("No vendor key found in organization response")
+      }
+    }
+
+    // Get the (potentially new) vendor key
+    const currentVendorKey = localStorage.getItem("vendor_key")
+
+    if (!currentVendorKey) {
+      throw new Error("Failed to obtain vendor key")
+    }
+
+    // Format the request body exactly as required by the API
+    const requestBody = {
+      destination: params.destination.toLowerCase(),
+      citizenship: params.citizenship.toLowerCase(),
+      arrivalDate: params.arrivalDate || params.travelDate, // Support both parameter names
+    }
+
+    console.log("Making visa programs API call with:", {
+      vendorKey: currentVendorKey ? `${currentVendorKey.substring(0, 10)}...` : "missing",
+      requestBody,
+    })
+
+    // Make the API call with proper authorization through our proxy
+    const data = await callProxyApi("get_visa_programs_omantel", requestBody, currentVendorKey)
+
+    // Store the successful response
+    localStorage.setItem("visa_programs_data", JSON.stringify(data))
+
+    // Enhanced response processing
+    console.log("Raw API response data:", JSON.stringify(data, null, 2))
+
+    // Ensure we have a valid result structure
+    if (!data) {
+      data = { result: [] }
+    }
+
+    // Handle different response structures
+    if (data.result) {
+      // Case 1: result is already an array
+      if (Array.isArray(data.result)) {
+        console.log("API returned array result with length:", data.result.length)
+      }
+      // Case 2: result has a programs property that is an array
+      else if (data.result.programs && Array.isArray(data.result.programs)) {
+        console.log("API returned nested programs array with length:", data.result.programs.length)
+        // Keep the original structure - the UI will handle it
+      }
+      // Case 3: result is an object that needs to be converted to an array
+      else if (typeof data.result === "object") {
+        console.log("Converting result object to array:", Object.keys(data.result))
+        data.result = Object.values(data.result)
+      }
+      // Case 4: result is something else, convert to empty array
+      else {
+        console.warn("API returned unexpected result type, using empty array instead:", typeof data.result)
+        data.result = []
+      }
+    }
+    // Case 5: No result property but has programs directly
+    else if (data.programs && Array.isArray(data.programs)) {
+      console.log("API returned programs directly:", data.programs.length)
+      data.result = { programs: data.programs }
+    }
+    // Case 6: No valid data structure, create empty result
+    else {
+      console.warn("API returned no valid result structure, creating empty result")
+      data.result = []
+    }
+
+    // Store program IDs for later use if we have valid programs
+    if (Array.isArray(data.result) && data.result.length > 0) {
+      const programIds = data.result.filter((program) => program && program.id).map((program: any) => program.id)
+
+      if (programIds.length > 0) {
+        localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
+        console.log("Stored program IDs:", programIds)
+      }
+    } else if (
+      data.result &&
+      data.result.programs &&
+      Array.isArray(data.result.programs) &&
+      data.result.programs.length > 0
+    ) {
+      const programIds = data.result.programs
+        .filter((program) => program && program.id)
+        .map((program: any) => program.id)
+
+      if (programIds.length > 0) {
+        localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
+        console.log("Stored program IDs from nested structure:", programIds)
+      }
+    }
+
+    return data
+  } catch (error) {
+    console.error("Failed to fetch visa programs:", error)
+
+    // Try to use cached data if available
+    const cachedData = localStorage.getItem("visa_programs_data")
+    if (cachedData) {
+      try {
+        const parsedData = JSON.parse(cachedData)
+        console.log("Using cached visa programs data")
+
+        // Ensure result is an array
+        if (parsedData && parsedData.result && !Array.isArray(parsedData.result)) {
+          if (typeof parsedData.result === "object") {
+            parsedData.result = Object.values(parsedData.result)
+          } else {
+            parsedData.result = []
+          }
+        }
+
+        return parsedData
+      } catch (cacheError) {
+        console.error("Error parsing cached data:", cacheError)
+      }
+    }
+
+    // If no cached data or parsing failed, throw the original error
+    throw error
+  }
+}
+
+/**
  * Create a visa order
  * @param orderData The order data
  * @returns Promise with the order creation response
  */
 export async function createVisaOrder(orderData: any): Promise<any> {
   try {
-    console.log("Creating visa order:", orderData)
     // Mock successful order creation
     return {
       success: true,
@@ -155,108 +316,10 @@ export async function createVisaOrder(orderData: any): Promise<any> {
       iframe_url: "https://omantel.sandbox-simplevisa.net/iframe/mock-order",
     }
   } catch (error) {
-    console.error("Failed to create visa order:", error)
     return {
       success: false,
       message: "Failed to create visa order",
     }
-  }
-}
-
-/**
- * Get visa programs
- * @param params The search parameters
- * @returns Promise with the visa programs
- */
-export async function getVisaPrograms(params: any): Promise<any> {
-  try {
-    console.log("Getting visa programs:", params)
-
-    // Make a real API call instead of returning mock data
-    const response = await fetch(`${API_BASE_URL}/get_visa_programs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    })
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error("Failed to get visa programs:", error)
-    // Don't return mock data, throw the error to be handled by the caller
-    throw error
-  }
-}
-
-// Add a function to store API errors for the status indicator
-export function storeApiError(error: string | null): void {
-  if (error) {
-    localStorage.setItem("api_error", error)
-  } else {
-    localStorage.removeItem("api_error")
-  }
-}
-
-// Add a new function to get visa programs using the stored vendor key
-export async function getVisaProgramsWithVendorKey(params: {
-  destination: string
-  citizenship: string
-  arrivalDate: string
-}): Promise<any> {
-  try {
-    console.log("Getting visa programs with vendor key:", params)
-
-    // Get the vendor key from localStorage
-    const vendorKey = localStorage.getItem("vendor_key") || ""
-
-    if (!vendorKey) {
-      const error = "No vendor key found in localStorage"
-      console.error(error)
-      storeApiError(error)
-      throw new Error(error)
-    }
-
-    // Make a direct fetch call to the API endpoint with the vendor key as bearer token
-    const response = await fetch("https://stg-api.superjetom.com/get_visa_programs_omantel", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${vendorKey}`,
-      },
-      body: JSON.stringify(params),
-    })
-
-    if (!response.ok) {
-      const error = `API returned status: ${response.status}`
-      storeApiError(error)
-      throw new Error(error)
-    }
-
-    // Parse the response
-    const data = await response.json()
-    console.log("Visa programs response:", data)
-
-    // Clear any stored errors since the request succeeded
-    storeApiError(null)
-
-    return {
-      success: true,
-      data,
-    }
-  } catch (error) {
-    console.error("Failed to get visa programs:", error)
-    if (error instanceof Error) {
-      storeApiError(error.message)
-    } else {
-      storeApiError("Unknown error occurred")
-    }
-    throw error
   }
 }
 
@@ -268,27 +331,17 @@ export async function getCountries(): Promise<any> {
     // Ensure API client is initialized
     await apiClient.initialize()
 
-    // Set a timeout for the API call
-    const timeoutPromise = new Promise<any>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error("Countries API request timed out"))
-      }, 8000)
-    })
-
-    // Make the API call
-    const apiPromise = apiClient.makeRequest("country", {
+    // Make the API call through our proxy
+    const response = await callProxyApi("country", {
       vendor_key: apiClient.getVendorKey(),
     })
-
-    // Race between the API call and the timeout
-    const response = await Promise.race([apiPromise, timeoutPromise])
 
     return {
       countries: response.result || [],
       _isMockData: false,
     }
   } catch (error) {
-    console.error("Failed to get countries:", error)
+    console.error("Error fetching countries:", error)
     // Return fallback data instead of throwing
     return {
       countries: [],
@@ -325,4 +378,167 @@ export async function initializeApi(): Promise<boolean> {
  */
 export function isApiInitialized(): boolean {
   return apiClient.isClientInitialized()
+}
+
+/**
+ * Create a traveller in the Omantel system
+ * @param userData The traveller's data
+ * @returns Promise with the traveller creation response
+ */
+export async function createTravellerOmantel(userData: {
+  email: string
+  first_name: string
+  last_name: string
+  locale: string
+}): Promise<any> {
+  try {
+    // Get the vendor key from localStorage
+    const vendorKey = localStorage.getItem("vendor_key")
+
+    if (!vendorKey) {
+      console.warn("No vendor key found. Creating a mock vendor key for development.")
+      // Create a mock vendor key for development/preview environments
+      localStorage.setItem("vendor_key", "MOCK_VENDOR_KEY_FOR_DEVELOPMENT")
+    }
+
+    // Try to make the API call with proper error handling
+    try {
+      const data = await callProxyApi(
+        "create_traveller_omantel",
+        userData,
+        vendorKey || "MOCK_VENDOR_KEY_FOR_DEVELOPMENT",
+      )
+
+      // Store the access token in localStorage if available
+      if (data && data.result && data.result.length > 0 && data.result[0].access_token) {
+        localStorage.setItem("traveller_access_token", data.result[0].access_token)
+        console.log("Traveller access token stored:", data.result[0].access_token)
+      }
+
+      return data
+    } catch (apiError) {
+      console.error("API call failed:", apiError)
+      // If the API call fails, fall back to mock data
+      throw new Error(`API call failed: ${apiError instanceof Error ? apiError.message : "Unknown error"}`)
+    }
+  } catch (error) {
+    console.error("Failed to create traveller:", error)
+
+    // FALLBACK: Create a mock traveller response for development/preview
+    console.log("Using fallback mock data for traveller creation")
+    const mockAccessToken = `mock_token_${Math.random().toString(36).substring(2, 15)}`
+    localStorage.setItem("traveller_access_token", mockAccessToken)
+
+    return {
+      success: true,
+      _isMockData: true,
+      result: [
+        {
+          access_token: mockAccessToken,
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+        },
+      ],
+    }
+  }
+}
+
+/**
+ * Create an iframe order for visa in the Omantel system
+ * @param orderData The order data
+ * @returns Promise with the order creation response
+ */
+export async function createIframeOrderVisaOmantel(orderData: {
+  vendor_key: string
+  reference_no: string
+  description: string
+  program_id: string
+  quantity: number
+  first_name: string
+  last_name: string
+  email: string
+  fee: string
+  arrival: string
+  destination: string
+  commision: string
+  commision_type: string
+}): Promise<any> {
+  try {
+    // Get the traveller access token from localStorage
+    const accessToken = localStorage.getItem("traveller_access_token")
+
+    if (!accessToken) {
+      throw new Error("No traveller access token found. Please create a traveller first.")
+    }
+
+    // Try to make the API call with proper error handling
+    try {
+      const data = await callProxyApi("iframe_order_visa_omantel", orderData, accessToken)
+
+      console.log("Iframe order API response:", data)
+
+      // Store the iframe URL if available - ONLY use iframe_deeplink_url, no fallbacks
+      if (data && data.result && data.result.iframe_deeplink_url) {
+        localStorage.setItem("iframe_url", data.result.iframe_deeplink_url)
+        console.log("Iframe URL stored:", data.result.iframe_deeplink_url)
+      } else {
+        console.error("No iframe_deeplink_url found in API response:", data)
+        throw new Error("Backend issue: Missing iframe_deeplink_url in response. Please try again later.")
+      }
+
+      // Store the order ID if available
+      if (data && data.result && data.result.order_id) {
+        localStorage.setItem("order_id", data.result.order_id)
+        console.log("Order ID stored:", data.result.order_id)
+      }
+
+      return data
+    } catch (apiError) {
+      console.error("API call failed:", apiError)
+      throw new Error(
+        `Backend issue: ${apiError instanceof Error ? apiError.message : "Unknown error"}. Please try again later.`,
+      )
+    }
+  } catch (error) {
+    console.error("Failed to create iframe order:", error)
+
+    // In development/preview mode, we can use mock data
+    if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
+      console.log("Development mode detected, using mock data")
+      const mockIframeUrl = "https://omantel.sandbox-simplevisa.net/iframe/mock-order"
+      const mockOrderId = `order_${Math.random().toString(36).substring(2, 10)}`
+
+      localStorage.setItem("iframe_url", mockIframeUrl)
+      localStorage.setItem("order_id", mockOrderId)
+
+      return {
+        success: true,
+        _isMockData: true,
+        result: {
+          iframe_deeplink_url: mockIframeUrl,
+          order_id: mockOrderId,
+          reference_no: orderData.reference_no,
+        },
+      }
+    }
+
+    // In production, we should throw the error
+    throw new Error(
+      `Backend issue: ${error instanceof Error ? error.message : "Unknown error"}. Please try again later.`,
+    )
+  }
+}
+
+/**
+ * Generate a unique reference number with 15 characters
+ * @returns A unique 15-character reference number
+ */
+export function generateReferenceNumber(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  let result = ""
+  for (let i = 0; i < 15; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
 }

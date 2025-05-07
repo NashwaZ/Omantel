@@ -222,7 +222,7 @@ export default function GlobalDebugPanel() {
 
   return (
     <>
-      <div className="fixed right-0 bottom-0 bg-white border-l border-t border-gray-200 shadow-lg w-96 z-50 flex flex-col h-[400px]">
+      <div className="fixed right-0 bottom-0 bg-white border-l border-t border-gray-200 shadow-z2 w-96 z-50 flex flex-col h-[400px]">
         <div className="flex items-center justify-between p-2 border-b border-gray-200 bg-gray-100">
           <div className="flex items-center">
             <Bug className="h-4 w-4 mr-1 text-blue-600" />

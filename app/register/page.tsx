@@ -77,7 +77,7 @@ export default function Register() {
   return (
     <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-10">
       <div className="w-full max-w-md">
-        <Card>
+        <Card className="shadow-z1">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
             <CardDescription className="text-center">
@@ -205,7 +205,11 @@ export default function Register() {
                 </label>
               </div>
 
-              <Button type="submit" className="w-full bg-[#E4002B] hover:bg-[#c00025]" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#ea6e00] hover:bg-[#ff7800] active:bg-[#b55500]"
+                disabled={loading}
+              >
                 {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>

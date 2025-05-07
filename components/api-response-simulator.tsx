@@ -107,7 +107,7 @@ export default function ApiResponseSimulator({ onClose, onSaveResponse }: ApiRes
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <Card className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-z2">
         <CardHeader className="bg-gray-100 flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Code className="mr-2 h-5 w-5" />

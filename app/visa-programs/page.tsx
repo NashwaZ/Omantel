@@ -10,10 +10,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getVisaPrograms, initializeApi } from "@/lib/api"
-import { Calendar, Check, Clock, DollarSign, Globe } from "lucide-react"
 // Add import for the country utils
 import { getCountryFlagUrl } from "@/lib/country-utils"
 import { allCountries } from "@/lib/countries"
+import LoadingIndicator from "@/components/loading-indicator"
 
 export default function VisaPrograms() {
   const router = useRouter()
@@ -91,7 +91,7 @@ export default function VisaPrograms() {
     e.preventDefault()
     setLoading(true)
     setVisaPrograms([])
-    setError(null) // Add this line to track errors
+    setError(null)
 
     try {
       // Format the travel date for the API in DD-MM-YYYY format as required by the API
@@ -145,7 +145,7 @@ export default function VisaPrograms() {
     setSelectedProgram(program)
   }
 
-  // Update the handleApply function to ensure programId is correctly passed to the visa application page
+  // Update the handleApply function to add better error handling and ensure all parameters are properly passed
   const handleApply = async () => {
     if (!selectedProgram || !travelDate) {
       alert("Please select a travel date")
@@ -173,22 +173,37 @@ export default function VisaPrograms() {
         commissionType: selectedProgram.commision_type || "flat rate",
       })
 
-      // Navigate to visa application page with query parameters
-      router.push(
-        `/visa-application?destination=${encodeURIComponent(formData.destination)}&citizenship=${encodeURIComponent(
-          formData.citizenship,
-        )}&travelDate=${encodeURIComponent(travelDate)}&visaType=${encodeURIComponent(
-          selectedProgram.program_name || selectedProgram.name || "",
-        )}&visaFee=${encodeURIComponent(selectedProgram.fee || 0)}&programId=${encodeURIComponent(
+      // Store selected program data in localStorage for recovery in case of navigation issues
+      localStorage.setItem(
+        "selected_program",
+        JSON.stringify({
           programId,
-        )}&commission=${encodeURIComponent(selectedProgram.commision || "0")}&commissionType=${encodeURIComponent(
-          selectedProgram.commision_type || "flat rate",
-        )}`,
+          destination: formData.destination,
+          citizenship: formData.citizenship,
+          travelDate,
+          visaType: selectedProgram.program_name || selectedProgram.name || "",
+          visaFee: selectedProgram.fee || 0,
+          commission: selectedProgram.commision || "0",
+          commissionType: selectedProgram.commision_type || "flat rate",
+        }),
+      )
+
+      // Navigate to visa application page with query parameters
+      // Ensure all parameters are properly encoded and have fallback values
+      router.push(
+        `/visa-application?` +
+          `destination=${encodeURIComponent(formData.destination || "")}` +
+          `&citizenship=${encodeURIComponent(formData.citizenship || "")}` +
+          `&travelDate=${encodeURIComponent(travelDate || "")}` +
+          `&visaType=${encodeURIComponent(selectedProgram.program_name || selectedProgram.name || "Tourist Visa")}` +
+          `&visaFee=${encodeURIComponent(selectedProgram.fee || "0")}` +
+          `&programId=${encodeURIComponent(programId)}` +
+          `&commission=${encodeURIComponent(selectedProgram.commision || "0")}` +
+          `&commissionType=${encodeURIComponent(selectedProgram.commision_type || "flat rate")}`,
       )
     } catch (error) {
       console.error("Error processing visa application:", error)
       alert("There was an error processing your application. Please try again.")
-    } finally {
       setProcessingOrder(false)
     }
   }
@@ -211,8 +226,8 @@ export default function VisaPrograms() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid gap-8 md:grid-cols-3">
-          <Card className="md:col-span-1">
+        <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
+          <Card className="lg:col-span-1 shadow-z1">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-4">Travel Details</h2>
               <form onSubmit={handleSearch} className="space-y-4">
@@ -316,19 +331,26 @@ export default function VisaPrograms() {
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   disabled={loading || loadingCountries}
                 >
-                  {loading ? "Searching..." : loadingCountries ? "Loading countries..." : "Search Visa Programs"}
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <LoadingIndicator size="small" text="Searching..." />
+                    </div>
+                  ) : loadingCountries ? (
+                    <div className="flex items-center justify-center">
+                      <LoadingIndicator size="small" text="Loading countries..." />
+                    </div>
+                  ) : (
+                    "Search Visa Programs"
+                  )}
                 </Button>
               </form>
             </CardContent>
           </Card>
 
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             {loading ? (
               <div className="flex h-64 items-center justify-center">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading visa programs...</p>
-                </div>
+                <LoadingIndicator size="large" text="Loading visa programs..." />
               </div>
             ) : searchPerformed ? (
               <div className="space-y-6">
@@ -344,17 +366,19 @@ export default function VisaPrograms() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                  <div className="grid gap-4 grid-cols-1">
                     {visaPrograms.length > 0 ? (
                       visaPrograms.map((program, index) => (
                         <Card
                           key={index}
                           className={`cursor-pointer transition-all ${
-                            selectedProgram?.id === program.id ? "ring-blue-600 ring-2" : "hover:shadow-md"
+                            selectedProgram?.id === program.id
+                              ? "ring-blue-600 ring-2 shadow-z2"
+                              : "shadow-z1 hover:shadow-z2"
                           }`}
                           onClick={() => handleProgramSelect(program)}
                         >
-                          <CardContent className="p-6">
+                          <CardContent className="p-4 sm:p-6">
                             {/* Add this inside the CardContent, at the beginning: */}
                             <div className="flex items-center gap-2 mb-4">
                               <img
@@ -375,88 +399,60 @@ export default function VisaPrograms() {
                                 </p>
                               </div>
                               {selectedProgram?.id === program.id && (
-                                <div className="bg-blue-600 text-white rounded-full p-1">
-                                  <Check className="h-4 w-4" />
+                                <div className="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm font-medium">
+                                  Selected
                                 </div>
                               )}
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-blue-600" />
-                                <span>
-                                  Processing:{" "}
-                                  {program.suggested_processing_time
-                                    ? `${program.suggested_processing_time} days`
-                                    : program.processing_time || "3-5 business days"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-blue-600" />
-                                <span>Validity: {program.validity || "90 days"}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Globe className="h-4 w-4 text-blue-600" />
-                                <span>
-                                  Entries: {program.max_entries === "0.0" ? "Multiple" : program.entries || "Single"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <DollarSign className="h-4 w-4 text-blue-600" />
-                                <span>
-                                  Fee: {program.fee} {program.currency || "USD"}
-                                </span>
-                              </div>
-                            </div>
-
-                            <p className="text-sm text-gray-600 mb-4">
-                              {program.description?.body ||
-                                program.description ||
-                                "Standard visa for temporary visits."}
-                            </p>
-
-                            {selectedProgram?.id === program.id && (
-                              <div className="mt-4 space-y-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="travel-date">Travel Date</Label>
-                                  <Input
-                                    id="travel-date"
-                                    type="date"
-                                    value={travelDate}
-                                    onChange={(e) => setTravelDate(e.target.value)}
-                                    min={new Date().toISOString().split("T")[0]}
-                                    required
-                                    className="omantel-input"
-                                  />
-                                </div>
-                                <Button
-                                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                                  onClick={handleApply}
-                                  disabled={processingOrder || !travelDate}
-                                >
-                                  {processingOrder ? "Processing..." : "Apply Now"}
-                                </Button>
-                              </div>
-                            )}
+                            <p className="text-sm text-gray-600">Fee: ${program.fee}</p>
                           </CardContent>
                         </Card>
                       ))
                     ) : (
-                      <div className="col-span-2 text-center py-10">
-                        <p className="text-gray-500">No visa programs found for the selected criteria.</p>
-                        <p className="text-sm text-gray-400 mt-2">Try different destination or citizenship options.</p>
+                      <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+                        <p className="text-gray-600">No visa programs found for the selected criteria.</p>
                       </div>
                     )}
                   </div>
                 )}
+
+                {selectedProgram && (
+                  <Card className="mt-6 shadow-z1">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-semibold mb-4">Apply for Visa</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="travelDate">Travel Date</Label>
+                          <Input
+                            type="date"
+                            id="travelDate"
+                            className="omantel-input"
+                            onChange={(e) => setTravelDate(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <Button
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={handleApply}
+                          disabled={processingOrder}
+                        >
+                          {processingOrder ? (
+                            <div className="flex items-center justify-center">
+                              <LoadingIndicator size="small" text="Processing..." />
+                            </div>
+                          ) : (
+                            "Apply Now"
+                          )}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             ) : (
-              <div className="flex h-64 flex-col items-center justify-center text-center">
-                <img src="/global-connections.png" alt="Search for Visa" className="h-48 w-48 mb-4" />
-                <h2 className="text-xl font-semibold">Find Your Perfect Visa</h2>
-                <p className="mt-2 text-gray-600">
-                  Enter your travel details to discover available visa options for your journey.
-                </p>
+              <div className="flex h-64 items-center justify-center">
+                <p className="text-gray-500">Enter your travel details to find visa programs.</p>
               </div>
             )}
           </div>

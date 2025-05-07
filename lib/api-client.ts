@@ -4,11 +4,11 @@
  * This client handles all API calls and authentication
  */
 
-// API Base URL
+// API Base URL - Updated to staging URL
 const API_BASE_URL = "https://stg-api.superjetom.com"
 
 // Storage keys
-const VENDOR_KEY_STORAGE_KEY = "visa_vendor_key"
+const VENDOR_KEY_STORAGE_KEY = "vendor_key" // Changed to match the key used in other functions
 const OFFLINE_MODE_KEY = "visa_offline_mode"
 
 // Default vendor key as fallback
@@ -32,6 +32,7 @@ const allCountries = [
   "Saudi Arabia",
   "Oman",
   "Turkey",
+  "Pakistan", // Added Pakistan as it's used in the example
 ]
 
 // Mock data for country to ISO code mapping
@@ -51,6 +52,7 @@ const countryToISOCode: { [key: string]: string } = {
   "Saudi Arabia": "SA",
   Oman: "OM",
   Turkey: "TR",
+  Pakistan: "PK", // Added Pakistan as it's used in the example
 }
 
 /**
@@ -146,8 +148,13 @@ class ApiClient {
       "Content-Type": "application/json",
     }
 
+    // Add Authorization header if we have a vendor key
+    if (this.vendorKey) {
+      headers["Authorization"] = `Bearer ${this.vendorKey}`
+    }
+
     const options: RequestInit = {
-      method: "POST",
+      method: "POST", // Always use POST for these APIs
       headers,
       body: JSON.stringify(data),
     }
@@ -166,6 +173,52 @@ class ApiClient {
 
       if (response.status === 404) {
         throw new Error(`API endpoint not found: ${endpoint}`)
+      }
+
+      // Handle 401 Unauthorized by trying to refresh the token
+      if (response.status === 401) {
+        console.log("Authentication failed (401), attempting to refresh token...")
+
+        try {
+          // Try to create a new organization to get a fresh token
+          const refreshResponse = await fetch(`${API_BASE_URL}/create_organization`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ organization_name: "Omantel"}),
+          })
+
+          if (!refreshResponse.ok) {
+            throw new Error(`Failed to refresh token: ${refreshResponse.status}`)
+          }
+
+          const refreshData = await refreshResponse.json()
+          if (refreshData?.result?.[0]?.vendor_key) {
+            this.vendorKey = refreshData.result[0].vendor_key
+            localStorage.setItem(VENDOR_KEY_STORAGE_KEY, this.vendorKey)
+            console.log("Token refreshed, retrying API call...")
+
+            // Update headers with new token
+            headers["Authorization"] = `Bearer ${this.vendorKey}`
+            options.headers = headers
+
+            // Retry the API call with the new token
+            const retryResponse = await fetch(url, options)
+
+            if (!retryResponse.ok) {
+              throw new Error(`API retry failed with status: ${retryResponse.status}`)
+            }
+
+            // Parse the retry response
+            return await retryResponse.json()
+          } else {
+            throw new Error("No vendor key in refresh response")
+          }
+        } catch (refreshError) {
+          console.error("Failed to refresh token:", refreshError)
+          throw new Error(`Authentication failed and token refresh failed: ${refreshError.message}`)
+        }
       }
 
       let responseData
