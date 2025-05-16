@@ -17,14 +17,16 @@ import { createTravellerOmantel, createIframeOrderVisaOmantel, generateReference
 import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
 
+
 export default function VisaApplication() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   // Get query parameters with fallbacks
-  const destination = searchParams.get("destination") || ""
-  const citizenship = searchParams.get("citizenship") || ""
-  const travelDate = searchParams.get("travelDate") || ""
+  const destination = localStorage.getItem("visa_destination") || "";
+  const citizenship =  localStorage.getItem("visa_citizenship") || "";
+
+  const travelDate =  localStorage.getItem("visa_travelDate") || "";
   const visaType = searchParams.get("visaType") || "Tourist Visa"
   const visaFee = searchParams.get("visaFee") || "0"
   const programId = searchParams.get("programId") || ""
@@ -56,6 +58,7 @@ const lastNameRef=useRef<HTMLInputElement>(null);
 const emailRef=useRef<HTMLInputElement>(null);
 const countrySearchRef=useRef<HTMLInputElement>(null);
 const phoneNoRef=useRef<HTMLInputElement>(null);
+const [userInfo,setUserInfo]=useState();
 
 const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef})
 
@@ -63,22 +66,22 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
 
-  // Try to recover data from localStorage if URL parameters are missing
-  useEffect(() => {
-    if (!destination || !citizenship || !programId) {
-      try {
-        const storedVisaData = localStorage.getItem("selected_visa_data")
-        const storedProgramsData = localStorage.getItem("visa_programs_data")
+  // // Try to recover data from localStorage if URL parameters are missing
+  // useEffect(() => {
+  //   if (!destination || !citizenship || !programId) {
+  //     try {
+  //       const storedVisaData = localStorage.getItem("selected_visa_data")
+  //       const storedProgramsData = localStorage.getItem("visa_programs_data")
 
-        if (storedVisaData) {
-          const parsedData = JSON.parse(storedVisaData)
-          // Use the stored data to fill in missing parameters
-        }
-      } catch (error) {
-        console.error("Error recovering data from localStorage:", error)
-      }
-    }
-  }, [destination, citizenship, programId])
+  //       if (storedVisaData) {
+  //         const parsedData = JSON.parse(storedVisaData)
+  //         // Use the stored data to fill in missing parameters
+  //       }
+  //     } catch (error) {
+  //       console.error("Error recovering data from localStorage:", error)
+  //     }
+  //   }
+  // }, [destination, citizenship, programId])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -93,6 +96,68 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
     setFormData((prev) => ({ ...prev, marketingConsent: checked }))
   }
 
+  const get_id_token =localStorage.getItem("id_token");
+
+  useEffect(()=>{
+
+    const fetchUserData=async(id_token:string)=>{
+      debugger
+  try {
+  
+      const response = await fetch('https://stg-api.superjetom.com/omanteluserdata', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer "+id_token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Token fetch failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if(data.message==="success"){
+        // console.log(data.result);
+        setUserInfo(data.result);
+      
+  const user_data=data.result;
+        const userInfo={
+              firstName:user_data["custom:firstName"],
+              lastName:user_data["custom:lastName"],
+              email:user_data["custom:email"],
+              phone:user_data["phone_number"] || "",
+              building: "",
+              floor: "",
+              apartment: "",
+              street: "",
+              city: "",
+              state:"",
+              country: citizenship || "",
+              marketingConsent: false,
+        }
+
+        setFormData(userInfo);
+        setSearchData({country:citizenship});
+      }
+
+
+      // console.log('Token fetched successfully:', data);
+    }
+   catch (error) {
+    console.error('Failed to initialize API:', error);
+  
+  }
+    }
+    if(get_id_token){
+      debugger
+      fetchUserData(get_id_token);
+    }
+  },[get_id_token])
+
+
+
+
   // Update the handleSubmit function to better handle API errors
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,8 +165,8 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
    
     // Store form data in localStorage for recovery
     localStorage.setItem("visa_application_form", JSON.stringify(formData))
-    localStorage.setItem("visa_destination", destination)
-    localStorage.setItem("visa_citizenship", citizenship)
+    // localStorage.setItem("visa_destination", destination)
+    // localStorage.setItem("visa_citizenship", citizenship)
     localStorage.setItem("visa_type", visaType)
     localStorage.setItem("visa_fee", visaFee)
     localStorage.setItem("program_id", programId || "")

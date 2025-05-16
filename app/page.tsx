@@ -39,6 +39,8 @@ const { countries } = useCountryList();
 
   const [vendorKey,setVendorKey]=useState("");
 
+  const [header,setHeader]=useState({});
+
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
   // Add click outside listener to close dropdowns
@@ -292,7 +294,79 @@ const { countries } = useCountryList();
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  
+  useEffect(() => {
+    debugger
+  const searchParams = new URLSearchParams(window.location.search);
+  const base64Data = searchParams.get("data");
+
+  if (base64Data) {
+    try {
+      const decodedString = atob(base64Data);
+      const params = new URLSearchParams(decodedString);
+
+      const headerData = {
+        accessToken: params.get("accessToken"),
+        uniqueId: params.get("uniqueId"),
+        language: params.get("language"),
+        sessionId: params.get("sessionId"),
+        partnerUserId: params.get("partnerUserId"),
+      };
+      var values={
+        "accessToken": headerData.accessToken,
+        "uniqueId": headerData.uniqueId,
+        "language":headerData.language,
+        "sessionId":headerData.sessionId,
+        "partnerUserId": headerData.partnerUserId,
+        
+      }
+      setHeader(values);
+      localStorage.setItem("header", JSON.stringify(headerData));
+      
+      initApi(values);
+      // setHeader(headerData); // assuming SetHeader is a useState setter
+      localStorage.setItem("header", JSON.stringify(headerData));
+      console.log("Header Data:", headerData);
+    } catch (error) {
+      console.error("Failed to decode or parse query data:", error);
+    }
+  }
+}, []);
+
+
+async function initApi(headerdata1: { accessToken: string | null; uniqueId: string | null; language: string | null; sessionId: string | null; partnerUserId: string | null }) {
+  try {
+    if (headerdata1) {
+      debugger
+      const response = await fetch('https://stg-api.superjetom.com/omanteltoken', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': headerdata1.accessToken ?? '',
+          'x-language': headerdata1.language ?? 'en'
+        }
+      });
+
+      if (!response.ok) {
+
+        throw new Error(`Token fetch failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if(data.message==="success"){
+        const id_token=data.result.idToken;
+        localStorage.setItem("id_token",id_token);
+      }
+
+      // Example: Update your accessToken here if applicable
+      // headerdata.accessToken = data.accessToken;  // update logic as per response
+
+      console.log('Token fetched successfully:', data);
+    }
+  } catch (error) {
+    console.error('Failed to initialize API:', error);
+    setLoading(false);
+  }
+}
 
   useEffect(()=>{
     const createOrganization=async()=>{
