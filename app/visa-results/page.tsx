@@ -824,14 +824,15 @@ const VisaResultsPage = () => {
                       </div>
 
                       {/* Content */}
-                      <div className="p-6 md:w-3/5 flex flex-col items-center text-center">
+                      <div className="p-6 md:w-3/5 flex flex-col items-center text-start">
                         <div className="mb-2 flex items-center">
+                           <h2 className="mb-2 text-[20px] font-semibold" > {destination}&nbsp;&nbsp; </h2>
                           {program.available !== false ? (
                             <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 mb-2">
                               <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                               </svg>
-                              Available
+                            Available
                             </Badge>
                           ) : (
                             <Badge variant="destructive" className="border-0 mb-2">
@@ -843,7 +844,7 @@ const VisaResultsPage = () => {
                                   d="M6 18L18 6M6 6l12 12"
                                 />
                               </svg>
-                              Not Available
+                               Not Available
                             </Badge>
                           )}
                         </div>
@@ -854,11 +855,13 @@ const VisaResultsPage = () => {
                         </div>
 
                         <h3 className="heading-3 mb-2">
-                          {safeRenderText(program.program_name || program.name || program.visa_type || "Visa Program")}
+                          {/* {safeRenderText(program.program_name || program.name || program.visa_type || "Visa Program")} */}
+                       
                         </h3>
 
                         {/* Visa details */}
-                        <div className="w-full max-w-xs mb-4">
+                        {(program.available===true && program?.required===true)
+                         && <div className="w-full max-w-xs mb-4">
                           <div className="border border-gray-200 rounded-xl p-4 mb-4">
                             <h4 className="text-center font-semibold text-gray-900 mb-3 flex items-center justify-center">
                               <svg
@@ -928,13 +931,14 @@ const VisaResultsPage = () => {
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">Entries:</span>
                                 <span className="body-small text-gray-900">
-                                  {program.max_entries === "0.0" || program.max_entries === 0
+                                  {/* {program.max_entries === "0.0" || program.max_entries === 0
                                     ? "Multiple"
                                     : program.max_entries === "1.0" || program.max_entries === 1
                                       ? "Single"
                                       : program.max_entries
                                         ? safeRenderText(program.max_entries).replace(".0", "")
-                                        : "Not specified"}
+                                        : "Not specified"} */}
+                                        Single
                                 </span>
                               </div>
                             </div>
@@ -951,7 +955,24 @@ const VisaResultsPage = () => {
                               </div>
                             </div>
                           </div>
+                        </div>}
+
+                        {
+                        <div>
+                        {
+                        program.required===false && 
+                        <div style={{textAlign:"start"}}>
+                        <div className="mb-2">A visa is not required for your visit.</div>
+
+                         {program.label && <div>{program.label}</div>}
+                       <div className="p-4 mt-4 rounded-2xl shadow-md bg-[#fff2e6]">
+                         {program.required===false  && program.available===true && <div className="mb-2"><b>You are good to go!</b> </div>}
+                        {program.required===false && <div>You don't need a Visa for {destination} if you have a passport from {citizenship}</div>}
                         </div>
+                        </div>
+                        }
+                              </div>
+                        }
 
                         {/* Additional Information - only show if available */}
                         {(program.additional_info || program.embassy_info || program.restrictions) && (
@@ -998,7 +1019,7 @@ const VisaResultsPage = () => {
                         )}
 
                         {/* Apply button */}
-                  {( program.available !== false&&     <Button
+                  {(( program.available && program.required )  &&  <Button
                           onClick={() => handleApply(program.id)}
                           className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4"
                         >

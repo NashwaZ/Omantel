@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,10 +11,11 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft } from "lucide-react"
-import { allCountries } from "@/lib/countries"
+import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
 import { createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
+import { CustomInput } from "@/components/ui/custom-input"
 
 export default function VisaApplication() {
   const router = useRouter()
@@ -43,6 +44,20 @@ export default function VisaApplication() {
     phone: "",
     marketingConsent: false,
   })
+    const [searchData,setSearchData]=useState({
+      country:""
+    })
+
+  const [attemptedSubmit,setAttemptedSubmit]=useState(false);
+const { countries, loading, error } = useCountryList();
+
+const firstNameRef=useRef<HTMLInputElement>(null);
+const lastNameRef=useRef<HTMLInputElement>(null);
+const emailRef=useRef<HTMLInputElement>(null);
+const countrySearchRef=useRef<HTMLInputElement>(null);
+const phoneNoRef=useRef<HTMLInputElement>(null);
+
+const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef})
 
   // Add these state variables at the top of the component with the other state variables
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -82,7 +97,7 @@ export default function VisaApplication() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Form submitted:", formData)
-
+   
     // Store form data in localStorage for recovery
     localStorage.setItem("visa_application_form", JSON.stringify(formData))
     localStorage.setItem("visa_destination", destination)
@@ -93,6 +108,20 @@ export default function VisaApplication() {
 
     try {
       // Step 1: Create traveller in Omantel system
+      setAttemptedSubmit(true);
+     
+      const fields:String[] =["firstName","lastName","email","country","phone"];
+      for(let i=0;i<fields.length;i++){
+        const key=fields[i] as keyof typeof formData;
+          if(!formData[key]){
+    const inputRef = formRef.current[key as keyof typeof formRef.current];
+    inputRef?.current?.focus();
+      return;
+      }
+      }
+     
+      
+
       setIsSubmitting(true)
       setSubmissionError(null)
 
@@ -189,6 +218,31 @@ export default function VisaApplication() {
     return (usdValue * 0.384).toFixed(3)
   }
 
+    
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    const dropdown = document.getElementById("country-dropdown");
+    const searchInput = document.getElementById("country-search");
+
+    const isDropdownVisible = dropdown && dropdown.style.display !== "none";
+
+    const clickedOutside =
+      dropdown &&
+      !dropdown.contains(event.target as Node) &&
+      searchInput &&
+      !searchInput.contains(event.target as Node);
+
+    if (isDropdownVisible && clickedOutside) {
+      dropdown.style.display = "none";
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Main Content */}
@@ -214,7 +268,7 @@ export default function VisaApplication() {
 
           <Card className="shadow-z1">
             <CardContent className="p-8 pt-10">
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form autoComplete="off" onSubmit={handleSubmit} className="space-y-8"  >
                 {/* Personal Information */}
                 <div>
                   <h3 className="heading-4 mb-4">Personal Information</h3>
@@ -223,40 +277,53 @@ export default function VisaApplication() {
                       <Label htmlFor="firstName" className="label">
                         First Name *
                       </Label>
-                      <Input
+                      <CustomInput
                         id="firstName"
+                        ref={firstNameRef}
                         name="firstName"
+                          className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.firstName}
                         onChange={handleInputChange}
                         placeholder="Enter your first name"
-                        required
+                         error={attemptedSubmit && !formData.firstName ? "First name is required." : ""}
+                      success={formData.firstName !== ""}
+                       
                       />
+                     
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName" className="label">
                         Last Name *
                       </Label>
-                      <Input
+                      <CustomInput
                         id="lastName"
                         name="lastName"
+                        ref={lastNameRef}
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.lastName}
                         onChange={handleInputChange}
                         placeholder="Enter your last name"
-                        required
+                         error={attemptedSubmit && !formData.lastName ? "Last name is required." : ""}
+                      success={formData.lastName !== ""}
+                        
                       />
                     </div>
                     <div className="space-y-2 col-span-1 sm:col-span-2">
                       <Label htmlFor="email" className="label">
                         Email *
                       </Label>
-                      <Input
+                      <CustomInput
                         id="email"
                         name="email"
                         type="email"
+                        ref={emailRef}
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="Enter your email address"
-                        required
+                        error={attemptedSubmit && !formData.email ? "Email is required." : ""}
+                      success={formData.email !== ""}
+                        
                       />
                     </div>
                   </div>
@@ -270,75 +337,87 @@ export default function VisaApplication() {
                       <Label htmlFor="building" className="label">
                         Building
                       </Label>
-                      <Input
+                      <CustomInput
                         id="building"
                         name="building"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.building}
                         onChange={handleInputChange}
                         placeholder="Building name/number"
+                         success={formData.building !== ""}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="floor" className="label">
                         Floor
                       </Label>
-                      <Input
+                      <CustomInput
                         id="floor"
                         name="floor"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.floor}
                         onChange={handleInputChange}
                         placeholder="Floor number"
+                         success={formData.floor !== ""}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="apartment" className="label">
                         Apartment
                       </Label>
-                      <Input
+                      <CustomInput
                         id="apartment"
                         name="apartment"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.apartment}
                         onChange={handleInputChange}
                         placeholder="Apartment number"
+                        success={formData.apartment !== ""}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="street" className="label">
                         Street
                       </Label>
-                      <Input
+                      <CustomInput
                         id="street"
                         name="street"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.street}
                         onChange={handleInputChange}
                         placeholder="Street name"
+                        success={formData.street !== ""}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="city" className="label">
                         City
                       </Label>
-                      <Input
+                      <CustomInput
                         id="city"
                         name="city"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.city}
                         onChange={handleInputChange}
                         placeholder="Enter your city"
+                        success={formData.city !== ""}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="state" className="label">
                         State
                       </Label>
-                      <Input
+                    <CustomInput
                         id="state"
                         name="state"
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.state}
                         onChange={handleInputChange}
                         placeholder="State/Province/Region"
+                         success={formData.state !== ""}
                       />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
+                    {/* <div className="space-y-2 ">
                       <Label htmlFor="country" className="label">
                         Country *
                       </Label>
@@ -347,14 +426,102 @@ export default function VisaApplication() {
                           <SelectValue placeholder="Select your country" />
                         </SelectTrigger>
                         <SelectContent>
-                          {allCountries.map((country) => (
+                          {countries.map((country) => (
                             <SelectItem key={country} value={country}>
                               {country}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </div> */}
+                    <div className="space-y-2 col-span-1 sm:col-span-2">
+                                      <Label htmlFor="destination" className="label font-medium">
+                                       Country *
+                                      </Label>
+                                      <div className="relative">
+                                        <CustomInput
+                                          type="text"
+                                          id="country-search"
+                                          ref={countrySearchRef}
+                                          autoComplete="off"
+                                          placeholder="Search for a country..."
+                                          className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
+                                          value={searchData.country}
+                                          onChange={(e) => {
+                                            const destination =searchData.country;
+                                            if(e.target.value.length<destination.length){
+                                                setFormData((prev) => ({ ...prev, country:"" }))
+                                            }
+                                            setSearchData((prev) => ({ ...prev, country: e.target.value }))
+                                            const dropdown = document.getElementById("country-dropdown")
+                                            if (dropdown) dropdown.style.display = "block"
+                                          }}
+                                          onFocus={() => {
+                                            const dropdown = document.getElementById("country-dropdown")
+                                            if (dropdown){
+
+                                             dropdown.style.display = "block";
+                                            }
+                                          }}
+                                          error={attemptedSubmit && !formData.country ? "Please select a destination country" : ""}
+                                          success={formData.country !== ""}
+                                        />
+                                        <button
+                                          type="button"
+                                          className="absolute right-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed"
+                                          onClick={() => {
+                                            const dropdown = document.getElementById("country-dropdown")
+                                            if (dropdown) {
+                                              dropdown.style.display = dropdown.style.display === "none" ? "block" : "none"
+                                            }
+                                          }}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                          >
+                                            <path d="m6 9 6 6 6-6" />
+                                          </svg>
+                                        </button>
+                                        <div
+                                          id="country-dropdown"
+                                          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto hidden transition-all duration-200"
+                                          style={{ boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)" }}
+                                        >
+                                          {countries.length > 0 ? (
+                                            countries
+                                              .filter(
+                                                (country) =>
+                                                  searchData.country === "" ||
+                                                  country.toLowerCase().includes(searchData.country.toLowerCase()),
+                                              )
+                                              .map((country) => (
+                                                <div
+                                                  key={country}
+                                                  className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                                                  onClick={() => {
+                                                    setFormData((prev) => ({ ...prev, country: country }))
+                                                    setSearchData((prev) => ({ ...prev, country: country }))
+                                                    const dropdown = document.getElementById("country-dropdown")
+                                                    if (dropdown) dropdown.style.display = "none"
+                                                  }}
+                                                >
+                                                  {country}
+                                                </div>
+                                              ))
+                                          ) : (
+                                            <div className="px-4 py-3 body-small text-gray-500">No countries found</div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
                   </div>
                 </div>
 
@@ -366,13 +533,16 @@ export default function VisaApplication() {
                       <Label htmlFor="phone" className="label">
                         Phone No *
                       </Label>
-                      <Input
+                      <CustomInput
                         id="phone"
                         name="phone"
+                        ref={phoneNoRef}
+                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="Enter your phone number"
-                        required
+                        success={formData.phone !== ""}
+                        error={attemptedSubmit && !formData.phone ? "Phone no is required." : ""}
                       />
                     </div>
                   </div>
@@ -405,7 +575,7 @@ export default function VisaApplication() {
                   )}
                   <Button
                     type="submit"
-                    className="w-full bg-[#ea6e00] hover:bg-[#ff7800] active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]"
+                    className={`w-full ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} hover:bg-[#ff7800] active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]`}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

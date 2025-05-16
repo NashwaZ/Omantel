@@ -12,24 +12,34 @@ import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 
 // Import country data directly
-import { allCountries } from "@/lib/countries"
+// import { allCountries } from "@/lib/countries"
 
 // Import the CustomInput component at the top of the file
 import { CustomInput } from "@/components/ui/custom-input"
+import { useCountryList } from "@/lib/countries"
 
 export default function VisaSearch() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState<Date>()
-  const [countries] = useState<string[]>(allCountries)
+  // const [countries,setCountries] = useState<string[]>([])
+const { countries } = useCountryList();
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [searchData,setSearchData]=useState({
+    destination: "",
+    citizenship: "",
+  })
 
   const [formData, setFormData] = useState({
     destination: "",
     citizenship: "",
-  })
+  });
+
+  const [vendorKey,setVendorKey]=useState("");
+
+  const validationCheck=formData?.destination && formData?.citizenship && date;
 
   // Add click outside listener to close dropdowns
   useEffect(() => {
@@ -282,21 +292,13 @@ export default function VisaSearch() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Update the handleSubmit function to properly create organization
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setAttemptedSubmit(true)
-    setApiError(null)
+  
 
-    if (!formData.destination || !formData.citizenship || !date) {
-      return
-    }
-
-    setLoading(true)
-
-    try {
+  useEffect(()=>{
+    const createOrganization=async()=>{
+    try{
       // Step 1: Create organization to get vendor key
-      console.log("Creating organization...")
+     console.log("Creating organization...")
       const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
         method: "POST",
         headers: {
@@ -308,19 +310,41 @@ export default function VisaSearch() {
       if (!orgResponse.ok) {
         throw new Error(`Failed to create organization: ${orgResponse.status} ${orgResponse.statusText}`)
       }
+     
+       const orgData = await orgResponse.json();
 
-      const orgData = await orgResponse.json()
       console.log("Organization created successfully", orgData)
 
       // Extract and store vendor key
-      let vendorKey = ""
+    
+       let vendor_key = ""
       if (orgData && orgData.result && orgData.result.length > 0 && orgData.result[0].vendor_key) {
-        vendorKey = orgData.result[0].vendor_key
-        localStorage.setItem("vendor_key", vendorKey)
+        vendor_key = orgData.result[0].vendor_key
+        localStorage.setItem("vendor_key", vendor_key);
+        setVendorKey(vendor_key);
         console.log("Vendor key stored successfully:", vendorKey)
       } else {
         throw new Error("No vendor key found in response")
       }
+    }
+    catch (error) {
+      console.error("Error submitting form:", error)
+      setApiError(error instanceof Error ? error.message : "Failed to process request")
+    }
+  }
+  createOrganization();
+
+  },[])
+
+  // Update the handleSubmit function to properly create organization
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAttemptedSubmit(true)
+    setApiError(null)
+
+    if (!formData.destination || !formData.citizenship || !date) {
+      return
+    }
 
       // Format date for API in DD-MM-YYYY format
       const formattedDate = date ? format(date, "dd-MM-yyyy") : "12-04-2025"
@@ -331,13 +355,11 @@ export default function VisaSearch() {
           formData.citizenship,
         )}&travelDate=${encodeURIComponent(formattedDate)}`,
       )
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      setApiError(error instanceof Error ? error.message : "Failed to process request")
-    } finally {
-      setLoading(false)
-    }
+     setLoading(false);
+   
   }
+
+
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
@@ -350,7 +372,7 @@ export default function VisaSearch() {
         <div className="w-full max-w-3xl px-4 sm:px-0">
           <Card className="border-0 shadow-z1 bg-hayyak-white w-full">
             <CardContent className="px-6 sm:px-8 pb-8 pt-8">
-              <form onSubmit={handleSubmit} className="space-y-5 w-full relative">
+              <form onSubmit={handleSubmit} className="space-y-5 w-full relative" autoComplete="off">
                 <div className="space-y-2">
                   <Label htmlFor="destination" className="label font-medium">
                     Destination Country
@@ -361,9 +383,13 @@ export default function VisaSearch() {
                       id="destination-search"
                       placeholder="Search for a country..."
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
-                      value={formData.destination}
+                      value={searchData.destination}
                       onChange={(e) => {
-                        setFormData((prev) => ({ ...prev, destination: e.target.value }))
+                        const destination =searchData.destination;
+                        if(e.target.value.length<destination.length){
+                            setFormData((prev) => ({ ...prev, destination:"" }))
+                        }
+                        setSearchData((prev) => ({ ...prev, destination: e.target.value }))
                         const dropdown = document.getElementById("destination-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
@@ -407,8 +433,8 @@ export default function VisaSearch() {
                         countries
                           .filter(
                             (country) =>
-                              formData.destination === "" ||
-                              country.toLowerCase().includes(formData.destination.toLowerCase()),
+                              searchData.destination === "" ||
+                              country.toLowerCase().includes(searchData.destination.toLowerCase()),
                           )
                           .map((country) => (
                             <div
@@ -416,6 +442,7 @@ export default function VisaSearch() {
                               className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
                               onClick={() => {
                                 setFormData((prev) => ({ ...prev, destination: country }))
+                                setSearchData((prev) => ({ ...prev, destination: country }))
                                 const dropdown = document.getElementById("destination-dropdown")
                                 if (dropdown) dropdown.style.display = "none"
                               }}
@@ -438,11 +465,16 @@ export default function VisaSearch() {
                     <CustomInput
                       type="text"
                       id="citizenship-search"
+                   
                       placeholder="Search for a country..."
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
-                      value={formData.citizenship}
+                      value={searchData.citizenship}
                       onChange={(e) => {
-                        setFormData((prev) => ({ ...prev, citizenship: e.target.value }))
+                        const citizenship =searchData.citizenship;
+                        if(e.target.value.length<citizenship.length){
+                            setFormData((prev) => ({ ...prev, citizenship:"" }))
+                        }
+                        setSearchData((prev) => ({ ...prev, citizenship: e.target.value }))
                         const dropdown = document.getElementById("citizenship-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
@@ -486,8 +518,8 @@ export default function VisaSearch() {
                         countries
                           .filter(
                             (country) =>
-                              formData.citizenship === "" ||
-                              country.toLowerCase().includes(formData.citizenship.toLowerCase()),
+                              searchData.citizenship === "" ||
+                              country.toLowerCase().includes(searchData.citizenship.toLowerCase()),
                           )
                           .map((country) => (
                             <div
@@ -495,6 +527,7 @@ export default function VisaSearch() {
                               className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
                               onClick={() => {
                                 setFormData((prev) => ({ ...prev, citizenship: country }))
+                                setSearchData((prev) => ({ ...prev, citizenship: country }))
                                 const dropdown = document.getElementById("citizenship-dropdown")
                                 if (dropdown) dropdown.style.display = "none"
                               }}
@@ -553,7 +586,7 @@ export default function VisaSearch() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 body-large font-medium rounded-[16px] bg-[#ea6e00] hover:bg-[#ff7800] active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4"
+                  className={`w-full h-12 body-large font-medium rounded-[16px] ${validationCheck?"bg-[#ea6e00]":"bg-[grey]"} hover:bg-[#ff7800] active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4`}
                   disabled={loading}
                 >
                   {loading ? (
