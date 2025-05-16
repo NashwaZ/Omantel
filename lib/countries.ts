@@ -1,235 +1,70 @@
-// Comprehensive list of all countries and territories in the world
-export const allCountries = [
-  "Afghanistan",
-  "Albania",
-  "Algeria",
-  "Andorra",
-  "Angola",
-  "Antigua and Barbuda",
-  "Argentina",
-  "Armenia",
-  "Australia",
-  "Austria",
-  "Azerbaijan",
-  "Bahamas",
-  "Bahrain",
-  "Bangladesh",
-  "Barbados",
-  "Belarus",
-  "Belgium",
-  "Belize",
-  "Benin",
-  "Bhutan",
-  "Bolivia",
-  "Bosnia and Herzegovina",
-  "Botswana",
-  "Brazil",
-  "Brunei",
-  "Bulgaria",
-  "Burkina Faso",
-  "Burundi",
-  "Cabo Verde",
-  "Cambodia",
-  "Cameroon",
-  "Canada",
-  "Central African Republic",
-  "Chad",
-  "Chile",
-  "China",
-  "Colombia",
-  "Comoros",
-  "Congo (Congo-Brazzaville)",
-  "Costa Rica",
-  "Croatia",
-  "Cuba",
-  "Cyprus",
-  "Czech Republic",
-  "Democratic Republic of the Congo",
-  "Denmark",
-  "Djibouti",
-  "Dominica",
-  "Dominican Republic",
-  "Ecuador",
-  "Egypt",
-  "El Salvador",
-  "Equatorial Guinea",
-  "Eritrea",
-  "Estonia",
-  "Eswatini",
-  "Ethiopia",
-  "Fiji",
-  "Finland",
-  "France",
-  "Gabon",
-  "Gambia",
-  "Georgia",
-  "Germany",
-  "Ghana",
-  "Greece",
-  "Grenada",
-  "Guatemala",
-  "Guinea",
-  "Guinea-Bissau",
-  "Guyana",
-  "Haiti",
-  "Holy See (Vatican City)",
-  "Honduras",
-  "Hungary",
-  "Iceland",
-  "India",
-  "Indonesia",
-  "Iran",
-  "Iraq",
-  "Ireland",
-  "Israel",
-  "Italy",
-  "Ivory Coast",
-  "Jamaica",
-  "Japan",
-  "Jordan",
-  "Kazakhstan",
-  "Kenya",
-  "Kiribati",
-  "Kosovo",
-  "Kuwait",
-  "Kyrgyzstan",
-  "Laos",
-  "Latvia",
-  "Lebanon",
-  "Lesotho",
-  "Liberia",
-  "Libya",
-  "Liechtenstein",
-  "Lithuania",
-  "Luxembourg",
-  "Madagascar",
-  "Malawi",
-  "Malaysia",
-  "Maldives",
-  "Mali",
-  "Malta",
-  "Marshall Islands",
-  "Mauritania",
-  "Mauritius",
-  "Mexico",
-  "Micronesia",
-  "Moldova",
-  "Monaco",
-  "Mongolia",
-  "Montenegro",
-  "Morocco",
-  "Mozambique",
-  "Myanmar (Burma)",
-  "Namibia",
-  "Nauru",
-  "Nepal",
-  "Netherlands",
-  "New Zealand",
-  "Nicaragua",
-  "Niger",
-  "Nigeria",
-  "North Korea",
-  "North Macedonia",
-  "Norway",
-  "Oman",
-  "Pakistan",
-  "Palau",
-  "Palestine",
-  "Panama",
-  "Papua New Guinea",
-  "Paraguay",
-  "Peru",
-  "Philippines",
-  "Poland",
-  "Portugal",
-  "Qatar",
-  "Romania",
-  "Russia",
-  "Rwanda",
-  "Saint Kitts and Nevis",
-  "Saint Lucia",
-  "Saint Vincent and the Grenadines",
-  "Samoa",
-  "San Marino",
-  "Sao Tome and Principe",
-  "Saudi Arabia",
-  "Senegal",
-  "Serbia",
-  "Seychelles",
-  "Sierra Leone",
-  "Singapore",
-  "Slovakia",
-  "Slovenia",
-  "Solomon Islands",
-  "Somalia",
-  "South Africa",
-  "South Korea",
-  "South Sudan",
-  "Spain",
-  "Sri Lanka",
-  "Sudan",
-  "Suriname",
-  "Sweden",
-  "Switzerland",
-  "Syria",
-  "Taiwan",
-  "Tajikistan",
-  "Tanzania",
-  "Thailand",
-  "Timor-Leste",
-  "Togo",
-  "Tonga",
-  "Trinidad and Tobago",
-  "Tunisia",
-  "Turkey",
-  "Turkmenistan",
-  "Tuvalu",
-  "Uganda",
-  "Ukraine",
-  "United Arab Emirates",
-  "United Kingdom",
-  "United States",
-  "Uruguay",
-  "Uzbekistan",
-  "Vanuatu",
-  "Venezuela",
-  "Vietnam",
-  "Yemen",
-  "Zambia",
-  "Zimbabwe",
-  // Additional territories and dependencies
-  "American Samoa",
-  "Anguilla",
-  "Aruba",
-  "Bermuda",
-  "British Virgin Islands",
-  "Cayman Islands",
-  "Cook Islands",
-  "Curaçao",
-  "Falkland Islands",
-  "Faroe Islands",
-  "French Polynesia",
-  "Gibraltar",
-  "Greenland",
-  "Guam",
-  "Guernsey",
-  "Hong Kong",
-  "Isle of Man",
-  "Jersey",
-  "Macau",
-  "Montserrat",
-  "New Caledonia",
-  "Niue",
-  "Northern Mariana Islands",
-  "Puerto Rico",
-  "Saint Barthélemy",
-  "Saint Helena, Ascension and Tristan da Cunha",
-  "Saint Martin",
-  "Saint Pierre and Miquelon",
-  "Sint Maarten",
-  "Tokelau",
-  "Turks and Caicos Islands",
-  "U.S. Virgin Islands",
-  "Wallis and Futuna",
-  "Western Sahara",
-]
+import { useEffect, useState } from "react";
+
+type Country = { country: string };
+
+export const useCountryList = () => {
+  const [countries, setCountries] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const createOrganizationAndFetchCountries = async () => {
+      try {
+        console.log("Creating organization...");
+        const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ organization_name: "Omantel" }),
+        });
+
+        if (!orgResponse.ok) {
+          throw new Error(`Failed to create organization: ${orgResponse.status} ${orgResponse.statusText}`);
+        }
+
+        const orgData = await orgResponse.json();
+        console.log("Organization created successfully", orgData);
+
+        const vendorKey =
+          orgData?.result?.[0]?.vendor_key ?? "";
+
+        if (!vendorKey) {
+          throw new Error("No vendor key found in response");
+        }
+
+        localStorage.setItem("vendor_key", vendorKey);
+
+        const countryResponse = await fetch("https://stg-api.superjetom.com/country", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ vendor_key: vendorKey }),
+        });
+
+        if (!countryResponse.ok) {
+          throw new Error(`Failed to get country: ${countryResponse.status} ${countryResponse.statusText}`);
+        }
+
+        const data = await countryResponse.json();
+        if (data.message === "success") {
+          const filteredCountries = data.result.map((c: Country) => c.country);
+          setCountries(filteredCountries);
+        } else {
+          throw new Error("Failed to retrieve countries");
+        }
+
+      } catch (err: any) {
+        console.error("Error:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    createOrganizationAndFetchCountries();
+  }, []);
+
+  return { countries, loading, error };
+};
