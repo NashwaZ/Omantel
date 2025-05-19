@@ -573,6 +573,11 @@ const VisaResultsPage = () => {
   }
 
   const handleApply = (programId: string) => {
+
+    localStorage.setItem("visa_citizenship",citizenship);
+    localStorage.setItem("visa_destination",destination);
+    localStorage.setItem("visa_travelDate",travelDate);
+
     console.log("Applying for program with ID:", programId)
 
     // Store the selected program ID for the iframe API
