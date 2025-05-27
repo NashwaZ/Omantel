@@ -201,7 +201,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
     })
 
     // Make the API call with proper authorization through our proxy
-    const data = await callProxyApi("get_visa_programs_omantel", requestBody, currentVendorKey)
+    let data = await callProxyApi("get_visa_programs_omantel", requestBody, currentVendorKey)
 
     // Store the successful response
     localStorage.setItem("visa_programs_data", JSON.stringify(data))
@@ -249,7 +249,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
 
     // Store program IDs for later use if we have valid programs
     if (Array.isArray(data.result) && data.result.length > 0) {
-      const programIds = data.result.filter((program) => program && program.id).map((program: any) => program.id)
+      const programIds = data.result.filter((program:any) => program && program.id).map((program: any) => program.id)
 
       if (programIds.length > 0) {
         localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
@@ -262,7 +262,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
       data.result.programs.length > 0
     ) {
       const programIds = data.result.programs
-        .filter((program) => program && program.id)
+        .filter((program:any) => program && program.id)
         .map((program: any) => program.id)
 
       if (programIds.length > 0) {
@@ -481,6 +481,7 @@ export async function createIframeOrderVisaOmantel(orderData: {
       // Store the iframe URL if available - ONLY use iframe_deeplink_url, no fallbacks
       if (data && data.result && data.result.iframe_deeplink_url) {
         localStorage.setItem("iframe_url", data.result.iframe_deeplink_url)
+        localStorage.setItem("signin_url",data.result.deeplink)
         console.log("Iframe URL stored:", data.result.iframe_deeplink_url)
       } else {
         console.error("No iframe_deeplink_url found in API response:", data)
