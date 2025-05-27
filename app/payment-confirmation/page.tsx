@@ -6,19 +6,37 @@ import LoadingIndicator from "@/components/loading-indicator"
 export default function PaymentConfirmation() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [signinUrl,setSigninUrl]=useState<string | null >(null);
+  const [iframeTime,setIframeTime]=useState(false);
+  const [openIframeUrl,setOpenIframeUrl]=useState<string | null>("null")
 
   useEffect(() => {
     // Get the iframe URL from localStorage
+    try{
+    const signin_url=localStorage.getItem("signin_url");
     const storedIframeUrl = localStorage.getItem("iframe_url")
-
-    if (storedIframeUrl) {
+   if(signin_url){
+    setSigninUrl(signin_url)
+    setOpenIframeUrl(signin_url)
+   }
+   if (storedIframeUrl) {
       setIframeUrl(storedIframeUrl)
+
     } else {
       console.error("No iframe URL found in localStorage")
     }
-
-    setIsLoading(false)
+    setTimeout(()=>{
+      setOpenIframeUrl(storedIframeUrl);
+      setIsLoading(false);
+    },4000)
+    
+  }catch(err){
+    console.error(err);
+  }
+ 
   }, [])
+
+
 
   // Full-screen loading indicator
   if (isLoading) {
@@ -40,13 +58,15 @@ export default function PaymentConfirmation() {
   // Full-screen iframe with no other content
   return (
     <div className="fixed inset-0 w-full h-full">
-      <iframe
-        src={iframeUrl}
+     {openIframeUrl &&   
+     <iframe
+        src={openIframeUrl}
         className="w-full h-full border-0"
         frameBorder="0"
         title="Payment Gateway"
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
       ></iframe>
+      }
     </div>
   )
 }
