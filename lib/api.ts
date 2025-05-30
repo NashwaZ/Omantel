@@ -389,7 +389,8 @@ export async function createTravellerOmantel(userData: {
   email: string
   first_name: string
   last_name: string
-  locale: string
+  locale: string,
+  omantel_user_id:number|string
 }): Promise<any> {
   try {
     // Get the vendor key from localStorage
@@ -404,7 +405,7 @@ export async function createTravellerOmantel(userData: {
     // Try to make the API call with proper error handling
     try {
       const data = await callProxyApi(
-        "create_traveller_omantel",
+        "omantel_user_traveller",
         userData,
         vendorKey || "MOCK_VENDOR_KEY_FOR_DEVELOPMENT",
       )
@@ -461,8 +462,8 @@ export async function createIframeOrderVisaOmantel(orderData: {
   fee: string
   arrival: string
   destination: string
-  commision: string
-  commision_type: string
+  commission: string
+  commission_type: string
 }): Promise<any> {
   try {
     // Get the traveller access token from localStorage
@@ -529,6 +530,63 @@ export async function createIframeOrderVisaOmantel(orderData: {
       `Backend issue: ${error instanceof Error ? error.message : "Unknown error"}. Please try again later.`,
     )
   }
+}
+
+export async function sendEventMsgToCEPApp(event:any,user:any,access_token:string){
+  // event->send type,sub_type,description,user
+  const data =  {
+    "event": {
+        "cxp_session_id": "BQeR11wlM0aLcTHGLMUBL30mvqC7MYqmx24aZDU2",
+        "event_type":"TRANSACTION",
+        "sub_type": event.sub_type ,
+        "event_details": {
+            "description": event.description || "payment successful"
+            // "metadata": {
+            //     "triggerType": "FORCE_REFRESH",
+            //     "loginMsisdn": "69001331",
+            //     "accountMsisdn": "69001331",
+            //     "acountType": "MOBILE",
+            //     "billingType": "POSTPAID",
+            //     "isOtpProfile": true
+            // }
+        }
+    },
+    "user": {
+        "id": user.user_id ,
+        "name": user.first_name+" "+user.last_name,
+        "phone":user.mobile_no,
+        "email": user.email
+    },
+    "sender": {
+        "id": "OT-CXP-SUPERJET-f65c1d89",
+        "name": "Superjet",
+        "channel": "mobile"
+    },
+    "timestamp": new Date()
+}
+ try{
+  const response= await fetch(API_BASE_URL+"/omantel_event",{
+    method:"POST",
+    headers:{
+      Authorization:"Bearer "+ access_token,
+      "x-language":"en",
+      "Content-Type":"application/json" 
+    },
+    body:JSON.stringify(data)
+  });
+  if(response.ok){
+    const data = await response.json();
+    if(data.message==="success"){
+      return "success";
+    }
+    else{
+      return "error";
+    }
+ }  
+ }catch(err){
+  console.error('error  at sending event msg : ' + err);
+  return "error";
+ }
 }
 
 /**

@@ -10,13 +10,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Currency } from "lucide-react"
 import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
-import { createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber } from "@/lib/api"
+import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
-
 
 export default function VisaApplication() {
   const router = useRouter()
@@ -27,8 +26,9 @@ export default function VisaApplication() {
   const citizenship =  localStorage.getItem("visa_citizenship") || "";
 
   const travelDate =  localStorage.getItem("visa_travelDate") || "";
+
   const visaType = searchParams.get("visaType") || "Tourist Visa"
-  const visaFee = searchParams.get("visaFee") || "0"
+  // const visaFee = searchParams.get("visaFee") || "0"
   const programId = searchParams.get("programId") || ""
 
   // Form state
@@ -36,15 +36,15 @@ export default function VisaApplication() {
     firstName: "",
     lastName: "",
     email: "",
-    building: "",
-    floor: "",
-    apartment: "",
-    street: "",
-    city: "",
-    state: "",
-    country: citizenship || "",
     phone: "",
     marketingConsent: false,
+     // building: "",
+    // floor: "",
+    // apartment: "",
+    // street: "",
+    // city: "",
+    // state: "",
+    // country: citizenship || ""
   })
     const [searchData,setSearchData]=useState({
       country:""
@@ -88,74 +88,18 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  // const handleSelectChange = (name: string, value: string) => {
+  //   setFormData((prev) => ({ ...prev, [name]: value }))
+  // }
 
   const handleCheckboxChange = (checked: boolean) => {
     setFormData((prev) => ({ ...prev, marketingConsent: checked }))
   }
 
-  const get_id_token =localStorage.getItem("id_token");
-
-  useEffect(()=>{
-
-    const fetchUserData=async(id_token:string)=>{
-      debugger
-  try {
-  
-      const response = await fetch('https://stg-api.superjetom.com/omanteluserdata', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer "+id_token
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Token fetch failed with status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if(data.message==="success"){
-        // console.log(data.result);
-        setUserInfo(data.result);
-      
-  const user_data=data.result;
-        const userInfo={
-              firstName:user_data["custom:firstName"],
-              lastName:user_data["custom:lastName"],
-              email:user_data["custom:email"],
-              phone:user_data["phone_number"] || "",
-              building: "",
-              floor: "",
-              apartment: "",
-              street: "",
-              city: "",
-              state:"",
-              country: citizenship || "",
-              marketingConsent: false,
-        }
-
-        setFormData(userInfo);
-        setSearchData({country:citizenship});
-      }
+   
 
 
-      // console.log('Token fetched successfully:', data);
-    }
-   catch (error) {
-    console.error('Failed to initialize API:', error);
-  
-  }
-    }
-    if(get_id_token){
-      debugger
-      fetchUserData(get_id_token);
-    }
-  },[get_id_token])
-
-
+     const validationCheck=formData?.firstName && formData?.lastName && formData?.marketingConsent && formData?.phone
 
 
   // Update the handleSubmit function to better handle API errors
@@ -167,15 +111,15 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
     localStorage.setItem("visa_application_form", JSON.stringify(formData))
     // localStorage.setItem("visa_destination", destination)
     // localStorage.setItem("visa_citizenship", citizenship)
-    localStorage.setItem("visa_type", visaType)
-    localStorage.setItem("visa_fee", visaFee)
+    // localStorage.setItem("visa_type", visaType)
+    // localStorage.setItem("visa_fee", visaFee)
     localStorage.setItem("program_id", programId || "")
 
     try {
       // Step 1: Create traveller in Omantel system
       setAttemptedSubmit(true);
      
-      const fields:String[] =["firstName","lastName","email","country","phone"];
+      const fields:String[] =["firstName","lastName","email","phone"];
       for(let i=0;i<fields.length;i++){
         const key=fields[i] as keyof typeof formData;
           if(!formData[key]){
@@ -190,11 +134,18 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
       setIsSubmitting(true)
       setSubmissionError(null)
 
+      const get_user_data=localStorage.getItem("user_info_cep");
+      const parse_user_data = get_user_data?JSON.parse(get_user_data):"";
+      if(!parse_user_data){
+        console.error("User ID is required to create a traveller. ");
+        return;
+      }
       const travellerData = {
         email: formData.email,
         first_name: formData.firstName,
         last_name: formData.lastName,
         locale: "en",
+        omantel_user_id:parse_user_data?.id
       }
 
       console.log("Creating traveller with data:", travellerData)
@@ -219,6 +170,10 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
       const referenceNo = generateReferenceNumber()
       console.log("Generated reference number:", referenceNo)
 
+      const get_local_visa=localStorage.getItem("visa_programs_data");
+      const parse_visa_data =get_local_visa? JSON.parse(get_local_visa):"";
+     const visa_program=parse_visa_data.result.programs[0];
+     
       const orderData = {
         vendor_key: localStorage.getItem("vendor_key") || "OMANTEL", // Use stored vendor key or default
         reference_no: referenceNo,
@@ -228,11 +183,12 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
-        fee: visaFee,
+        fee: visa_program?.fee,
+        currency:visa_program?.currency,
         arrival: citizenship.toLowerCase(),
         destination: destination.toLowerCase(),
-        commision: "0", // Default value as specified
-        commision_type: "flat rate", // Default value as specified
+        commission: visa_program?.commision, // Default value as specified
+        commission_type: visa_program?.commision_type || "flat rate", // Default value as specified
       }
 
       console.log("Creating iframe order with data:", orderData)
@@ -246,7 +202,19 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
         if (!orderResponse?.result?.iframe_deeplink_url) {
           throw new Error("Backend issue: Missing iframe_deeplink_url in response. Please try again later.")
         }
-
+        
+         const get_user=localStorage.getItem("user_info_cep");
+            const userInfo=get_user?JSON.parse(get_user):"";
+              const auth_token=localStorage.getItem("sso_header");
+            const header=auth_token?JSON.parse(auth_token):"";
+            const accessToken=header?.authorization;
+            
+           const eventDetails = {
+              sub_type: "Form Submission - Next Stage",
+              description: "User is submitting the form to proceed to the next stage."
+            };
+        
+                  await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
         // Navigate to payment confirmation page
         router.push("/payment-confirmation")
       } catch (error) {
@@ -256,6 +224,8 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
           console.log("Development mode detected, continuing with mock data")
           // The createIframeOrderVisaOmantel function will handle creating mock data
           orderResponse = await createIframeOrderVisaOmantel(orderData)
+
+
           router.push("/payment-confirmation")
         } else {
           throw error // Re-throw in production
@@ -395,7 +365,7 @@ useEffect(() => {
                 </div>
 
                 {/* Address Information - Improve mobile layout */}
-                <div>
+                {/* <div>
                   <h3 className="heading-4 mb-4">Address Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
@@ -499,7 +469,7 @@ useEffect(() => {
                         </SelectContent>
                       </Select>
                     </div> */}
-                    <div className="space-y-2 col-span-1 sm:col-span-2">
+                   {/* <div className="space-y-2 col-span-1 sm:col-span-2">
                                       <Label htmlFor="destination" className="label font-medium">
                                        Country *
                                       </Label>
@@ -588,7 +558,7 @@ useEffect(() => {
                                       </div>
                                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Contact Information */}
                 <div>
@@ -640,7 +610,7 @@ useEffect(() => {
                   )}
                   <Button
                     type="submit"
-                    className={`w-full ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} hover:bg-[#ff7800] active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]`}
+                  className={`w-full ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"} active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]`}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

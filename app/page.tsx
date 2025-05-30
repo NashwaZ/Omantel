@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
+import { sendEventMsgToCEPApp } from "@/lib/api"
 
 // Import country data directly
 // import { allCountries } from "@/lib/countries"
@@ -17,6 +18,7 @@ import { format } from "date-fns"
 // Import the CustomInput component at the top of the file
 import { CustomInput } from "@/components/ui/custom-input"
 import { useCountryList } from "@/lib/countries"
+import { Description } from "@radix-ui/react-toast"
 
 export default function VisaSearch() {
   const router = useRouter()
@@ -36,10 +38,30 @@ const { countries } = useCountryList();
     destination: "",
     citizenship: "",
   });
+const [userInfo,setUserInfo]=useState({ 
+email:"",
+first_name:"",
+id: "",
+last_name: "",
+mobile_no: "",
+sub: "",
+updated_at: "",
+user_id: "",
+username: "",
+created_at:"",
+});
 
   const [vendorKey,setVendorKey]=useState("");
 
-  const [header,setHeader]=useState({});
+  const [header,setHeader]=useState({
+        "accessToken": "",
+        "uniqueId": "",
+        "language":"",
+        "sessionId":"",
+        "partnerUserId": ""
+  });
+
+  const [accessToken,setAccessToken]=useState("");
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
@@ -294,79 +316,79 @@ const { countries } = useCountryList();
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  useEffect(() => {
-    debugger
-  const searchParams = new URLSearchParams(window.location.search);
-  const base64Data = searchParams.get("data");
+//   useEffect(() => {
+//     debugger
+//   const searchParams = new URLSearchParams(window.location.search);
+//   const base64Data = searchParams.get("data");
 
-  if (base64Data) {
-    try {
-      const decodedString = atob(base64Data);
-      const params = new URLSearchParams(decodedString);
+//   if (base64Data) {
+//     try {
+//       const decodedString = atob(base64Data);
+//       const params = new URLSearchParams(decodedString);
 
-      const headerData = {
-        accessToken: params.get("accessToken"),
-        uniqueId: params.get("uniqueId"),
-        language: params.get("language"),
-        sessionId: params.get("sessionId"),
-        partnerUserId: params.get("partnerUserId"),
-      };
-      var values={
-        "accessToken": headerData.accessToken,
-        "uniqueId": headerData.uniqueId,
-        "language":headerData.language,
-        "sessionId":headerData.sessionId,
-        "partnerUserId": headerData.partnerUserId,
+//       const headerData = {
+//         accessToken: params.get("accessToken"),
+//         uniqueId: params.get("uniqueId"),
+//         language: params.get("language"),
+//         sessionId: params.get("sessionId"),
+//         partnerUserId: params.get("partnerUserId"),
+//       };
+//       var values={
+//         "accessToken": headerData.accessToken,
+//         "uniqueId": headerData.uniqueId,
+//         "language":headerData.language,
+//         "sessionId":headerData.sessionId,
+//         "partnerUserId": headerData.partnerUserId,
         
-      }
-      setHeader(values);
-      localStorage.setItem("header", JSON.stringify(headerData));
+//       }
+//       setHeader(values);
+//       localStorage.setItem("header", JSON.stringify(headerData));
       
-      initApi(values);
-      // setHeader(headerData); // assuming SetHeader is a useState setter
-      localStorage.setItem("header", JSON.stringify(headerData));
-      console.log("Header Data:", headerData);
-    } catch (error) {
-      console.error("Failed to decode or parse query data:", error);
-    }
-  }
-}, []);
+//       // initApi(values);
+//       // setHeader(headerData); // assuming SetHeader is a useState setter
+//       localStorage.setItem("header", JSON.stringify(headerData));
+//       console.log("Header Data:", headerData);
+//     } catch (error) {
+//       console.error("Failed to decode or parse query data:", error);
+//     }
+//   }
+// }, []);
 
 
-async function initApi(headerdata1: { accessToken: string | null; uniqueId: string | null; language: string | null; sessionId: string | null; partnerUserId: string | null }) {
-  try {
-    if (headerdata1) {
-      debugger
-      const response = await fetch('https://stg-api.superjetom.com/omanteltoken', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': headerdata1.accessToken ?? '',
-          'x-language': headerdata1.language ?? 'en'
-        }
-      });
+// async function initApi(headerdata1: { accessToken: string | null; uniqueId: string | null; language: string | null; sessionId: string | null; partnerUserId: string | null }) {
+//   try {
+//     if (headerdata1) {
+//       debugger
+//       const response = await fetch('https://stg-api.superjetom.com/omanteltoken', {
+//         method: 'GET',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': headerdata1.accessToken ?? '',
+//           'x-language': headerdata1.language ?? 'en'
+//         }
+//       });
 
-      if (!response.ok) {
+//       if (!response.ok) {
 
-        throw new Error(`Token fetch failed with status: ${response.status}`);
-      }
+//         throw new Error(`Token fetch failed with status: ${response.status}`);
+//       }
 
-      const data = await response.json();
-      if(data.message==="success"){
-        const id_token=data.result.idToken;
-        localStorage.setItem("id_token",id_token);
-      }
+//       const data = await response.json();
+//       if(data.message==="success"){
+//         const id_token=data.result.idToken;
+//         localStorage.setItem("id_token",id_token);
+//       }
 
-      // Example: Update your accessToken here if applicable
-      // headerdata.accessToken = data.accessToken;  // update logic as per response
+//       // Example: Update your accessToken here if applicable
+//       // headerdata.accessToken = data.accessToken;  // update logic as per response
 
-      console.log('Token fetched successfully:', data);
-    }
-  } catch (error) {
-    console.error('Failed to initialize API:', error);
-    setLoading(false);
-  }
-}
+//       console.log('Token fetched successfully:', data);
+//     }
+//   } catch (error) {
+//     console.error('Failed to initialize API:', error);
+//     setLoading(false);
+//   }
+// }
 
   useEffect(()=>{
     const createOrganization=async()=>{
@@ -410,6 +432,117 @@ async function initApi(headerdata1: { accessToken: string | null; uniqueId: stri
 
   },[])
 
+  useEffect(()=>{
+
+  const call_SSO= async ()=>{  
+    const url=window.location.search;
+    const getParams=new URLSearchParams(url)
+    const h_id=getParams.get("id");
+    if(h_id!==null){
+    const get_h_id = Buffer.from(h_id, 'base64').toString('utf-8');
+
+    if(get_h_id){
+    const data ={
+      vendor_key:vendorKey,
+      head_id: get_h_id
+    }
+
+  const response = await fetch("https://stg-api.superjetom.com/omantel_sso_basic",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(data)
+  })
+
+  if(!response.ok){
+     console.log("Error at get head sso api");
+  }
+  else{
+    const data = await response.json(); 
+    if(data.message==='success'){
+
+        const header_data=data.result;
+
+         var values={
+        "accessToken": header_data.authorization,
+        "uniqueId": header_data.uniqueid,
+        "language":header_data.language,
+        "sessionId":header_data.sessionid,
+        "partnerUserId": header_data.userid,
+        
+      }
+      setHeader(values);
+        setAccessToken(data.result.authorization);
+      // setLocale(values.language);
+      // const get_locale=values.language;
+      //  if (get_locale === "en" || get_locale === "ar") {
+      // i18n.changeLanguage(get_locale);
+      // const direction = getDirection(get_locale);
+      // document.documentElement.dir = direction;
+    // }
+
+      localStorage.setItem("sso_header", JSON.stringify(header_data));
+      
+      // initApi(values);
+
+    }
+  }
+}
+    }
+  }
+if(vendorKey){
+  call_SSO();
+}
+},[vendorKey])
+
+
+  useEffect(()=>{
+
+    const fetchUserData=async(token:string)=>{
+      debugger
+      
+  try {
+  
+      const response = await fetch('https://stg-api.superjetom.com/omantel_user_store', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-language':"en",
+          'Authorization': "Bearer "+token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Token fetch failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if(data.message==="success"){
+        // console.log(data.result);
+        if(data.result.length>0){
+
+        setUserInfo(data.result[0]);
+
+       localStorage.setItem("user_info_cep",JSON.stringify(data.result[0]));
+       
+      }
+    }
+
+      // console.log('Token fetched successfully:', data);
+    }
+   catch (error) {
+    console.error('Failed to initialize API:', error);
+  
+  }
+    }
+
+    if(accessToken){
+      fetchUserData(accessToken);
+    }
+    
+  },[accessToken])
+
   // Update the handleSubmit function to properly create organization
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -423,6 +556,12 @@ async function initApi(headerdata1: { accessToken: string | null; uniqueId: stri
       // Format date for API in DD-MM-YYYY format
       const formattedDate = date ? format(date, "dd-MM-yyyy") : "12-04-2025"
 
+       const eventDetails = {
+         sub_type:"Visa Search",
+         description: "User is searching for visa programs based on selected country."
+       };
+       
+      await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
       // Navigate to results page with query parameters
       router.push(
         `/visa-results?destination=${encodeURIComponent(formData.destination)}&citizenship=${encodeURIComponent(
@@ -660,7 +799,7 @@ async function initApi(headerdata1: { accessToken: string | null; uniqueId: stri
 
                 <Button
                   type="submit"
-                  className={`w-full h-12 body-large font-medium rounded-[16px] ${validationCheck?"bg-[#ea6e00]":"bg-[grey]"} hover:bg-[#ff7800] active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4`}
+                  className={`w-full h-12 body-large font-medium rounded-[16px] ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"}  active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4`}
                   disabled={loading}
                 >
                   {loading ? (
