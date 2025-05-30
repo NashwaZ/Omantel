@@ -8,6 +8,7 @@ import LoadingIndicator from "@/components/loading-indicator"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getVisaPrograms } from "@/lib/api"
+import { sendEventMsgToCEPApp } from "@/lib/api"
 
 const VisaResultsPage = () => {
   const router = useRouter()
@@ -341,16 +342,16 @@ const VisaResultsPage = () => {
   // Modify the useEffect for converting fees
   useEffect(() => {
     if (safeVisaPrograms.length > 0) {
-      const convertFee = async (fee: string, programId: string) => {
+      const convertFee = async (currency:string,fee: string, programId: string) => {
         try {
-          const response = await fetch("/api/proxy?endpoint=amount_convertion", {
+          const response = await fetch("https://stg-api.superjetom.com/amount_convertion", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
               amount: fee,
-              currency: "USD",
+              currency: currency ,
             }),
           })
 
@@ -362,13 +363,7 @@ const VisaResultsPage = () => {
                 [programId]: Number(data.result).toFixed(3),
               }))
             }
-          } else {
-            // Fallback conversion if API fails
-            setConvertedFees((prev) => ({
-              ...prev,
-              [programId]: (Number.parseFloat(fee) * 0.385).toFixed(3),
-            }))
-          }
+          } 
         } catch (error) {
           console.error("Error converting currency:", error)
           // Fallback conversion if API fails
@@ -383,7 +378,8 @@ const VisaResultsPage = () => {
       safeVisaPrograms.forEach((program) => {
         if (program.fee && program.id) {
           const feeValue = typeof program.fee === "string" ? program.fee : String(program.fee)
-          convertFee(feeValue, program.id)
+          const currency = typeof program.currency === "string" ? program.currency : String(program.fee)
+          convertFee(currency,feeValue, program.id)
         }
       })
     }
@@ -572,7 +568,7 @@ const VisaResultsPage = () => {
     router.back()
   }
 
-  const handleApply = (programId: string) => {
+  const handleApply = async(programId: string) => {
 
     localStorage.setItem("visa_citizenship",citizenship);
     localStorage.setItem("visa_destination",destination);
@@ -582,6 +578,18 @@ const VisaResultsPage = () => {
 
     // Store the selected program ID for the iframe API
     localStorage.setItem("selected_program_id", programId)
+    const get_user=localStorage.getItem("user_info_cep");
+    const userInfo=get_user?JSON.parse(get_user):"";
+      const auth_token=localStorage.getItem("sso_header");
+    const header=auth_token?JSON.parse(auth_token):"";
+    const accessToken=header?.authorization;
+    
+    const eventDetails = {
+      sub_type: "Visa Application",
+      description: "User is applying for a visa."
+    };
+
+          await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
 
     // Navigate to the application page
     router.push(`/visa-application?programId=${encodeURIComponent(programId)}`)
@@ -888,7 +896,7 @@ const VisaResultsPage = () => {
                             {/* Fee information with currency conversion */}
                             <div className="mb-3 pb-3 border-b border-gray-200">
                               <div className="flex justify-between items-center mb-1">
-                                <span className="text-gray-600 caption">Fee (USD):</span>
+                                <span className="text-gray-600 caption">Fee {program.currency}:</span>
                                 <span className="body-small font-medium text-gray-900">
                                   ${safeRenderText(program.fee || "0")}
                                 </span>

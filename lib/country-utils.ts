@@ -1,5 +1,5 @@
 // Country code mapping for flags and other country-related utilities
-import { allCountries } from "./countries"
+
 
 // ISO 3166-1 alpha-2 country codes mapping
 export const countryToISOCode: Record<string, string> = {
@@ -260,6 +260,3 @@ export function getCountryFlagUrl(countryName: string): string {
  * @param countryName The name of the country to check
  * @returns boolean indicating if the country is valid
  */
-export function isValidCountry(countryName: string): boolean {
-  return allCountries.includes(countryName)
-}

@@ -195,8 +195,8 @@ class ApiClient {
 
           const refreshData = await refreshResponse.json()
           if (refreshData?.result?.[0]?.vendor_key) {
-            this.vendorKey = refreshData.result[0].vendor_key
-            localStorage.setItem(VENDOR_KEY_STORAGE_KEY, this.vendorKey)
+            this.vendorKey  = refreshData.result[0].vendor_key
+            localStorage.setItem(VENDOR_KEY_STORAGE_KEY, ""+this.vendorKey)
             console.log("Token refreshed, retrying API call...")
 
             // Update headers with new token
@@ -215,7 +215,7 @@ class ApiClient {
           } else {
             throw new Error("No vendor key in refresh response")
           }
-        } catch (refreshError) {
+        } catch (refreshError:any) {
           console.error("Failed to refresh token:", refreshError)
           throw new Error(`Authentication failed and token refresh failed: ${refreshError.message}`)
         }
@@ -224,7 +224,7 @@ class ApiClient {
       let responseData
       try {
         responseData = await response.json()
-      } catch (parseError) {
+      } catch (parseError:any) {
         console.error(`Failed to parse JSON response: ${parseError.message}`)
         throw new Error(`Failed to parse JSON response: ${parseError.message}`)
       }
