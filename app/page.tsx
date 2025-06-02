@@ -509,7 +509,7 @@ if(vendorKey){
         headers: {
           'Content-Type': 'application/json',
           'x-language':"en",
-          'Authorization': "Bearer "+token
+          'Authorization': token
         }
       });
 
