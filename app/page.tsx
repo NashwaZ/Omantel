@@ -33,6 +33,7 @@ const { countries } = useCountryList();
     destination: "",
     citizenship: "",
   })
+  const [partnerUserId,setPartnerUserId]=useState(null)
 
   const [formData, setFormData] = useState({
     destination: "",
@@ -62,6 +63,7 @@ created_at:"",
   });
 
   const [accessToken,setAccessToken]=useState("");
+  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null})
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
@@ -473,7 +475,9 @@ created_at:"",
         
       }
       setHeader(values);
+      setPassingParams({accessToken:data.result.authorization,partnerUserId:data.result.userid})
         setAccessToken(data.result.authorization);
+        setPartnerUserId(data.result.userid);
       // setLocale(values.language);
       // const get_locale=values.language;
       //  if (get_locale === "en" || get_locale === "ar") {
@@ -499,17 +503,18 @@ if(vendorKey){
 
   useEffect(()=>{
 
-    const fetchUserData=async(token:string)=>{
+    const fetchUserData=async(token:string,user_id:any)=>{
       debugger
       
   try {
   
-      const response = await fetch('https://stg-api.superjetom.com/omantel_user_store', {
+      const response = await fetch('https://stg-api.superjetom.com/omantel_user_traveller_check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-language':"en",
-          'Authorization': token
+          'Authorization': token,
+          'user_id':user_id
         }
       });
 
@@ -537,11 +542,11 @@ if(vendorKey){
   }
     }
 
-    if(accessToken){
-      fetchUserData(accessToken);
+    if(passingParams?.accessToken ){
+      fetchUserData(passingParams?.accessToken,passingParams?.partnerUserId);
     }
     
-  },[accessToken])
+  },[passingParams])
 
   // Update the handleSubmit function to properly create organization
   const handleSubmit = async (e: React.FormEvent) => {

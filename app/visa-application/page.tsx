@@ -189,6 +189,7 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
         destination: destination.toLowerCase(),
         commission: visa_program?.commision, // Default value as specified
         commission_type: visa_program?.commision_type || "flat rate", // Default value as specified
+        travel_date:travelDate
       }
 
       console.log("Creating iframe order with data:", orderData)
