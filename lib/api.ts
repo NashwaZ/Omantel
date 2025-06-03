@@ -568,7 +568,7 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
   const response= await fetch(API_BASE_URL+"/omantel_event",{
     method:"POST",
     headers:{
-      Authorization:"Bearer "+ access_token,
+      Authorization:access_token,
       "x-language":"en",
       "Content-Type":"application/json" 
     },
@@ -588,6 +588,54 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
   return "error";
  }
 }
+// export async function sendNotificationToCEPApp(notification:any,user:any,headers:any){
+// const data = {
+//   "notification_type": "TRANSACTIONAL",
+//   "notification_sub_type": "PAYMENT_CONFIRMATION",
+//   "message": {
+//       "id": "",
+//       "title":"Payment Successful",
+//       "description": "<Message to be sent to the user>",
+//       "channels": [
+//       "push"
+//       ]
+//   },
+//   "user": {
+//       "id": user.user_id,
+//       "name": user.first_name+" "+user.last_name,
+//       "phone": user.mobile_no,
+//       "email": user.email
+//   },
+//   "sender": {
+//       "id": "OT-CXP-SUPERJET-f65c1d89",
+//       "name": "Superjet"
+//   }
+
+// }
+//  try{
+//   const response= await fetch(API_BASE_URL+"/omantelnotification",{
+//     method:"POST",
+//     headers:{
+//       Authorization: headers.accessToken,
+//       "x-language":"en",
+//       "Content-Type":"application/json" 
+//     },
+//     body:JSON.stringify(data)
+//   });
+//   if(response.ok){
+//     const data = await response.json();
+//     if(data.message==="success"){
+//       return "success";
+//     }
+//     else{
+//       return "error";
+//     }
+//  }  
+//  }catch(err){
+//   console.error('error  at sending event msg : ' + err);
+//   return "error";
+//  }
+// }
 
 /**
  * Generate a unique reference number with 15 characters
