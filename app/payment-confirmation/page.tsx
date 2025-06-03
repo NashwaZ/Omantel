@@ -105,25 +105,47 @@ useEffect(() => {
       </div>
     )
   }
+  function getBrowserInfo() {
+  const userAgent = navigator.userAgent;
+
+  if (/chrome|crios|crmo/i.test(userAgent)) {
+    return "Chrome";
+  } else if (/firefox|fxios/i.test(userAgent)) {
+    return "Firefox";
+  } else if (/safari/i.test(userAgent) && !/chrome|crios|crmo/i.test(userAgent)) {
+    return "Safari";
+  } else if (/edg/i.test(userAgent)) {
+    return "Edge";
+  } else {
+    return "Unknown";
+  }
+}
+
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/mobile/i.test(ua)) return "Mobile";
+  if (/tablet/i.test(ua)) return "Tablet";
+  return "Desktop";
+}
 
   // Full-screen iframe with no other content
   return (
     <div className="fixed inset-0 w-full h-full">
-        {showPopup && 
-          (
+        {showPopup && (
   <div className="absolute right-0 bottom-0 bg-gray-100 p-4 w-full text-center shadow-md text-sm sm:text-base">
-    <p className="mb-2">
-      To continue, this app needs third-party cookies enabled for proper sign-in and functionality.
-    </p>
+    <strong>Setting Notice:</strong>
+   <p className="mt-2">
+        Please go to <strong>Settings &gt; Safari</strong> and turn OFF <strong>“Prevent Cross-Site Tracking”</strong> to ensure full functionality.
+      </p>
     <button
-      className="bg-blue-600 text-white px-4 py-2 rounded-md"
+      className="bg-blue-600 text-white px-4 py-2 rounded-md mt-3"
       onClick={() => setShowPopup(false)}
     >
-      I Understand
+      Got It
     </button>
   </div>
-)
-}
+)}
+
      {openIframeUrl &&   
      <iframe
         src={openIframeUrl}
