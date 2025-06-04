@@ -588,6 +588,42 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
   return "error";
  }
 }
+
+export async function createCardUserApplication(vendor_key:String,visa_data:{  
+  "user_id" :string|number,
+  "traveller_id" : string|number, 
+   "destination" :string, 
+  "citizenship" : string,
+  "citizenship_code" : string,
+  "destination_code" : string,
+  "program_id" : string,
+  "fee" : string|number ,
+  "currency": string,
+  "commission" : string|number,
+  "commission_type" : string|number
+}){
+  // event->send type,sub_type,description,user
+ try{
+  const response= await fetch(API_BASE_URL+"/add_order_cart",{
+    method:"POST",
+    headers:{
+      Authorization:"Bearer "+vendor_key,
+      "Content-Type":"application/json" 
+    },
+    body:JSON.stringify(visa_data)
+  });
+  if(response.ok){
+    const data = await response.json();
+  
+      return data;
+    
+  
+ }  
+ }catch(err){
+  console.error('error  at sending event msg : ' + err);
+  return err;
+ }
+}
 // export async function sendNotificationToCEPApp(notification:any,user:any,headers:any){
 // const data = {
 //   "notification_type": "TRANSACTIONAL",

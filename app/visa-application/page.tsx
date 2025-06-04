@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Currency } from "lucide-react"
 import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
-import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber } from "@/lib/api"
+import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCardUserApplication } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
 
@@ -51,7 +51,7 @@ export default function VisaApplication() {
     })
 
   const [attemptedSubmit,setAttemptedSubmit]=useState(false);
-const { countries, loading, error } = useCountryList();
+const { countries, error } = useCountryList();
 
 const firstNameRef=useRef<HTMLInputElement>(null);
 const lastNameRef=useRef<HTMLInputElement>(null);
@@ -59,6 +59,7 @@ const emailRef=useRef<HTMLInputElement>(null);
 const countrySearchRef=useRef<HTMLInputElement>(null);
 const phoneNoRef=useRef<HTMLInputElement>(null);
 const [userInfo,setUserInfo]=useState();
+const [vendorKey,setVendorKey]=useState("");
 
 const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef})
 
@@ -101,9 +102,50 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
 
      const validationCheck=formData?.firstName && formData?.lastName && formData?.marketingConsent && formData?.phone
 
+ useEffect(()=>{
+    const createOrganization=async()=>{
+    try{
+      // Step 1: Create organization to get vendor key
+     console.log("Creating organization...")
+      const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ organization_name: "Omantel"}),
+      })
 
+      if (!orgResponse.ok) {
+        throw new Error(`Failed to create organization: ${orgResponse.status} ${orgResponse.statusText}`)
+      }
+     
+       const orgData = await orgResponse.json();
+
+      console.log("Organization created successfully", orgData)
+
+      // Extract and store vendor key
+    
+       let vendor_key = ""
+      if (orgData && orgData.result && orgData.result.length > 0 && orgData.result[0].vendor_key) {
+        vendor_key = orgData.result[0].vendor_key
+        localStorage.setItem("vendor_key", vendor_key);
+        setVendorKey(vendor_key);
+        console.log("Vendor key stored successfully:", vendor_key)
+      } else {
+        throw new Error("No vendor key found in response")
+      }
+    }
+    catch (error) {
+      console.error("Error submitting form:", error)
+      // setApiError(error instanceof Error ? error.message : "Failed to process request")
+    }
+  }
+  createOrganization();
+
+  },[])
   // Update the handleSubmit function to better handle API errors
   const handleSubmit = async (e: React.FormEvent) => {
+    debugger
     e.preventDefault()
     console.log("Form submitted:", formData)
    
@@ -153,7 +195,9 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
 
       try {
         travellerResponse = await createTravellerOmantel(travellerData)
+
         console.log("Traveller created successfully:", travellerResponse)
+
       } catch (error) {
         console.error("Error creating traveller:", error)
         // Check if we're in development/preview mode and continue with mock data
@@ -161,6 +205,7 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
           console.log("Development mode detected, continuing with mock data")
           // The createTravellerOmantel function will handle creating mock data
           travellerResponse = await createTravellerOmantel(travellerData)
+
         } else {
           throw error // Re-throw in production
         }
@@ -193,10 +238,27 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
       }
 
       console.log("Creating iframe order with data:", orderData)
+              
+   const visa_info={  
+ "user_id" : parse_user_data?.id,
+  "traveller_id" : travellerResponse.result[0].id, 
+   "destination" : destination.toLowerCase(), 
+  "citizenship" :  citizenship.toLowerCase(),
+  "citizenship_code" : visa_program?.citizenship,
+  "destination_code" : visa_program?.destination,
+  "program_id" : visa_program?.id,
+  "fee" : visa_program?.fee,
+  "currency":visa_program?.currency ,
+  "commission" : visa_program?.commision,
+  "commission_type" : visa_program?.commision_type || "flat rate"
+}
       let orderResponse
 
       try {
         orderResponse = await createIframeOrderVisaOmantel(orderData)
+     
+        const cardResponse =await createCardUserApplication(vendorKey,visa_info);
+        localStorage.setItem("added_card_details",JSON.stringify(cardResponse));
         console.log("Iframe order created successfully:", orderResponse)
 
         // Check if we have a valid iframe_deeplink_url
@@ -209,14 +271,35 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
               const auth_token=localStorage.getItem("sso_header");
             const header=auth_token?JSON.parse(auth_token):"";
             const accessToken=header?.authorization;
-            
-           const eventDetails = {
+            const eventDetails = {
               sub_type: "Form Submission - Next Stage",
               description: "User is submitting the form to proceed to the next stage."
             };
+             await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
+         
+             const country={
+    "destination":destination.toLowerCase()
+}
+    const reqDocResponse=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
+      method:"POST",
+      headers:{
+       "Authorization":"Bearer "+vendorKey,
+       "Content-Type":"application/json"
+      },
+      body:JSON.stringify(country)
+    });
+    if(reqDocResponse.ok){
+    const data =await reqDocResponse.json();
+    if(data.message==="success"){
+       if(data.result.length>0){
+         router.push("/visa-requirements");
+         return;
+       }
+    }}
         
-                  await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
+                 
         // Navigate to payment confirmation page
+
         router.push("/payment-confirmation")
       } catch (error) {
         console.error("Error creating iframe order:", error)
@@ -226,6 +309,25 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
           // The createIframeOrderVisaOmantel function will handle creating mock data
           orderResponse = await createIframeOrderVisaOmantel(orderData)
 
+    const country={
+    "destination":destination.toLowerCase()
+}
+    const reqDocResponse=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
+      method:"POST",
+      headers:{
+       "Authorization":"Bearer "+vendorKey,
+       "Content-Type":"application/json"
+      },
+      body:JSON.stringify(country)
+    });
+    if(reqDocResponse.ok){
+    const data =await reqDocResponse.json();
+    if(data.message==="success"){
+       if(data.result.length>0){
+         router.push("/visa-requirements");
+         return;
+       }
+    }}
 
           router.push("/payment-confirmation")
         } else {
