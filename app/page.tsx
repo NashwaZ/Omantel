@@ -25,7 +25,7 @@ export default function VisaSearch() {
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState<Date>()
   // const [countries,setCountries] = useState<string[]>([])
-const { countries } = useCountryList();
+const { countries,load } = useCountryList();
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
@@ -669,7 +669,7 @@ if(vendorKey){
                             </div>
                           ))
                       ) : (
-                        <div className="px-4 py-3 body-small text-gray-500">No countries found</div>
+                        <div className="px-4 py-3 body-small text-gray-500">{load ?"Loading ...":"No countries found"}</div>
                       )}
                     </div>
                   </div>
@@ -754,7 +754,7 @@ if(vendorKey){
                             </div>
                           ))
                       ) : (
-                        <div className="px-4 py-3 body-small text-gray-500">No countries found</div>
+                        <div className="px-4 py-3 body-small text-gray-500">{load ?"Loading ...":"No countries found"}</div>
                       )}
                     </div>
                   </div>

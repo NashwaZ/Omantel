@@ -4,7 +4,7 @@ type Country = { country: string };
 
 export const useCountryList = () => {
   const [countries, setCountries] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [load, setLoad] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -59,12 +59,12 @@ export const useCountryList = () => {
         console.error("Error:", err);
         setError(err.message);
       } finally {
-        setLoading(false);
+        setLoad(false);
       }
     };
 
     createOrganizationAndFetchCountries();
   }, []);
 
-  return { countries, loading, error };
+  return { countries, load, error };
 };
