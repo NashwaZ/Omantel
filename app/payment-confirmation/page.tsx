@@ -99,7 +99,7 @@ useEffect(() => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white">
         <div className="text-center p-4">
-          <p className="text-red-600 mb-2">Payment gateway not available</p>
+          <p className="text-red-600 mb-2">iframe URL not available</p>
           <p className="text-gray-600">Please try again later.</p>
         </div>
       </div>
@@ -131,7 +131,7 @@ function getDeviceType() {
   // Full-screen iframe with no other content
   return (
     <div className="fixed inset-0 w-full h-full">
-        {showPopup && (
+        {/* {showPopup && (
   <div className="absolute right-0 bottom-0 bg-gray-100 p-4 w-full text-center shadow-md text-sm sm:text-base">
     <strong>Setting Notice:</strong>
    <p className="mt-2">
@@ -144,7 +144,7 @@ function getDeviceType() {
       Got It
     </button>
   </div>
-)}
+)} */}
 
      {openIframeUrl &&   
      <iframe
@@ -168,14 +168,14 @@ function getDeviceType() {
           <Card className="border  bg-hayyak-white w-full">
           <CardContent className="px-6 sm:px-8 pb-8 pt-8">
               {/* Entry information */}
-                            <div className="mb-3 pb-3  border-gray-200">
+                            {/* <div className="mb-3 pb-3  border-gray-200">
                             <div className="flex justify-evenly items-center">
                                 <span className="text-gray-600 caption">First Name:</span>
                                 <span className="body-small text-gray-900">
                                         Yukenthiran
                                 </span>
                               </div>
-                            </div>
+                            </div> */}
                             
           </CardContent>
           </Card>
