@@ -300,7 +300,7 @@
 import { useEffect, useState } from "react";
 import LoadingIndicator from "@/components/loading-indicator";
 import { Button } from "@/components/ui/button";
-import { sendEventMsgToCEPApp } from "@/lib/api";
+import { sendEventMsgToCEPApp, sendNotificationToCEPApp } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -457,6 +457,18 @@ debugger
     };
   }, []);
 
+
+  useEffect(()=>{
+     const get_user=localStorage.getItem("user_info_cep");
+        const userInfo=get_user?JSON.parse(get_user):"";
+          const auth_token=localStorage.getItem("sso_header");
+        const header=auth_token?JSON.parse(auth_token):"";
+        // const accessToken=header?.authorization;
+        
+    
+    const notify="payment successful"
+    sendNotificationToCEPApp(notify,userInfo,header);
+  },[])
   const handleBack = () => {
     router.back();
   }
