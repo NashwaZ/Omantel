@@ -468,7 +468,7 @@ debugger
     
     const notify="payment successful"
     sendNotificationToCEPApp(notify,userInfo,header);
-  })
+  },[])
   const handleBack = () => {
     router.back();
   }
