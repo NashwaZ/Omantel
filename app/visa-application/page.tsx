@@ -456,15 +456,15 @@ const handleChangeFile = (
     
      const ext = file.name.split('.').pop()?.toLowerCase();
     if(allowedExt.includes(ext)){
-      const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+//       const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
-if (file?.size) {
-  if (file.size > MAX_FILE_SIZE) {
-    e.target.value = ""; 
-    // setFileError(()"File size must be less than 2MB.");
-    return;
-  }
-}
+// if (file?.size) {
+//   if (file.size > MAX_FILE_SIZE) {
+//     e.target.value = ""; 
+//     // setFileError(()"File size must be less than 2MB.");
+//     return;
+//   }
+// }
     setFilesData((prev) => ({
       ...prev,
       [name.replace(" ","_")]: file,

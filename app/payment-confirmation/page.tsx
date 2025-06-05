@@ -131,7 +131,7 @@ function getDeviceType() {
   // Full-screen iframe with no other content
   return (
     <div className="fixed inset-0 w-full h-full">
-        {showPopup && (
+        {/* {showPopup && (
   <div className="absolute right-0 bottom-0 bg-gray-100 p-4 w-full text-center shadow-md text-sm sm:text-base">
     <strong>Setting Notice:</strong>
    <p className="mt-2">
@@ -144,7 +144,7 @@ function getDeviceType() {
       Got It
     </button>
   </div>
-)}
+)} */}
 
      {openIframeUrl &&   
      <iframe

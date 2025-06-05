@@ -534,9 +534,14 @@ export async function createIframeOrderVisaOmantel(orderData: {
 
 export async function sendEventMsgToCEPApp(event:any,user:any,access_token:string){
   // event->send type,sub_type,description,user
+  const get_headers_info=localStorage.getItem("sso_header");
+  const parse_h_data=get_headers_info?JSON.parse(get_headers_info):"";
+  if(!parse_h_data){
+     return;
+  }
   const data =  {
     "event": {
-        "cxp_session_id": "BQeR11wlM0aLcTHGLMUBL30mvqC7MYqmx24aZDU2",
+        "cxp_session_id": parse_h_data?.sessionid,
         "event_type":"TRANSACTION",
         "sub_type": event.sub_type ,
         "event_details": {
@@ -624,54 +629,55 @@ export async function createCardUserApplication(vendor_key:String,visa_data:{
   return err;
  }
 }
-// export async function sendNotificationToCEPApp(notification:any,user:any,headers:any){
-// const data = {
-//   "notification_type": "TRANSACTIONAL",
-//   "notification_sub_type": "PAYMENT_CONFIRMATION",
-//   "message": {
-//       "id": "",
-//       "title":"Payment Successful",
-//       "description": "<Message to be sent to the user>",
-//       "channels": [
-//       "push"
-//       ]
-//   },
-//   "user": {
-//       "id": user.user_id,
-//       "name": user.first_name+" "+user.last_name,
-//       "phone": user.mobile_no,
-//       "email": user.email
-//   },
-//   "sender": {
-//       "id": "OT-CXP-SUPERJET-f65c1d89",
-//       "name": "Superjet"
-//   }
+export async function sendNotificationToCEPApp(notification:any,user:any,headers:any){
+  debugger
+const data = {
+  "notification_type": "TRANSACTIONAL",
+  "notification_sub_type": "PAYMENT_CONFIRMATION",
+  "message": {
+      "id": "",
+      "title":"Payment Successful",
+      "description": "<Message to be sent to the user>",
+      "channels": [
+      "push"
+      ]
+  },
+  "user": {
+      "id": user.user_id,
+      "name": user.first_name+" "+user.last_name,
+      "phone": user.mobile_no,
+      "email": user.email
+  },
+  "sender": {
+      "id": "OT-CXP-SUPERJET-f65c1d89",
+      "name": "Superjet"
+  }
 
-// }
-//  try{
-//   const response= await fetch(API_BASE_URL+"/omantelnotification",{
-//     method:"POST",
-//     headers:{
-//       Authorization: headers.accessToken,
-//       "x-language":"en",
-//       "Content-Type":"application/json" 
-//     },
-//     body:JSON.stringify(data)
-//   });
-//   if(response.ok){
-//     const data = await response.json();
-//     if(data.message==="success"){
-//       return "success";
-//     }
-//     else{
-//       return "error";
-//     }
-//  }  
-//  }catch(err){
-//   console.error('error  at sending event msg : ' + err);
-//   return "error";
-//  }
-// }
+}
+ try{
+  const response= await fetch(API_BASE_URL+"/omantelnotification",{
+    method:"POST",
+    headers:{
+      Authorization: headers?.authorization,
+      "x-language":"en",
+      "Content-Type":"application/json" 
+    },
+    body:JSON.stringify(data)
+  });
+  if(response.ok){
+    const data = await response.json();
+    if(data.message==="success"){
+      return "success";
+    }
+    else{
+      return "error";
+    }
+ }  
+ }catch(err){
+  console.error('error  at sending event msg : ' + err);
+  return "error";
+ }
+}
 
 /**
  * Generate a unique reference number with 15 characters
@@ -684,35 +690,4 @@ export function generateReferenceNumber(): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
   return result
-}
-
-
-export async function  getDestinationRequirements(vendor_key:string,destination:string){
- 
- if (!destination) return undefined 
- // Guard against undefined or null destination string
-    try{
-    // Add file submission logic here
-   const destination=localStorage.getItem("visa_destination");
-    const country={
-    "destination":destination
-}
-    const response=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
-      method:"POST",
-      headers:{
-       "Authorization":"Bearer "+vendor_key,
-       "Content-Type":"application/json"
-      },
-      body:JSON.stringify(country)
-    });
-    
-    const data =await response.json();
-    if(data.message=="success"){
-    const destinationRequirements=data.result
-    return destinationRequirements;
-    }
-  }
-  catch(err){
-    console.log("err at get requirements API",err);
-  }
 }
