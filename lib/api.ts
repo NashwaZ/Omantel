@@ -685,3 +685,34 @@ export function generateReferenceNumber(): string {
   }
   return result
 }
+
+
+export async function  getDestinationRequirements(vendor_key:string,destination:string){
+ 
+ if (!destination) return undefined 
+ // Guard against undefined or null destination string
+    try{
+    // Add file submission logic here
+   const destination=localStorage.getItem("visa_destination");
+    const country={
+    "destination":destination
+}
+    const response=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
+      method:"POST",
+      headers:{
+       "Authorization":"Bearer "+vendor_key,
+       "Content-Type":"application/json"
+      },
+      body:JSON.stringify(country)
+    });
+    
+    const data =await response.json();
+    if(data.message=="success"){
+    const destinationRequirements=data.result
+    return destinationRequirements;
+    }
+  }
+  catch(err){
+    console.log("err at get requirements API",err);
+  }
+}
