@@ -25,10 +25,10 @@ export default function VisaApplication() {
   const searchParams = useSearchParams()
 
   // Get query parameters with fallbacks
-  const destination = localStorage.getItem("visa_destination") || "";
-  const citizenship =  localStorage.getItem("visa_citizenship") || "";
+  // const destination = localStorage.getItem("visa_destination") || "";
+  // const citizenship =  localStorage.getItem("visa_citizenship") || "";
 
-  const travelDate =  localStorage.getItem("visa_travelDate") || "";
+  // const travelDate =  localStorage.getItem("visa_travelDate") || "";
 
   const visaType = searchParams.get("visaType") || "Tourist Visa"
   // const visaFee = searchParams.get("visaFee") || "0"
@@ -79,6 +79,18 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
   // Add these state variables at the top of the component with the other state variables
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
+  const [destination, setDestination] = useState('');
+  const [citizenship, setCitizenship] = useState('');
+  const [travelDate, setTravelDate] = useState('');
+  useEffect(() => {
+    const storedDestination = localStorage.getItem("visa_destination") || "";
+    const storedCitizenship = localStorage.getItem("visa_citizenship") || "";
+    const storedTravelDate = localStorage.getItem("visa_travelDate") || "";
+
+    setDestination(storedDestination);
+    setCitizenship(storedCitizenship);
+    setTravelDate(storedTravelDate);
+  }, []);
 
   // // Try to recover data from localStorage if URL parameters are missing
   // useEffect(() => {
@@ -96,6 +108,7 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
   //     }
   //   }
   // }, [destination, citizenship, programId])
+
   const getUploadedFileLength=()=>{
   const file_key_name=Object.keys(filesData);
   let count =0;
@@ -486,10 +499,10 @@ useEffect(()=>{
   const callRequirements=async()=>{
     try{
     // Add file submission logic here
-   const destination :string | null | undefined=localStorage.getItem("visa_destination");
-   setDestinationCountry(destination)
+   const destination1 :string | null | undefined=localStorage.getItem("visa_destination");
+   setDestinationCountry(destination1)
     const country={
-    "destination":destination
+    "destination":destination1
 }
     const response=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
       method:"POST",
@@ -879,7 +892,7 @@ return (size/1024).toFixed(0);
                       }
                     </div>                   
                   </div>
-                <h4 className="mt-6 font-semibold text-gray-800 mb-3">Upload Your Documents:</h4>
+                  {requirements.length>0 && <h4 className="mt-6 font-semibold text-gray-800 mb-3">Upload Your Documents:</h4>}
                <div className="flex-col md:flex-row" style={{display:"flex"}}>
               {requirements.length>0 ? requirements?.map((req:any, index:number) => (
                 <div key={index} className="mr-3">
@@ -1017,7 +1030,7 @@ return (size/1024).toFixed(0);
          {/* Upload Progress Bar */}
                     {
                        
-                      <div className="mt-2" >
+                       requirements.length>0 &&<div className="mt-2" >
                         <Progress value={uploadProgress} className="w-full h-2 [&>div]:bg-[#ea6e00]" />
                         <p className="text-xs text-gray-500 mt-1 text-right">
                           {getUploadedFileLength()} of {requirements.length} files uploaded
