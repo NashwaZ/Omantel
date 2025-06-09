@@ -551,13 +551,14 @@ if(vendorKey){
   // Update the handleSubmit function to properly create organization
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+   
     setAttemptedSubmit(true)
     setApiError(null)
 
     if (!formData.destination || !formData.citizenship || !date) {
       return
     }
-
+ setLoading(true);
       // Format date for API in DD-MM-YYYY format
       const formattedDate = date ? format(date, "dd-MM-yyyy") : "12-04-2025"
 
@@ -583,7 +584,7 @@ if(vendorKey){
     <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
         <div className="text-center mb-5xl">
-          <h1 className="heading-1 mb-4">E-Visa Application Service</h1>
+          <h1 className="heading-font-style heading-1 mb-4">E-Visa Application Service</h1>
           <p className="body-large text-gray-600">Check your visa eligibility and apply online in minutes</p>
         </div>
 
@@ -804,7 +805,7 @@ if(vendorKey){
 
                 <Button
                   type="submit"
-                  className={`w-full h-12 body-large font-medium rounded-[16px] ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"}  active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4`}
+                  className={`w-full h-12 body-large font-medium rounded-[16px] bg-[#ea6e00] hover:bg-[#ea6e00]  active:bg-[#b55500] text-white px-4xl py-3 disabled:bg-hayyak-moderate-grey disabled:text-hayyak-dark-grey mt-4`}
                   disabled={loading}
                 >
                   {loading ? (
@@ -817,7 +818,7 @@ if(vendorKey){
                   )}
                 </Button>
 
-                {loading && (
+                {/* {loading && (
                   <div className="absolute inset-0 bg-white flex items-center justify-center z-50">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#b55500] shadow-sm flex items-center justify-center">
                       <div className="flex space-x-1 items-center justify-center h-full">
@@ -836,7 +837,7 @@ if(vendorKey){
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
               </form>
             </CardContent>
           </Card>
