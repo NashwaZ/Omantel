@@ -509,7 +509,7 @@ debugger
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
           <div className="text-center mb-5xl">
-            <h1 className="heading-1 mb-7">Make Payment</h1>
+            <h1 className="heading-font-style heading-1 mb-7">Make Payment</h1>
           </div>
 
           <div className="w-full sm:w-[85%] max-w-2xl border py-3 rounded-xl px-4 sm:px-4 mx-auto">

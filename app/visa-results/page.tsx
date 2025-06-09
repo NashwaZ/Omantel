@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AlertCircle, WifiOff } from "lucide-react"
+import { AlertCircle, WifiOff,CheckCircle2,Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import LoadingIndicator from "@/components/loading-indicator"
@@ -15,6 +15,7 @@ const VisaResultsPage = () => {
   const searchParams = useSearchParams()
 
   const [loading, setLoading] = useState(true)
+  const [isSubmitLoad,setIsSubmitLoad]=useState(false);
   const [error, setError] = useState<string | null>(null)
   const [networkError, setNetworkError] = useState(false)
   const [visaPrograms, setVisaPrograms] = useState<any[]>([])
@@ -569,12 +570,14 @@ const VisaResultsPage = () => {
   }
 
   const handleApply = async(programId: string) => {
+    setIsSubmitLoad(true);
 
     localStorage.setItem("visa_citizenship",citizenship);
     localStorage.setItem("visa_destination",destination);
     localStorage.setItem("visa_travelDate",travelDate);
 
     console.log("Applying for program with ID:", programId)
+    
 
     // Store the selected program ID for the iframe API
     localStorage.setItem("selected_program_id", programId)
@@ -590,7 +593,7 @@ const VisaResultsPage = () => {
     };
 
           await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
-
+setIsSubmitLoad(false)
     // Navigate to the application page
     router.push(`/visa-application?programId=${encodeURIComponent(programId)}`)
   }
@@ -621,7 +624,7 @@ const VisaResultsPage = () => {
 
       <div className="min-h-screen">
         {/* Hero section with destination info */}
-        <div className="relative pt-10 pb-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="relative pt-1 pb-2 px-4 sm:px-6 lg:px-8 bg-white">
           {/* Content */}
           <div className="relative max-w-5xl mx-auto text-center">
             <div className="flex items-center mb-8">
@@ -660,16 +663,18 @@ const VisaResultsPage = () => {
                 </svg>
                 <span className="text-gray-800 caption font-medium">{citizenship} Citizen</span>
               </div>
-              <h1 className="heading-1 mb-2">Visa Options for {destination}</h1>
-              <p className="body-large text-gray-600 max-w-2xl mx-auto">
+              <h1 className="heading-font-style text-3xl md:text-4xl font-bold text-center mb-2">Visa Options for {destination}</h1>
+              <p className="text-slate-600 text-center text-md md:text-lg mb-8">
                 Discover available visa programs for your trip to {destination}
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-5 mb-6">
-              <div className="bg-gray-50 rounded-xl p-4 flex items-center">
-                <div className="rounded-full bg-[#ea6e00]/20 p-2 mr-3">
-                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+
+            {/* Travel Date */}
+            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
+              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+                 <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -677,16 +682,17 @@ const VisaResultsPage = () => {
                       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                </div>
-                <div>
-                  <p className="text-gray-500 caption">Travel Date</p>
-                  <p className="text-gray-800 body-small font-medium">{travelDate}</p>
-                </div>
               </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-500 ">Travel Date</p>
+                <p className="font-semibold text-slate-700">{travelDate}</p>
+              </div>
+            </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 flex items-center">
-                <div className="rounded-full bg-[#ea6e00]/20 p-2 mr-3">
-                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           {/* Destination */}
+            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
+              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+                <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -694,16 +700,17 @@ const VisaResultsPage = () => {
                       d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                     />
                   </svg>
-                </div>
-                <div>
-                  <p className="text-gray-500 caption">Destination</p>
-                  <p className="text-gray-800 body-small font-medium">{destination}</p>
-                </div>
               </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-500 ">Destination</p>
+                <p className="font-semibold text-slate-700">{destination}</p>
+              </div>
+            </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 flex items-center">
-                <div className="rounded-full bg-[#ea6e00]/20 p-2 mr-3">
-                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           {/* Citizenship */}
+            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
+              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+                <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -711,18 +718,20 @@ const VisaResultsPage = () => {
                       d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
                     />
                   </svg>
-                </div>
-                <div>
-                  <p className="text-gray-500 caption">Citizenship</p>
-                  <p className="text-gray-800 body-small font-medium">{citizenship}</p>
-                </div>
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-500 text-left">Citizenship</p>
+                <p className="font-semibold text-slate-700">{citizenship}</p>
               </div>
             </div>
+            
+</div>
+
           </div>
         </div>
 
         {/* Main content with visa options */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-6">
+        <div className="relative max-w-5xl mx-auto text-center">
           {/* Alert for using mock data */}
           {usingMockData && (
             <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center shadow-sm">
@@ -792,46 +801,40 @@ const VisaResultsPage = () => {
             </div>
           ) : (
             <>
-              {/* Visa options count */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center bg-[#ea6e00] text-white body-small font-medium px-4 py-1.5 rounded-full">
-                  <span>
-                    {safeVisaPrograms.length === 1
-                      ? `${safeRenderText(safeVisaPrograms[0].program_name || safeVisaPrograms[0].name || "Visa Program")} Available`
-                      : safeVisaPrograms.length <= 3
-                        ? safeVisaPrograms.map((program, index) => (
-                            <span key={program.id || index}>
-                              {index > 0 && (index === safeVisaPrograms.length - 1 ? " and " : ", ")}
-                              {safeRenderText(program.program_name || program.name || "Visa Program")}
-                            </span>
-                          ))
-                        : `${safeVisaPrograms.length} Visa Options Available`}
-                  </span>
-                </div>
-              </div>
+             
 
               {/* Visa card grid - CENTERED WITH SMALLER CONTAINER */}
-              <div className="grid grid-cols-1 gap-8 max-w-3xl mx-auto">
+              <div className="grid grid-cols-1 gap-8  mx-auto">
+                
                 {safeVisaPrograms.map((program, index) => (
-                  <div key={program.id || index} className="bg-white rounded-2xl shadow-md overflow-hidden">
+                  
+                  <div key={program.id || index} className="bg-white  shadow-md overflow-hidden">
+  {program.program_type && (
+                <div className="flex justify-center mb-7">
+                  <div className="inline-block bg-orange-500 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md">
+                    {program.program_type}
+                  </div>
+                </div>
+              )}
                     <div className="flex flex-col md:flex-row">
+
+                    
                       {/* Image */}
-                      <div className="relative h-64 md:w-2/5">
+                       <div className="w-full aspect-[3/2] md:aspect-auto md:w-2/5 relative p-0 flex items-center justify-center bg-slate-50 md:border-r border-slate-200 overflow-hidden md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none">
                         {countryFlags.to ? (
                           <Image
                             src={countryFlags.to || "/placeholder.svg"}
                             alt={`${destination} Flag`}
                             fill
-                            style={{ objectFit: "cover" }}
-                            className="rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
+                            // style={{ objectFit: "cover" }}
+                             className="md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none object-contain"
                           />
                         ) : (
                           <Image
                             src={countryImages[destination] || getPlaceholderImageUrl(destination)}
                             alt={`${destination} Tourism`}
                             fill
-                            style={{ objectFit: "cover" }}
-                            className="rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
+                            className="md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none object-contain"
                           />
                         )}
                       </div>
@@ -839,16 +842,16 @@ const VisaResultsPage = () => {
                       {/* Content */}
                       <div className="p-6 md:w-3/5 flex flex-col items-center text-start">
                         <div className="mb-2 flex items-center">
-                           <h2 className="mb-2 text-[20px] font-semibold" > {destination}&nbsp;&nbsp; </h2>
+                           {/* <h2 className="mb-2 text-[20px] font-semibold" > {destination}&nbsp;&nbsp; </h2> */}
                           {program.available !== false ? (
-                            <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 mb-2">
-                              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                              </svg>
-                            Available
-                            </Badge>
+                       
+                             <div className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                          <CheckCircle2 size={14} />
+                          Available
+                        </div>
                           ) : (
-                            <Badge variant="destructive" className="border-0 mb-2">
+                             <div className="inline-flex items-center gap-1.5 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                       
                               <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path
                                   strokeLinecap="round"
@@ -858,9 +861,26 @@ const VisaResultsPage = () => {
                                 />
                               </svg>
                                Not Available
-                            </Badge>
+                            </div>
                           )}
                         </div>
+                           {/* Visa options count */}
+              
+                {/* <div className="text-xl md:text-2xl font-bold text-slate-800 mb-6">
+                  <span>
+                    {safeVisaPrograms.length === 1 && safeVisaPrograms[0].available===true
+                      ? `${safeRenderText(safeVisaPrograms[0].program_name || safeVisaPrograms[0].name || "Visa Program")} `
+                      : safeVisaPrograms.length <= 3
+                        ? safeVisaPrograms.map((program, index) => (
+                            <span key={program.id || index}>
+                              {index > 0 && (index === safeVisaPrograms.length - 1 ? " and " : ", ")}
+                              {safeRenderText(program.program_name || program.name || "Visa Program")}
+                            </span>
+                          ))
+                        : `${safeVisaPrograms.length} Visa Options Available`}
+                  </span>
+                </div> */}
+        
 
                         {/* Debug info - remove in production */}
                         <div className="w-full mb-4 text-left bg-gray-50 p-3 rounded-lg text-xs overflow-auto max-h-40 hidden">
@@ -874,33 +894,23 @@ const VisaResultsPage = () => {
 
                         {/* Visa details */}
                         {(program.available===true && program?.required===true)
-                         && <div className="w-full max-w-xs mb-4">
+                         && <div className="w-full  mb-4">
                           <div className="border border-gray-200 rounded-xl p-4 mb-4">
-                            <h4 className="text-center font-semibold text-gray-900 mb-3 flex items-center justify-center">
-                              <svg
-                                className="w-4 h-4 mr-1 text-[#ea6e00]"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              Visa Details
-                            </h4>
+                            <div className="flex items-center text-orange-600 font-semibold mb-3">
+                        <Info size={18} className="mr-2" />
+                        Visa Details
+                      </div>
 
                             {/* Fee information with currency conversion */}
-                            <div className="mb-3 pb-3 border-b border-gray-200">
+                            <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center mb-1">
-                                <span className="text-gray-600 caption">Fee {program.currency}:</span>
+                                <span className="text-gray-600 caption">Fee ({program.currency}):</span>
                                 <span className="body-small font-medium text-gray-900">
-                                  ${safeRenderText(program.fee || "0")}
+                                  ${safeRenderText(Number.parseFloat(program.fee).toFixed(2) || "0")}
                                 </span>
                               </div>
+                              </div>
+                              <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">Fee (OMR):</span>
                                 <span className="body-small text-gray-900">
@@ -912,7 +922,7 @@ const VisaResultsPage = () => {
                             </div>
 
                             {/* Time-related information */}
-                            <div className="mb-3 pb-3 border-b border-gray-200">
+                            <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center mb-2">
                                 <span className="text-gray-600 caption">Processing:</span>
                                 <span className="body-small text-gray-900">
@@ -940,7 +950,7 @@ const VisaResultsPage = () => {
                             </div>
 
                             {/* Entry information */}
-                            <div className="mb-3 pb-3 border-b border-gray-200">
+                            <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">Entries:</span>
                                 <span className="body-small text-gray-900">
@@ -1030,15 +1040,45 @@ const VisaResultsPage = () => {
                             </div>
                           </div>
                         )}
+                        {program.available ===false && program.required==true &&
+                           <div className="bg-amber-50 border border-amber-200 text-red-700 p-8 rounded-2xl text-center shadow-sm">
+              {/* <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4"> */}
+                {/* <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg> */}
+              {/* </div> */}
+              {/* <p className="heading-4 mb-3"></p> */}
+              <p className="body-small mb-5">
+             This visa program is currently unavailable or does not meet the specified criteria.
+              </p>
+              <Button onClick={handleBack} className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white">
+                Back to Search
+              </Button>
+            </div>
+                        }
 
                         {/* Apply button */}
                   {(( program.available && program.required )  &&  <Button
                           onClick={() => handleApply(program.id)}
-                          className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4"
+                          className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4 w-full"
                         >
-                          Apply Now
+                           {isSubmitLoad ? (
+                                                <div className="flex items-center justify-center">
+                                                  <LoadingIndicator size="small" />
+                                                </div>
+                                              ) : (
+                                                "Apply Now"
+                                              )}
+                         
                         </Button>)}
                       </div>
+
+                    
                     </div>
                   </div>
                 ))}

@@ -5,7 +5,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent,CardTitle,CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -17,6 +17,7 @@ import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmante
 import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
 import { Progress } from "@/components/ui/progress"
+import Loading from "./loading"
 
 import { ChevronDown, ChevronUp, FileText, Info, XCircle, Paperclip } from "lucide-react"
 
@@ -82,15 +83,20 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
   const [destination, setDestination] = useState('');
   const [citizenship, setCitizenship] = useState('');
   const [travelDate, setTravelDate] = useState('');
+  const [visaDetails,setVisaDetails]=useState<{ [key: string]: any | null }>({});
   useEffect(() => {
     const storedDestination = localStorage.getItem("visa_destination") || "";
     const storedCitizenship = localStorage.getItem("visa_citizenship") || "";
     const storedTravelDate = localStorage.getItem("visa_travelDate") || "";
+     const get_visa=localStorage.getItem("visa_programs_data");
+      const parse_visa_details =get_visa? JSON.parse(get_visa):"";
 
     setDestination(storedDestination);
     setCitizenship(storedCitizenship);
     setTravelDate(storedTravelDate);
+    setVisaDetails(parse_visa_details);
   }, []);
+
 
   // // Try to recover data from localStorage if URL parameters are missing
   // useEffect(() => {
@@ -497,6 +503,7 @@ const handleChangeFile = (
 
 useEffect(()=>{
   const callRequirements=async()=>{
+   
     try{
     // Add file submission logic here
    const destination1 :string | null | undefined=localStorage.getItem("visa_destination");
@@ -539,6 +546,10 @@ if(vendorKey){
 },[vendorKey])
 
 
+if(isLoading){
+   return <Loading />
+}
+
   const uploadProgress = requirements.length > 0 ? (getUploadedFileLength() / requirements.length) * 100 : 100
 
 const getSizeOfFile=(size:any)=>{
@@ -563,18 +574,26 @@ return (size/1024).toFixed(0);
           </div>
 
           <div className="mb-8">
-            <h1 className="heading-2 mb-2">Visa Application</h1>
+            <h1 className="heading-font-style text-4xl font-bold text-gray-800 ">Visa Application</h1>
             <p className="body-default text-gray-600">
               Please fill in the form below to apply for your {visaType} to {destination}.
             </p>
           </div>
 
-          <Card className="shadow-z1">
+          <Card className="mt-4 shadow-lg border-0 rounded-2xl overflow-hidden">
+              {/* <CardHeader className="bg-gray-50 border-b p-8">
+            <CardTitle className="text-2xl text-gray-900 flex items-center">
+              <FileText className="h-6 w-6 mr-3 text-[#ea6e00]" />
+              Visa Application for {destination}
+            </CardTitle>
+            <p className="text-gray-600 mt-2">{visaDetails?.result?.programs[0]?.program_name}</p>
+          </CardHeader> */}
             <CardContent className="p-8 pt-10">
               <form autoComplete="off" onSubmit={handleSubmit} className="space-y-8"  >
                 {/* Personal Information */}
                 <div>
-                  <h3 className="heading-4 mb-4">Personal Information</h3>
+                   <div  className="flex"><Info className="h-5 w-5 mr-2 text-[#ea6e00] " style={{position:"relative",top:"4px"}} />
+                  <h3 className="heading-4 mb-4">Personal Information</h3></div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="firstName" className="label">
@@ -1065,19 +1084,22 @@ return (size/1024).toFixed(0);
                       Error: {submissionError}
                     </div>
                   )}
+                  <div className="flex justify-end">
                   <Button
                     type="submit"
-                  className={`w-full ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"} active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]`}
-                    disabled={isSubmitting}
+                  // className={`w-full ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"} active:bg-[#b55500] text-white py-6 body-large font-medium rounded-[16px] min-h-[56px]`}
+                  className={` ${[formData.marketingConsent?"bg-[#ea6e00]":"bg-[grey]"]} ${validationCheck?"bg-[#ea6e00] hover:bg-[#ea6e00]":"bg-[#8E8E8E] hover:bg-[#8E8E8E]"} active:bg-[#b55500] text-white py-1 body-large font-medium rounded-[16px]  disabled:opacity-50`}
+                    disabled={!validationCheck || !formData.marketingConsent }
                   >
                     {isSubmitting ? (
                       <div className="flex items-center justify-center">
                         <LoadingIndicator size="small" />
                       </div>
                     ) : (
-                      "Submit"
+                      "Submit Application"
                     )}
                   </Button>
+                  </div>
                 </div>
               </form>
             </CardContent>

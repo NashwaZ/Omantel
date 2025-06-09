@@ -545,3 +545,103 @@ button[class*="icon-only"] {
   align-items: center;
   justify-content: center;
 }
+
+
+/* FSAlbert Font Family */
+@font-face {
+  font-family: 'FSAlbert';
+  src: url('/fonts/FSAlbert-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbert';
+  src: url('/fonts/FSAlbert-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbert';
+  src: url('/fonts/FSAlbert-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbert';
+  src: url('/fonts/FSAlbert-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* FSAlbertArabic Font Family */
+@font-face {
+  font-family: 'FSAlbertArabic';
+  src: url('/fonts/FSAlbertArabic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbertArabic';
+  src: url('/fonts/FSAlbertArabic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbertArabic';
+  src: url('/fonts/FSAlbertArabic-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbertArabic';
+  src: url('/fonts/FSAlbertArabic-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlbertArabic';
+  src: url('/fonts/FSAlbertArabic-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* FSAlvar Font Family */
+@font-face {
+  font-family: 'FSAlvar';
+  src: url('/fonts/FSAlvar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlvar';
+  src: url('/fonts/FSAlvar-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FSAlvar';
+  src: url('/fonts/FSAlvar-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+body {
+  font-family: 'FSAlbert', sans-serif !important;
+}
+
+html[dir="rtl"] {
+  font-family: 'FSAlbertArabic', sans-serif !important;
+}
+
+.heading-font-style {
+  font-family: 'FSAlvar', serif !important;
+}
