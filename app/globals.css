@@ -514,9 +514,9 @@ Usage Examples:
 }
 
 /* Update font-family references to use the new Albert Sans variable */
-.font-albert-sans {
+/* .font-albert-sans {
   font-family: var(--font-albert-sans), system-ui, sans-serif;
-}
+} */
 
 /* Global button styles */
 button,
@@ -644,4 +644,8 @@ html[dir="rtl"] {
 
 .heading-font-style {
   font-family: 'FSAlvar', serif !important;
+}
+
+button, input{
+  font-family: 'FSAlbert', sans-serif !important;
 }

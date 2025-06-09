@@ -4,23 +4,23 @@ import { ThemeProvider } from "@/components/theme-provider"
 import ApiInitializer from "@/components/api-initializer"
 import ApiStorageManager from "@/components/api-storage-manager"
 import ApiDebugPanel from "@/components/api-debug-panel"
-import { Inter, Albert_Sans } from "next/font/google"
+// import { Inter, Albert_Sans } from "next/font/google"
 
-// Use Inter font from Google Fonts as primary font
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
-})
+// // Use Inter font from Google Fonts as primary font
+// const inter = Inter({
+//   subsets: ["latin"],
+//   display: "swap",
+//   weight: ["400", "500", "600", "700"],
+//   variable: "--font-inter",
+// })
 
-// Use Albert Sans as secondary font
-const albertSans = Albert_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-albert-sans",
-})
+// // Use Albert Sans as secondary font
+// const albertSans = Albert_Sans({
+//   subsets: ["latin"],
+//   display: "swap",
+//   weight: ["400", "500", "600", "700", "800"],
+//   variable: "--font-albert-sans",
+// })
 
 export const metadata = {
   title: "Visa Application Service",
@@ -42,7 +42,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`${inter.variable} ${albertSans.variable} font-sans font-normal text-base leading-normal text-foreground bg-background`}
+        className={`font-normal text-base leading-normal text-foreground bg-background`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ApiInitializer />
