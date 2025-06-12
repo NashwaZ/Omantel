@@ -633,19 +633,26 @@ button[class*="icon-only"] {
   font-weight: 300;
   font-style: normal;
 }
-
-body {
-  font-family: 'FSAlbert', sans-serif !important;
+button, input, select {
+  font-family: 'FSAlbert', sans-serif;
 }
 
-html[dir="rtl"] {
-  font-family: 'FSAlbertArabic', sans-serif !important;
+
+html {
+  font-family: 'FSAlbert', sans-serif;
+  overflow-x: hidden;
+}
+
+html[lang="ar"] button,
+html[lang="ar"] input,
+html[lang="ar"] select,
+html[dir="rtl"] button,
+html[dir="rtl"] input,
+html[dir="rtl"] select {
+  font-family: 'FSAlbertArabic', sans-serif ;
 }
 
 .heading-font-style {
   font-family: 'FSAlvar', serif !important;
 }
 
-button, input{
-  font-family: 'FSAlbert', sans-serif !important;
-}

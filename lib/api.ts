@@ -659,7 +659,7 @@ const data = {
     method:"POST",
     headers:{
       Authorization: headers?.authorization,
-      "x-language":"en",
+      "x-language":headers?.language,
       "Content-Type":"application/json" 
     },
     body:JSON.stringify(data)
@@ -679,6 +679,171 @@ const data = {
  }
 }
 
+
+
+
+export async function OmantelCreateOrder(notification:any,user:any,headers:any){
+debugger
+const data = {
+    "partnerEvent": {
+        "partnerSessionId": null,
+        "eventType": "ORDER", 
+        "eventSubType": "ORDER_CREATION", 
+        "eventDetails": {
+            "description": "Order PLACED"
+        }
+    },
+    "paymentDetails": {
+        "paymentId": "123456",
+        "transactionId": "txn123456789",
+        "totalAmount": "16.8",
+        "partnerAccountId": "123344",
+        "rRN": "RRN12345",
+        "currency": "OMR",
+        "timestamp": "2025-04-15T10:30:00Z",
+        "paymentMethod": "Card",
+        "paymentStatus": "Confirmed"
+    },
+    "orderDetails": {
+        "orderId": "123456",
+        "customerId": "69102487",
+        "description": "Purchase Order",
+        "orderDateTime": "2025-04-15T10:30:00Z",
+        "category": "Air Conditioners",
+        "totalAmount": 150.75,
+        "deliveryAddress": "123 Main Street, Cityville, Country",
+        "orderStatus": "ORDER_PLACED",
+        "items": [
+            {
+                "orderItemId": "123456",
+                "name": "Purchase Order Item",
+                "description": "Purchase Order Item description",
+                "itemIndex": 1,
+                "unitPrice": "50.00",
+                "quantity": "2",
+                "createdAt": "2025-04-15T10:30:00Z",
+                "itemStatus": "CANCELLED"
+            },
+            {
+                "orderItemId": "123457",
+                "name": "Purchase Order Item1",
+                "description": "Purchase Order Item1 description",
+                "itemIndex": 2,
+                "unitPrice": "5.00",
+                "quantity": "1",
+                "createdAt": "2025-04-15T10:30:00Z",
+                "itemStatus": "PLACED"
+            }
+        ],
+        "shippingAndBilling": {
+            "shippingAddress": "shippingAddress",
+            "shippingDate": "2025-04-15T10:30:00Z",
+            "shippingCarrier": "ABC",
+            "deliveryLocation": "deliveryLocaion",
+            "trackingUrl": "trackingUrl",
+            "trackingNumber": "trackingNumber",
+            "billingAddress": "billingAddress",
+            "billingDate": "2025-04-15T10:30:00Z",
+            "invoiceNumber": "INV12345"
+        },
+        "discount": 2.00,
+        "tax": 1.354,
+        "fee": 0.234
+    },
+    "user": {
+        "id": user?.user_id,
+        "phone": user?.mobile_no,
+        "email": user?.email
+    },
+    "sender": {
+        "name": "Xhawi",
+        "id": "OT-CXP-XHAWI-bc35a3c5"
+    },
+    "timestamp": new Date()
+}
+ try{
+  const response= await fetch(API_BASE_URL+"/omantel_create_order",{
+    method:"POST",
+    headers:{
+      Authorization: headers?.authorization,
+      "x-unique-id":headers?.uniqueid,
+      "x-language":headers?.language,
+      "Content-Type":"application/json" 
+    },
+    body:JSON.stringify(data)
+  });
+  if(response.ok){
+    const data = await response.json();
+    if(data.message==="success"){
+      return "success";
+    }
+    else{
+      return "error";
+    }
+ }  
+ }catch(err){
+  console.error('error  at sending event msg : ' + err);
+  return "error";
+ }
+}
+
+export async function OmantelUpdateOrder(notification:any,user:any,headers:any){
+debugger
+const data = {
+    "partnerEvent": {
+        "partnerSessionId": null,
+        "eventType": "ORDER", 
+        "eventSubType": "ORDER_UPDATE", 
+        "eventDetails": {
+            "description": "Order PLACED"
+        }
+    },
+    "orderDetails": {
+        "orderId": "123456",
+        "customerId": "69102487",
+        "description": "Purchase Order",
+        "orderDateTime": "2025-04-15T10:30:00Z",
+        "category": "Air Conditioners",
+        "totalAmount": 150.75,
+        "deliveryAddress": "123 Main Street, Cityville, Country",
+        "orderStatus": "ORDER_PLACED"
+    },
+    "user": {
+        "id": user?.user_id,
+        "phone": user?.mobile_no,
+        "email": user?.email
+    },
+    "sender": {
+        "name": "Xhawi",
+        "id": "OT-CXP-XHAWI-bc35a3c5"
+    },
+    "timestamp": new Date()
+}
+ try{
+  const response= await fetch(API_BASE_URL+"/omantel_order_update",{
+    method:"POST",
+    headers:{
+      Authorization: headers?.authorization,
+      "x-unique-id":headers?.uniqueid,
+      "x-language":headers?.language,
+      "Content-Type":"application/json" 
+    },
+    body:JSON.stringify(data)
+  });
+  if(response.ok){
+    const data = await response.json();
+    if(data.message==="success"){
+      return "success";
+    }
+    else{
+      return "error";
+    }
+ }  
+ }catch(err){
+  console.error('error  at sending event msg : ' + err);
+  return "error";
+ }
+}
 /**
  * Generate a unique reference number with 15 characters
  * @returns A unique 15-character reference number
