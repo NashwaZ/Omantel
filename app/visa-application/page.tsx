@@ -91,6 +91,7 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
 
      const [locale,setLocale]=useState("en");
     const [header,setHeader]=useState(null);
+    const startFirstRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const storedDestination = localStorage.getItem("visa_destination") || "";
@@ -103,6 +104,7 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
     setCitizenship(storedCitizenship);
     setTravelDate(storedTravelDate);
     setVisaDetails(parse_visa_details);
+    window.scrollTo(0,0)
   }, []);
 
 
@@ -157,6 +159,7 @@ return count;
 
 
 const { t,i18n } = useTranslation();
+
 
 const getDirection = (lang: string): "ltr" | "rtl" => {
   return lang==='ar' ? "rtl" : "ltr";
@@ -613,8 +616,8 @@ return (size/1024).toFixed(0);
             </Button>
           </div> */}
 
-          <div className="mb-8">
-            <h1 className="heading-font-style text-4xl font-bold text-gray-800 ">{t("Visa")} {t("Application")}</h1>
+          <div className="mb-8" >
+            <h1 className="text-4xl font-bold text-gray-800 ">{t("Visa")} {t("Application")}</h1>
             <p className="body-default text-gray-600">
              {t("Please fill in the form below to apply for your")} {visaType!="Tourist Visa"? visaType:""}{visaType=="Tourist Visa"? t(visaType):""} {t("to")} {t(destination)}.
              </p>

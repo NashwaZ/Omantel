@@ -650,7 +650,7 @@ useEffect(() => {
     <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
         <div className="text-center mb-5xl">
-          <h1 className="heading-font-style heading-1 mb-4">{t('E-Visa')} {t('Application')} {t('Service')}</h1>
+          <h1 className=" heading-1 mb-4">{t('E-Visa')} {t('Application')} {t('Service')}</h1>
           <p className="body-large text-gray-600">{t("Check your visa eligibility and apply online in minutes")}</p>
         </div>
 

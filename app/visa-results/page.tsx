@@ -705,7 +705,7 @@ setIsSubmitLoad(false)
                 </svg>
                 <span className="text-gray-800 caption font-medium">{t(citizenship)} {t("Citizen")}</span>
               </div>
-              <h1 className="heading-font-style text-3xl md:text-4xl font-bold text-center mb-2">{t("Visa Options for")} {t(destination)}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">{t("Visa Options for")} {t(destination)}</h1>
               <p className="text-slate-600 text-center text-md md:text-lg mb-8">
               {t("Discover available visa programs for your trip to ")}{t(destination)}
           </p>
