@@ -9,6 +9,8 @@ import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { getVisaPrograms } from "@/lib/api"
 import { sendEventMsgToCEPApp } from "@/lib/api"
+import { useTranslation } from "react-i18next"
+import "@/lib/i18n"
 
 const VisaResultsPage = () => {
   const router = useRouter()
@@ -21,6 +23,9 @@ const VisaResultsPage = () => {
   const [visaPrograms, setVisaPrograms] = useState<any[]>([])
   const [usingMockData, setUsingMockData] = useState(false)
   const [countryFlags, setCountryFlags] = useState<{ from?: string; to?: string }>({})
+    const [locale,setLocale]=useState("en");
+
+     const { t , i18n } = useTranslation();
 
   // Get query parameters
   const destination = searchParams?.get("destination") || "Unknown Destination"
@@ -68,6 +73,43 @@ const VisaResultsPage = () => {
 
     return result !== undefined ? result : defaultValue
   }
+
+    useEffect(()=>{
+      // const get_headers_data=localStorage.getItem("sso_header");
+      // if(get_headers_data){
+      //   const parse_header=JSON.parse(get_headers_data);
+      //   // setHeader(parse_header);
+      //   const get_locale = parse_header.language;
+      //   setLocale(get_locale);
+      // }
+ 
+
+      // const get_headers_data=localStorage.getItem("sso_header");
+      // if(get_headers_data){
+      //   const parse_header=JSON.parse(get_headers_data);
+      //   setHeader(parse_header);
+      //   const get_locale = parse_header.language;
+      //   setLocale(get_locale);
+          
+      // i18n.changeLanguage(get_locale).then(()=>{
+      //      updateHtmlAttributes(get_locale);
+      // })
+     
+      // }
+      const getLanguage=localStorage.getItem("app_language");
+      if(getLanguage){
+      setLocale(getLanguage);
+      }
+ 
+    },[])
+
+      useEffect(() => {
+  if(locale=="en" || locale=="ar"){  
+    i18n.changeLanguage(locale); // Force change on client
+    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr'; // Set direction
+    }
+  }, [locale]);
+  
 
   useEffect(() => {
     const fetchVisaPrograms = async () => {
@@ -610,12 +652,12 @@ setIsSubmitLoad(false)
           <p className="text-amber-800 flex items-center justify-center body-small">
             <WifiOff className="h-4 w-4 mr-2" />
             <span>
-              We're having trouble connecting to our servers. Showing available information.
+              {t("We're having trouble connecting to our servers. Showing available information.")}
               <button
                 onClick={handleRetry}
                 className="ml-2 underline text-hayyak hover:text-hayyak-hover rounded-[16px] px-4"
               >
-                Try again
+                   {t("Try again")}
               </button>
             </span>
           </p>
@@ -627,7 +669,7 @@ setIsSubmitLoad(false)
         <div className="relative pt-1 pb-2 px-4 sm:px-6 lg:px-8 bg-white">
           {/* Content */}
           <div className="relative max-w-5xl mx-auto text-center">
-            <div className="flex items-center mb-8">
+            {/* <div className="flex items-center mb-8">
               <Button
                 variant="ghost"
                 onClick={handleBack}
@@ -649,7 +691,7 @@ setIsSubmitLoad(false)
                   <path d="M19 12H5" />
                 </svg>
               </Button>
-            </div>
+            </div> */}
 
             <div className="text-center mb-8">
               <div className="inline-flex items-center mb-3 px-3 py-1 bg-gray-100 rounded-full">
@@ -661,12 +703,12 @@ setIsSubmitLoad(false)
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                   />
                 </svg>
-                <span className="text-gray-800 caption font-medium">{citizenship} Citizen</span>
+                <span className="text-gray-800 caption font-medium">{t(citizenship)} {t("Citizen")}</span>
               </div>
-              <h1 className="heading-font-style text-3xl md:text-4xl font-bold text-center mb-2">Visa Options for {destination}</h1>
+              <h1 className="heading-font-style text-3xl md:text-4xl font-bold text-center mb-2">{t("Visa Options for")} {t(destination)}</h1>
               <p className="text-slate-600 text-center text-md md:text-lg mb-8">
-                Discover available visa programs for your trip to {destination}
-              </p>
+              {t("Discover available visa programs for your trip to ")}{t(destination)}
+          </p>
             </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
@@ -684,7 +726,7 @@ setIsSubmitLoad(false)
                   </svg>
               </div>
               <div className="text-left">
-                <p className="text-sm text-slate-500 ">Travel Date</p>
+                <p className="text-sm text-slate-500 ">{t("Travel")} {t("Date")}</p>
                 <p className="font-semibold text-slate-700">{travelDate}</p>
               </div>
             </div>
@@ -692,25 +734,8 @@ setIsSubmitLoad(false)
            {/* Destination */}
             <div className="bg-slate-100 p-4 rounded-xl flex items-center">
               <div className="bg-orange-100 p-2.5 rounded-full mr-4">
-                <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-              </div>
-              <div className="text-left">
-                <p className="text-sm text-slate-500 ">Destination</p>
-                <p className="font-semibold text-slate-700">{destination}</p>
-              </div>
-            </div>
-
-           {/* Citizenship */}
-            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
-              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
-                <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                
+                   <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -720,7 +745,26 @@ setIsSubmitLoad(false)
                   </svg>
               </div>
               <div className="text-left">
-                <p className="text-sm text-slate-500 text-left">Citizenship</p>
+                <p className="text-sm text-slate-500 ">{t("Destination")}</p>
+                <p className="font-semibold text-slate-700">{destination}</p>
+              </div>
+            </div>
+
+           {/* Citizenship */}
+            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
+              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+               
+                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-slate-500 text-left">{t('Citizenship')}</p>
                 <p className="font-semibold text-slate-700">{citizenship}</p>
               </div>
             </div>
@@ -737,8 +781,9 @@ setIsSubmitLoad(false)
             <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center shadow-sm">
               <AlertCircle className="h-5 w-5 mr-3 flex-shrink-0" />
               <p className="body-small">
-                We're showing estimated visa information. For the most accurate and up-to-date requirements, please
-                verify with the embassy or consulate.
+               {t(`We're showing estimated visa information. For the most accurate and up-to-date requirements, please
+                verify with the embassy or consulate.`)}
+             
               </p>
             </div>
           )}
@@ -748,9 +793,9 @@ setIsSubmitLoad(false)
             <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center shadow-sm">
               <WifiOff className="h-5 w-5 mr-3 flex-shrink-0" />
               <div className="flex-1">
-                <p className="body-small font-medium">Connection issue detected</p>
+                <p className="body-small font-medium">{t("Connection issue detected")}</p>
                 <p className="caption mt-1">
-                  We're having trouble connecting to our servers. Showing available information.
+    {t(`We're having trouble connecting to our servers. Showing available information.`)}
                 </p>
               </div>
               <Button
@@ -758,8 +803,8 @@ setIsSubmitLoad(false)
                 size="sm"
                 className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-300 rounded-[16px] px-16"
               >
-                Try again
-              </Button>
+                 {t("Try again")}
+               </Button>
             </div>
           )}
 
@@ -774,10 +819,10 @@ setIsSubmitLoad(false)
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <p className="heading-4 mb-3">{error}</p>
-              <p className="body-small mb-5">Please try again or modify your search parameters.</p>
+              <p className="body-small mb-5">{t("Please try again or modify your search parameters.")}</p>
               <Button onClick={handleBack} className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white">
-                Back to Search
-              </Button>
+                 {t("Back to Search")}
+                </Button>
             </div>
           ) : safeVisaPrograms.length === 0 ? (
             <div className="bg-amber-50 border border-amber-200 text-amber-700 p-8 rounded-2xl text-center shadow-sm">
@@ -791,12 +836,12 @@ setIsSubmitLoad(false)
                   />
                 </svg>
               </div>
-              <p className="heading-4 mb-3">No visa programs found for this combination</p>
+              <p className="heading-4 mb-3">{t("No visa programs found for this combination")}</p>
               <p className="body-small mb-5">
-                Please try a different destination or citizenship, or contact the embassy for more information.
+               {t("Please try a different destination or citizenship, or contact the embassy for more information.")}
               </p>
               <Button onClick={handleBack} className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white">
-                Back to Search
+                {t("Back to Search")}
               </Button>
             </div>
           ) : (
@@ -847,7 +892,7 @@ setIsSubmitLoad(false)
                        
                              <div className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
                           <CheckCircle2 size={14} />
-                          Available
+                        {  t("Available")}
                         </div>
                           ) : (
                              <div className="inline-flex items-center gap-1.5 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
@@ -860,7 +905,7 @@ setIsSubmitLoad(false)
                                   d="M6 18L18 6M6 6l12 12"
                                 />
                               </svg>
-                               Not Available
+                              {t("Not Available")}
                             </div>
                           )}
                         </div>
@@ -898,21 +943,21 @@ setIsSubmitLoad(false)
                           <div className="border border-gray-200 rounded-xl p-4 mb-4">
                             <div className="flex items-center text-orange-600 font-semibold mb-3">
                         <Info size={18} className="mr-2" />
-                        Visa Details
+                          {t("Visa")} {t("Details")}
                       </div>
 
                             {/* Fee information with currency conversion */}
                             <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center mb-1">
-                                <span className="text-gray-600 caption">Fee ({program.currency}):</span>
+                                <span className="text-gray-600 caption">{t("Fee")} ({program.currency}):</span>
                                 <span className="body-small font-medium text-gray-900">
-                                  ${safeRenderText(Number.parseFloat(program.fee).toFixed(2) || "0")}
+                              {safeRenderText(Number.parseFloat(program.fee).toFixed(2) || "0")} {program.currency}
                                 </span>
                               </div>
                               </div>
                               <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center">
-                                <span className="text-gray-600 caption">Fee (OMR):</span>
+                                <span className="text-gray-600 caption">{t("Fee")} (OMR):</span>
                                 <span className="body-small text-gray-900">
                                   {convertedFees[program.id] ||
                                     (Number.parseFloat(safeRenderText(program.fee || "0")) * 0.385).toFixed(3)}{" "}
@@ -923,28 +968,32 @@ setIsSubmitLoad(false)
 
                             {/* Time-related information */}
                             <div className="mb-3 pb-1.5 border-b border-gray-200">
-                              <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 caption">Processing:</span>
+                              <div className="flex justify-between items-center   ">
+                                <span className="text-gray-600 caption">{t("Processing")}:</span>
                                 <span className="body-small text-gray-900">
-                                  {program.suggested_processing_time
+                                {program.suggested_processing_time
                                     ? `${safeRenderText(program.suggested_processing_time)} days`
-                                    : "Not specified"}
+                                    : t("Not specified")}
                                 </span>
                               </div>
-                              <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 caption">Max Stay:</span>
+                              </div>
+                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="flex justify-between items-center ">
+                                <span className="text-gray-600 caption">{t("Max")} {t("Stay")}:</span>
                                 <span className="body-small text-gray-900">
                                   {program.max_stay
                                     ? `${safeRenderText(program.max_stay).replace(".0", "")} days`
-                                    : "Not specified"}
+                                    : t("Not specified")}
                                 </span>
                               </div>
+                              </div>
+                               <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center">
-                                <span className="text-gray-600 caption">Validity:</span>
+                                <span className="text-gray-600 caption">{t("Validity")}:</span>
                                 <span className="body-small text-gray-900">
-                                  {program.validity
+                                   {program.validity
                                     ? `${safeRenderText(program.validity).replace(".0", "")} days`
-                                    : "Not specified"}
+                                    : t("Not specified")}
                                 </span>
                               </div>
                             </div>
@@ -952,7 +1001,7 @@ setIsSubmitLoad(false)
                             {/* Entry information */}
                             <div className="mb-3 pb-1.5 border-b border-gray-200">
                               <div className="flex justify-between items-center">
-                                <span className="text-gray-600 caption">Entries:</span>
+                                <span className="text-gray-600 caption">{t("Entries")}:</span>
                                 <span className="body-small text-gray-900">
                                   {/* {program.max_entries === "0.0" || program.max_entries === 0
                                     ? "Multiple"
@@ -961,7 +1010,7 @@ setIsSubmitLoad(false)
                                       : program.max_entries
                                         ? safeRenderText(program.max_entries).replace(".0", "")
                                         : "Not specified"} */}
-                                        Single
+                                    {t("Single")}
                                 </span>
                               </div>
                             </div>
@@ -971,9 +1020,9 @@ setIsSubmitLoad(false)
                               {/* Program ID is stored but not displayed */}
                               <div className="hidden">{safeRenderText(program.id || "N/A")}</div>
                               <div className="flex justify-between items-center">
-                                <span>Status:</span>
+                                <span>{t("Status")}:</span>
                                 <span className="font-medium text-gray-900">
-                                  {program.available !== false ? "Available" : "Unavailable"}
+                                  {program.available !== false ? t("Available") : t("Unavailable")}
                                 </span>
                               </div>
                             </div>
@@ -985,12 +1034,12 @@ setIsSubmitLoad(false)
                         {
                         program.required===false && 
                         <div style={{textAlign:"start"}}>
-                        <div className="mb-2">A visa is not required for your visit.</div>
+                        <div className="mb-2">{t("A visa is not required for your visit.")}</div>
 
                          {program.label && <div>{program.label}</div>}
                        <div className="p-4 mt-4 rounded-2xl shadow-md bg-[#fff2e6]">
-                         {program.required===false  && program.available===true && <div className="mb-2"><b>You are good to go!</b> </div>}
-                        {program.required===false && <div>You don't need a Visa for {destination} if you have a passport from {citizenship}</div>}
+                         {program.required===false  && program.available===true && <div className="mb-2"><b>{t("You are good to go!")}</b> </div>}
+                        {program.required===false && <div>{t("You don't need a Visa for")} {t(destination)} {t("if you have a passport from")} {t(citizenship)}</div>}
                         </div>
                         </div>
                         }
@@ -1015,7 +1064,7 @@ setIsSubmitLoad(false)
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                   />
                                 </svg>
-                                Additional Information
+                              {t("Additional Information")}
                               </h4>
 
                               {program.additional_info && (
@@ -1026,14 +1075,14 @@ setIsSubmitLoad(false)
 
                               {program.embassy_info && (
                                 <div className="mb-3 pb-2 border-b border-gray-200">
-                                  <p className="caption font-medium text-gray-900 mb-1">Embassy Information:</p>
+                                  <p className="caption font-medium text-gray-900 mb-1">{t("Embassy")} {"Information"}:</p>
                                   <p className="caption text-gray-600">{safeRenderText(program.embassy_info)}</p>
                                 </div>
                               )}
 
                               {program.restrictions && (
                                 <div className="mb-2">
-                                  <p className="caption font-medium text-gray-900 mb-1">Restrictions:</p>
+                                  <p className="caption font-medium text-gray-900 mb-1">{t("Restrictions")}</p>
                                   <p className="caption text-gray-600">{safeRenderText(program.restrictions)}</p>
                                 </div>
                               )}
@@ -1053,11 +1102,12 @@ setIsSubmitLoad(false)
                 </svg> */}
               {/* </div> */}
               {/* <p className="heading-4 mb-3"></p> */}
-              <p className="body-small mb-5">
-             This visa program is currently unavailable or does not meet the specified criteria.
-              </p>
+              <p className="body-small mb-5">{
+              t(
+             "This visa program is currently unavailable or does not meet the specified criteria.")
+              }</p>
               <Button onClick={handleBack} className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white">
-                Back to Search
+              { t("Back to Search")}
               </Button>
             </div>
                         }
@@ -1072,7 +1122,7 @@ setIsSubmitLoad(false)
                                                   <LoadingIndicator size="small" />
                                                 </div>
                                               ) : (
-                                                "Apply Now"
+                                             t("Apply Now")
                                               )}
                          
                         </Button>)}

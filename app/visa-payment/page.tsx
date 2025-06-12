@@ -303,6 +303,10 @@ import { Button } from "@/components/ui/button";
 import { sendEventMsgToCEPApp, sendNotificationToCEPApp } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
+import { useTranslation } from "react-i18next"
+import  "@/lib/i18n"
+
+
 declare global {
   interface Window {
     ReactNativeWebView?: {
@@ -313,8 +317,47 @@ declare global {
 
 export default function MakePayment() {
   const [isLoading, setIsLoading] = useState(false);
-  const [convertedFees, setConvertedFees] = useState({ fee: "" });
+
+       const [locale,setLocale]=useState("en");
+      const [header,setHeader]=useState(null);
+      const [convertedFees, setConvertedFees] = useState({ fee: "" });
   const router = useRouter();
+  
+         
+const { t,i18n } = useTranslation();
+
+const getDirection = (lang: string): "ltr" | "rtl" => {
+  return lang==='ar' ? "rtl" : "ltr";
+};
+  const updateHtmlAttributes = (lang: string) => {
+    document.documentElement.dir = getDirection(lang)==="rtl"?"rtl":"ltr";
+    document.documentElement.lang = lang;
+  };
+
+    useEffect(()=>{
+
+      // const get_headers_data=localStorage.getItem("sso_header");
+      // if(get_headers_data){
+      //   const parse_header=JSON.parse(get_headers_data);
+      //   setHeader(parse_header);
+      //   const get_locale = parse_header.language;
+      //   setLocale(get_locale);
+          
+      // i18n.changeLanguage(get_locale).then(()=>{
+      //      updateHtmlAttributes(get_locale);
+      // })
+     
+      // }
+      const getLanguage=localStorage.getItem("app_language");
+      if(getLanguage){
+      setLocale(getLanguage);
+          
+      i18n.changeLanguage(getLanguage).then(()=>{
+           updateHtmlAttributes(getLanguage);
+      })
+    }
+    },[])
+  
 
   type VisaDetails = {
     destinationCountry: string | null;
@@ -451,6 +494,7 @@ debugger
 
     window.addEventListener("message", messageListener);
 
+
     // Cleanup function to remove the event listener
     return () => {
       window.removeEventListener("message", messageListener);
@@ -509,7 +553,7 @@ debugger
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
           <div className="text-center mb-5xl">
-            <h1 className="heading-font-style heading-1 mb-7">Make Payment</h1>
+            <h1 className="heading-font-style heading-1 mb-7">{t("Make Payment")}</h1>
           </div>
 
           <div className="w-full sm:w-[85%] max-w-2xl border py-3 rounded-xl px-4 sm:px-4 mx-auto">
@@ -518,7 +562,7 @@ debugger
                 <tbody>
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> First Name:</span>
+                      <span className="text-gray-600 caption"> {t("First Name")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900">{VisaDetails?.firstName}</span>
@@ -526,7 +570,7 @@ debugger
                   </tr>
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Last Name:</span>
+                      <span className="text-gray-600 caption"> {t("Last Name")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900">{VisaDetails?.lastName}</span>
@@ -534,7 +578,7 @@ debugger
                   </tr>
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Email:</span>
+                      <span className="text-gray-600 caption"> {t("Email")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900"> {VisaDetails?.email}</span>
@@ -543,7 +587,7 @@ debugger
 
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Passport Country:</span>
+                      <span className="text-gray-600 caption"> {t("Passport Country")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900"> {VisaDetails?.passportCountry}</span>
@@ -552,7 +596,7 @@ debugger
 
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Destination Country:</span>
+                      <span className="text-gray-600 caption"> {t("Destination Country")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900"> {VisaDetails?.destinationCountry}</span>
@@ -560,7 +604,7 @@ debugger
                   </tr>
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Fee:</span>
+                      <span className="text-gray-600 caption"> {t("Fee")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900">  {VisaDetails?.fee}</span>
@@ -568,7 +612,7 @@ debugger
                   </tr>
                   <tr>
                     <td className="p-2">
-                      <span className="text-gray-600 caption"> Currency:</span>
+                      <span className="text-gray-600 caption"> {t("Currency")}:</span>
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900">  {VisaDetails?.currency}</span>
@@ -584,7 +628,7 @@ debugger
               onClick={(e) => handleSubmit(e)}
               className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4"
             >
-              Make Payment
+             {t("Make Payment")}
             </Button>
           </div>
         </div>

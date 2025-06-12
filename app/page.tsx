@@ -11,6 +11,11 @@ import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { sendEventMsgToCEPApp } from "@/lib/api"
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n'
+import { usePathname } from "next/navigation";
+import { LanguagesIcon } from "lucide-react";
+import LoadingIndicator from "@/components/LoadingIndicator"
 
 // Import country data directly
 // import { allCountries } from "@/lib/countries"
@@ -34,11 +39,15 @@ const { countries,load } = useCountryList();
     citizenship: "",
   })
   const [partnerUserId,setPartnerUserId]=useState(null)
+  const [locale,setLocale]=useState("en")
 
   const [formData, setFormData] = useState({
     destination: "",
     citizenship: "",
   });
+
+   const pathname = usePathname();
+
 const [userInfo,setUserInfo]=useState({ 
 email:"",
 first_name:"",
@@ -66,6 +75,16 @@ created_at:"",
   const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null})
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
+
+  const { i18n, t } = useTranslation();
+
+const getDirection = (lang: string): "ltr" | "rtl" => {
+  return lang==='ar' ? "rtl" : "ltr";
+};
+  const updateHtmlAttributes = (lang: string) => {
+    document.documentElement.dir = getDirection(lang);
+    document.documentElement.lang = lang;
+  };
 
   // Add click outside listener to close dropdowns
   useEffect(() => {
@@ -392,6 +411,7 @@ created_at:"",
 //   }
 // }
 
+
   useEffect(()=>{
     const createOrganization=async()=>{
     try{
@@ -478,20 +498,24 @@ created_at:"",
       setPassingParams({accessToken:data.result.authorization,partnerUserId:data.result.userid})
         setAccessToken(data.result.authorization);
         setPartnerUserId(data.result.userid);
-      // setLocale(values.language);
-      // const get_locale=values.language;
-      //  if (get_locale === "en" || get_locale === "ar") {
-      // i18n.changeLanguage(get_locale);
-      // const direction = getDirection(get_locale);
-      // document.documentElement.dir = direction;
-    // }
-
-      localStorage.setItem("sso_header", JSON.stringify(header_data));
+        localStorage.setItem("app_language",values.language);
+      setLocale(values.language);
       
+      i18n.changeLanguage(values.language).then(()=>{
+ updateHtmlAttributes(values.language);
+      localStorage.setItem("sso_header", JSON.stringify(header_data));
+    
+        })
+     
+
       // initApi(values);
 
     }
+     else{
+        updateHtmlAttributes(i18n.language);
+    }
   }
+
 }
     }
   }
@@ -499,6 +523,17 @@ if(vendorKey){
   call_SSO();
 }
 },[vendorKey])
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    const get_language = localStorage.getItem("app_language");
+    if (get_language) {
+      setLocale(get_language);
+    }
+  }, 1000);
+
+  return () => clearTimeout(timer); // 🔁 Cleanup when component unmounts
+}, []);
 
 
   useEffect(()=>{
@@ -548,6 +583,8 @@ if(vendorKey){
     
   },[passingParams])
 
+
+
   // Update the handleSubmit function to properly create organization
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -578,14 +615,43 @@ if(vendorKey){
    
   }
 
+  const handleBack = () => {
+    router.back()
+  }
 
+    const toggleLanguage=()=>{
+    debugger
+    if(locale=="en"){
+      const set_language="ar"
+    localStorage.setItem("app_language",set_language);
+    setLocale("ar");
+      i18n.changeLanguage(set_language).then(()=>{
+ updateHtmlAttributes(set_language);
+   
+    
+        })
+    }
+  else{
+    const set_language="en"
+  localStorage.setItem("app_language",set_language);
+   setLocale("en");
+     i18n.changeLanguage(set_language).then(()=>{
+ updateHtmlAttributes(set_language);
+   
+    
+        })
+
+  }
+  }
 
   return (
+    <>
+      
     <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
         <div className="text-center mb-5xl">
-          <h1 className="heading-font-style heading-1 mb-4">E-Visa Application Service</h1>
-          <p className="body-large text-gray-600">Check your visa eligibility and apply online in minutes</p>
+          <h1 className="heading-font-style heading-1 mb-4">{t('E-Visa')} {t('Application')} {t('Service')}</h1>
+          <p className="body-large text-gray-600">{t("Check your visa eligibility and apply online in minutes")}</p>
         </div>
 
         <div className="w-full max-w-3xl px-4 sm:px-0">
@@ -594,13 +660,13 @@ if(vendorKey){
               <form onSubmit={handleSubmit} className="space-y-5 w-full relative" autoComplete="off">
                 <div className="space-y-2">
                   <Label htmlFor="destination" className="label font-medium">
-                    Destination Country
+                     {t('Destination')} {t("Country")}
                   </Label>
                   <div className="relative">
                     <CustomInput
                       type="text"
                       id="destination-search"
-                      placeholder="Search for a country..."
+                      placeholder={t("Search for a country")+"..."}
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                       value={searchData.destination}
                       onChange={(e) => {
@@ -616,12 +682,12 @@ if(vendorKey){
                         const dropdown = document.getElementById("destination-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
-                      error={attemptedSubmit && !formData.destination ? "Please select a destination country" : ""}
+                      error={attemptedSubmit && !formData.destination ? t("Please select a destination country") : ""}
                       success={formData.destination !== ""}
                     />
                     <button
                       type="button"
-                      className="absolute right-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed"
+                      className={`absolute end-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed`}
                       onClick={() => {
                         const dropdown = document.getElementById("destination-dropdown")
                         if (dropdown) {
@@ -670,7 +736,7 @@ if(vendorKey){
                             </div>
                           ))
                       ) : (
-                        <div className="px-4 py-3 body-small text-gray-500">{load ?"Loading ...":"No countries found"}</div>
+                        <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
                       )}
                     </div>
                   </div>
@@ -678,14 +744,13 @@ if(vendorKey){
 
                 <div className="space-y-2">
                   <Label htmlFor="citizenship" className="label font-medium">
-                    Your Citizenship
+                     {t("Your")} {t("Citizenship")}
                   </Label>
                   <div className="relative">
                     <CustomInput
                       type="text"
                       id="citizenship-search"
-                   
-                      placeholder="Search for a country..."
+                      placeholder={t("Search for a country")+"..."}
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                       value={searchData.citizenship}
                       onChange={(e) => {
@@ -701,12 +766,12 @@ if(vendorKey){
                         const dropdown = document.getElementById("citizenship-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
-                      error={attemptedSubmit && !formData.citizenship ? "Please select a citizenship country" : ""}
+                      error={attemptedSubmit && !formData.citizenship ?locale=="en"?"Please select a citizenship country":"يرجى اختيار بلد المواطنة" : ""}
                       success={formData.citizenship !== ""}
                     />
                     <button
                       type="button"
-                      className="absolute right-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed"
+                      className={`absolute end-0  top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed`}
                       onClick={() => {
                         const dropdown = document.getElementById("citizenship-dropdown")
                         if (dropdown) {
@@ -755,7 +820,7 @@ if(vendorKey){
                             </div>
                           ))
                       ) : (
-                        <div className="px-4 py-3 body-small text-gray-500">{load ?"Loading ...":"No countries found"}</div>
+                         <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
                       )}
                     </div>
                   </div>
@@ -763,7 +828,7 @@ if(vendorKey){
 
                 <div className="space-y-2">
                   <Label htmlFor="travel-date" className="label font-medium">
-                    Travel Date
+                      {t('Travel')} {t("Date")}
                   </Label>
                   <div className="relative">
                     <button
@@ -772,8 +837,11 @@ if(vendorKey){
                       className="w-full h-12 px-4 text-left flex items-center body-small border border-gray-200 rounded-lg bg-white text-gray-700 hover:border-[#ea6e00] transition-colors"
                       onClick={() => setCalendarOpen(!calendarOpen)}
                     >
-                      <CalendarIcon className="mr-3 h-5 w-5 text-[#ea6e00]" />
-                      {date ? format(date, "PPP") : "When are you traveling?"}
+                    <CalendarIcon className={`mr-3 h-5 w-5 text-[#ea6e00] ml-[15px]`} />
+
+                     
+                        {date ? format(date, "PPP") : t("When are you traveling?")} 
+                    
                     </button>
 
                     {calendarOpen && (
@@ -792,7 +860,7 @@ if(vendorKey){
                     )}
 
                     {attemptedSubmit && !date && (
-                      <div className="text-red-500 caption mt-1">Please select a travel date</div>
+                      <div className="text-red-500 caption mt-1">{locale=="en"?"Please select a travel date":"الرجاء تحديد تاريخ السفر"}</div>
                     )}
                   </div>
                 </div>
@@ -810,12 +878,12 @@ if(vendorKey){
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-m"></div>
-                      Searching...
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-m" ></div>
+                      &nbsp;{t("Searching...")}
                     </div>
-                  ) : (
-                    "Check Visa Requirements"
-                  )}
+                  ) :  (
+                    t("Check Visa Requirements")
+                    )}
                 </Button>
 
                 {/* {loading && (
@@ -843,10 +911,11 @@ if(vendorKey){
           </Card>
 
           <div className="mt-4xl text-center">
-            <p className="caption">Powered by Omantel eVisa Services. Fast, secure, and reliable visa processing.</p>
+            <p className="caption">{t("Powered by Omantel eVisa Services. Fast, secure, and reliable visa processing.")}</p>
           </div>
         </div>
       </div>
     </div>
+    </>
   )
 }

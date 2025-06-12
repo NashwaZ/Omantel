@@ -19,6 +19,10 @@ import { CustomInput } from "@/components/ui/custom-input"
 import { Progress } from "@/components/ui/progress"
 import Loading from "./loading"
 
+
+import { useTranslation } from "react-i18next"
+import  "@/lib/i18n"
+
 import { ChevronDown, ChevronUp, FileText, Info, XCircle, Paperclip } from "lucide-react"
 
 export default function VisaApplication() {
@@ -84,6 +88,10 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
   const [citizenship, setCitizenship] = useState('');
   const [travelDate, setTravelDate] = useState('');
   const [visaDetails,setVisaDetails]=useState<{ [key: string]: any | null }>({});
+
+     const [locale,setLocale]=useState("en");
+    const [header,setHeader]=useState(null);
+
   useEffect(() => {
     const storedDestination = localStorage.getItem("visa_destination") || "";
     const storedCitizenship = localStorage.getItem("visa_citizenship") || "";
@@ -146,6 +154,38 @@ return count;
 
      const validationCheck=formData?.firstName && formData?.lastName && formData?.marketingConsent && formData?.phone && (getUploadedFileLength()===requirements.length)
 
+
+
+const { t,i18n } = useTranslation();
+
+const getDirection = (lang: string): "ltr" | "rtl" => {
+  return lang==='ar' ? "rtl" : "ltr";
+};
+  const updateHtmlAttributes = (lang: string) => {
+    document.documentElement.dir = getDirection(lang)==="rtl"?"rtl":"ltr";
+    document.documentElement.lang = lang;
+  };
+
+    useEffect(()=>{
+
+      // const get_headers_data=localStorage.getItem("sso_header");
+      // if(get_headers_data){
+      //   const parse_header=JSON.parse(get_headers_data);
+      //   setHeader(parse_header);
+      //   const get_locale = parse_header.language;
+      //   setLocale(get_locale);
+          
+      // i18n.changeLanguage(get_locale).then(()=>{
+      //      updateHtmlAttributes(get_locale);
+      // })
+     
+      // }
+     const getLanguage=localStorage.getItem("app_language");
+      if(getLanguage){
+      setLocale(getLanguage);
+      }
+    },[])
+  
  useEffect(()=>{
     const createOrganization=async()=>{
     try{
@@ -562,7 +602,7 @@ return (size/1024).toFixed(0);
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <Button
               variant="ghost"
               className="flex items-center justify-center text-gray-600 hover:text-[#ea6e00] p-2 h-9 w-9"
@@ -571,13 +611,13 @@ return (size/1024).toFixed(0);
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-          </div>
+          </div> */}
 
           <div className="mb-8">
-            <h1 className="heading-font-style text-4xl font-bold text-gray-800 ">Visa Application</h1>
+            <h1 className="heading-font-style text-4xl font-bold text-gray-800 ">{t("Visa")} {t("Application")}</h1>
             <p className="body-default text-gray-600">
-              Please fill in the form below to apply for your {visaType} to {destination}.
-            </p>
+             {t("Please fill in the form below to apply for your")} {visaType!="Tourist Visa"? visaType:""}{visaType=="Tourist Visa"? t(visaType):""} {t("to")} {t(destination)}.
+             </p>
           </div>
 
           <Card className="mt-4 shadow-lg border-0 rounded-2xl overflow-hidden">
@@ -593,11 +633,11 @@ return (size/1024).toFixed(0);
                 {/* Personal Information */}
                 <div>
                    <div  className="flex"><Info className="h-5 w-5 mr-2 text-[#ea6e00] " style={{position:"relative",top:"4px"}} />
-                  <h3 className="heading-4 mb-4">Personal Information</h3></div>
+                  <h3 className="heading-4 mb-4">{t("Personal")} {t("Information")}</h3></div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="firstName" className="label">
-                        First Name *
+                         {t("First")} {t("Name")} *
                       </Label>
                       <CustomInput
                         id="firstName"
@@ -606,7 +646,7 @@ return (size/1024).toFixed(0);
                           className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        placeholder="Enter your first name"
+                        placeholder={t("Enter your first name")}
                          error={attemptedSubmit && !formData.firstName ? "First name is required." : ""}
                       success={formData.firstName !== ""}
                        
@@ -615,7 +655,7 @@ return (size/1024).toFixed(0);
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName" className="label">
-                        Last Name *
+                       {t("Last")} {t("Name")} *
                       </Label>
                       <CustomInput
                         id="lastName"
@@ -624,7 +664,7 @@ return (size/1024).toFixed(0);
                         className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        placeholder="Enter your last name"
+                         placeholder={t("Enter your last name")}
                          error={attemptedSubmit && !formData.lastName ? "Last name is required." : ""}
                       success={formData.lastName !== ""}
                         
@@ -632,7 +672,7 @@ return (size/1024).toFixed(0);
                     </div>
                     <div className="space-y-2 ">
                       <Label htmlFor="email" className="label">
-                        Email *
+                        {t("Email")} *
                       </Label>
                       <CustomInput
                         id="email"
@@ -642,15 +682,14 @@ return (size/1024).toFixed(0);
                         className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="Enter your email address"
+                        placeholder={t("Enter your email address")}
                         error={attemptedSubmit && !formData.email ? "Email is required." : ""}
-                      success={formData.email !== ""}
-                        
+                        success={formData.email !== ""} 
                       />
                     </div>
                      <div className="space-y-2">
                       <Label htmlFor="phone" className="label">
-                        Phone No *
+                        {t("Phone")} {t("Number")} *
                       </Label>
                       <CustomInput
                         id="phone"
@@ -659,7 +698,7 @@ return (size/1024).toFixed(0);
                         className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="Enter your phone number"
+                         placeholder={t("Enter your phone number")}
                         success={formData.phone !== ""}
                         error={attemptedSubmit && !formData.phone ? "Phone no is required." : ""}
                       />
@@ -875,7 +914,7 @@ return (size/1024).toFixed(0);
   <div className="border-t pt-8">
                   <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
                     <Paperclip className="h-5 w-5 mr-2 text-[#ea6e00]" />
-                    Document Requirements for {destinationCountry}
+                   {t("Document Requirements for")} {destinationCountry}
                   </h3>
 
                   
@@ -883,7 +922,7 @@ return (size/1024).toFixed(0);
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 space-y-4">
                     <div>
                       <h4 className="font-semibold text-amber-800 mb-2">
-                        Required Documents to Upload ({requirements.length} file(s)):
+                      {t("Required Documents to Upload")} ({requirements.length} {t('file(s)')}):
                       </h4>
                       {/* This list renders if numberOfRequiredDocs > 0 */}
                       {requirements.length > 0 ? (
@@ -894,24 +933,24 @@ return (size/1024).toFixed(0);
                           ))}
                         </ul>
                          <div className="mt-3">
-                        <h4 className="font-semibold text-amber-800 mb-2">Additional Information & Guidelines:</h4>
+                        <h4 className="font-semibold text-amber-800 mb-2">{t("Additional Information & Guidelines:")}</h4>
                            {requirements.map((doc, index) => (
                         <p className="text-amber-700 text-sm leading-relaxed">
                           {doc?.additional_information} {/* For USA, this shows passport validity */}
                         </p>
                           ))}
-                          <p className="text-amber-700 text-sm leading-relaxed">The accepted file formats are JPEG, JPG, PNG, and PDF.</p>
+                          <p className="text-amber-700 text-sm leading-relaxed">{t("The accepted file formats are JPEG, JPG, PNG, and PDF.")}</p>
                       </div>
                       </>
                       ) : (
                         <p className="text-amber-700">
-                          No specific documents need to be uploaded for this destination through our system.
+                          {t("No specific documents need to be uploaded for this destination through our system.")}
                         </p>
                       )
                       }
                     </div>                   
                   </div>
-                  {requirements.length>0 && <h4 className="mt-6 font-semibold text-gray-800 mb-3">Upload Your Documents:</h4>}
+                  {requirements.length>0 && <h4 className="mt-6 font-semibold text-gray-800 mb-3">{t('Upload Your Documents')}:</h4>}
                <div className="flex-col md:flex-row" style={{display:"flex"}}>
               {requirements.length>0 ? requirements?.map((req:any, index:number) => (
                 <div key={index} className="mr-3">
@@ -1005,7 +1044,7 @@ return (size/1024).toFixed(0);
    {/* <div className="space-y-3 mb-4"></div> */}
         {/* uploaded files */}
         
-                         { getUploadedFileLength()>0 &&  <p className="text-sm font-medium text-gray-700">Uploaded files:</p>}
+                         { getUploadedFileLength()>0 &&  <p className="text-sm font-medium text-gray-700">{t("Uploaded files")}:</p>}
                           {
                             
                             requirements.length>0 && requirements?.map((req,index)=>(
@@ -1052,7 +1091,7 @@ return (size/1024).toFixed(0);
                        requirements.length>0 &&<div className="mt-2" >
                         <Progress value={uploadProgress} className="w-full h-2 [&>div]:bg-[#ea6e00]" />
                         <p className="text-xs text-gray-500 mt-1 text-right">
-                          {getUploadedFileLength()} of {requirements.length} files uploaded
+                          {getUploadedFileLength()} {t("of")} {requirements.length} {t("files uploaded")}
                         </p>
                       </div>
                          
@@ -1062,7 +1101,7 @@ return (size/1024).toFixed(0);
                 {/* Consent and Information */}
                 <div className="space-y-4">
                   <p className="body-small text-gray-600">
-                    We use this to create your E-Visa and send you updates about your application
+                    {t("We use this to create your E-Visa and send you updates about your application")}
                   </p>
 
                   <div className="flex items-start space-x-2">
@@ -1072,8 +1111,8 @@ return (size/1024).toFixed(0);
                       onCheckedChange={handleCheckboxChange}
                     />
                     <Label htmlFor="marketingConsent" className="body-small font-normal leading-tight cursor-pointer">
-                      I want to receive E-Visa updates, product launches and personalized offers. I can opt out anytime.
-                    </Label>
+                       {t("I want to receive E-Visa updates, product launches and personalized offers. I can opt out anytime.")}
+                      </Label>
                   </div>
                 </div>
 
@@ -1081,7 +1120,7 @@ return (size/1024).toFixed(0);
                 <div className="pt-4">
                   {submissionError && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 body-small">
-                      Error: {submissionError}
+                     {t("Error")}: {submissionError}
                     </div>
                   )}
                   <div className="flex justify-end">
@@ -1096,7 +1135,7 @@ return (size/1024).toFixed(0);
                         <LoadingIndicator size="small" />
                       </div>
                     ) : (
-                      "Submit Application"
+                      t("Submit Application")
                     )}
                   </Button>
                   </div>

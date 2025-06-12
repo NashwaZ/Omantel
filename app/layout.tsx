@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import ApiInitializer from "@/components/api-initializer"
 import ApiStorageManager from "@/components/api-storage-manager"
 import ApiDebugPanel from "@/components/api-debug-panel"
+import Header from "@/components/header"
+
 // import { Inter, Albert_Sans } from "next/font/google"
 
 // // Use Inter font from Google Fonts as primary font
@@ -46,6 +48,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ApiInitializer />
+          <Header />
           <main className="min-h-screen">{children}</main>
           <ApiStorageManager />
           <ApiDebugPanel />
