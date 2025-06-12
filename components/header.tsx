@@ -119,18 +119,53 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
               variant="outline"
               size="sm"
               onClick={toggleLanguage}
-              className="flex items-center"
+              className="flex items-center px-8 sm:px-5"
               // aria-label={t.languageToggle || "Toggle language"}
             >
               <LanguagesIcon className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2 rtl:mr-2 rtl:ml-0">{t("Language")}</span>
+           {
+            language=="en"?
+              <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">EN &nbsp;<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="16"
+  height="16"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="inline"
+>
+  <path d="M5 12h14" />
+  <path d="m12 5 7 7-7 7" />
+</svg>
+ &nbsp;AR</div>
+ :
+   <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">AR &nbsp;<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="16"
+  height="16"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="inline"
+>
+  <path d="M5 12h14" />
+  <path d="m12 5 7 7-7 7" />
+</svg>
+ &nbsp;EN</div>
+}
             </Button>
-           <div className="flex border py-2 px-8" style={{borderRadius:"16px",background:"#fcf3e6" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22" stroke="#212121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+           <div className="flex border py-2 px-8 " style={{borderRadius:"16px",background:"#fcf3e6" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#ea6e00] relative top-[2px]">
+    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0"> &nbsp; {userDetails?.first_name+""+userDetails?.last_name}</span>
+              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name+""+userDetails?.last_name}</span>
             </div>
            </div>
            }

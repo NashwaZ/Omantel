@@ -305,6 +305,7 @@ import { useRouter } from "next/navigation";
 
 import { useTranslation } from "react-i18next"
 import  "@/lib/i18n"
+import { getVendorKey } from "@/lib/api";
 
 
 declare global {
@@ -381,11 +382,30 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    debugger
     const get_user = localStorage.getItem("user_info_cep");
     const userInfo = get_user ? JSON.parse(get_user) : "";
     const auth_token = localStorage.getItem("sso_header");
     const header = auth_token ? JSON.parse(auth_token) : "";
     const accessToken = header?.authorization;
+    const get_program_id=localStorage.getItem("order_id");
+    const order_id={
+      order_id:get_program_id
+    }
+    const vendor_key= await getVendorKey();
+const response =await fetch( "https://stg-api.superjetom.com/omantel_payment",{
+  method:"POST",
+  headers:{
+    Authorization:"Bearer "+vendor_key,
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify(order_id)
+})
+if(!response.ok){
+  throw new Error("Error at payment...");
+}
+const data =await response.json();
+if(data.message==="success"){
 
     const eventDetails = {
       sub_type: "proceed_payment",
@@ -403,33 +423,36 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       const user_details = user_local_data ? JSON.parse(user_local_data) : "";
 debugger
       if (user_details) {
-        const payload = {
-          name: VisaDetails.firstName,
-          partnerAccountId: "OT-CXP-SUPERJET-f65c1d89",
-          items: [
-            {
-              unitPrice: 1,
-              quantity: 1,
-              serviceDetails: {
-                serviceType: "e-Visa",
-                serviceSubType: "e-Visa"
-              },
-              invoiceNumber: "12345",
-              vatValue: 0,
-              standardPrice: VisaDetails.fee,
-              taxablePrice: VisaDetails.fee,
-              vatPercent: 0
-            }
-          ],
-          id: "12345",
-          rRN: ""
-        };
+        // const payload = {
+        //   name: VisaDetails.firstName,
+        //   partnerAccountId: "OT-CXP-SUPERJET-f65c1d89",
+        //   items: [
+        //     {
+        //       unitPrice: 1,
+        //       quantity: 1,
+        //       serviceDetails: {
+        //         serviceType: "e-Visa",
+        //         serviceSubType: "e-Visa"
+        //       },
+        //       invoiceNumber: "12345",
+        //       vatValue: 0,
+        //       standardPrice: VisaDetails.fee,
+        //       taxablePrice: VisaDetails.fee,
+        //       vatPercent: 0
+        //     }
+        //   ],
+        //   id: "12345",
+        //   rRN: ""
+        // };
+
+        const payload=data.result;
         window.ReactNativeWebView.postMessage(JSON.stringify(payload));
         console.log('Message posted to React Native app:', payload);
       }
     } else {
       console.warn('Not running inside React Native WebView.');
     }
+  }
   };
 
   useEffect(() => {
@@ -553,7 +576,7 @@ debugger
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
           <div className="text-center mb-5xl">
-            <h1 className="heading-font-style heading-1 mb-7">{t("Make Payment")}</h1>
+            <h1 className="heading-1 mb-7">{t("Make Payment")}</h1>
           </div>
 
           <div className="w-full sm:w-[85%] max-w-2xl border py-3 rounded-xl px-4 sm:px-4 mx-auto">

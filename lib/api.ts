@@ -844,6 +844,33 @@ const data = {
   return "error";
  }
 }
+
+export async function getVendorKey(){
+  try{
+   const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ organization_name: "Omantel"}),
+      })
+
+      if (!orgResponse.ok) {
+        throw new Error(`Failed to create organization: ${orgResponse.status} ${orgResponse.statusText}`)
+      }
+     
+       const orgData = await orgResponse.json();
+
+      console.log("Organization created successfully", orgData);
+       const  vendor_key = orgData.result[0].vendor_key
+        localStorage.setItem("vendor_key", vendor_key);
+      return vendor_key;
+
+  }
+  catch(err){
+    return err;
+  }
+}
 /**
  * Generate a unique reference number with 15 characters
  * @returns A unique 15-character reference number

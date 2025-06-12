@@ -19,16 +19,7 @@ export default function LoadingIndicator({
   fullScreen = false,
 }: LoadingIndicatorProps) {
   // Animation effect to ensure smooth start
-  const [mounted, setMounted] = useState(false);
-  const [locale,setLocale]=useState("en");
-useEffect(()=>{
- const header_json= localStorage.getItem("sso_header");
- if(header_json){
- const header_parse=JSON.parse(header_json);
-   setLocale(header_parse?.language)
- }
-},[]);
- 
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -64,36 +55,25 @@ useEffect(()=>{
     "bg-[#b55500] shadow-sm flex items-center justify-center",
   )
 
- return (
-  <div
-    className={containerClasses}
-    style={{
-      position: fullScreen ? "fixed" : center ? "absolute" : "relative",
-    }}
-    dir="auto" // or "rtl"/"ltr" dynamically
-  >
-    <div className={dotContainerClasses}>
-      <div className="flex flex-row-reverse space-x-1 rtl:space-x-reverse items-center justify-center h-full">
-        <div
-          className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
-          style={{ animationDelay: "0ms", animationDuration: "0.6s" }}
-        />
-        <div
-          className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
-          style={{ animationDelay: "200ms", animationDuration: "0.6s" }}
-        />
-        <div
-          className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
-          style={{ animationDelay: "400ms", animationDuration: "0.6s" }}
-        />
+  return (
+    <div className={containerClasses} style={{ position: fullScreen ? "fixed" : center ? "absolute" : "relative" }} dir="ltr">
+      <div className={dotContainerClasses}>
+        <div className="flex space-x-1 items-center justify-center h-full">
+          <div
+            className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
+            style={{ animationDelay: "0ms", animationDuration: "0.6s" }}
+          />
+          <div
+            className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
+            style={{ animationDelay: "200ms", animationDuration: "0.6s" }}
+          />
+          <div
+            className={cn(dotSizes[size], "bg-white rounded-full animate-bounce")}
+            style={{ animationDelay: "400ms", animationDuration: "0.6s" }}
+          />
+        </div>
       </div>
+      {text && <p className="mt-3 text-gray-600 text-sm font-medium">{text}</p>}
     </div>
-    {text && (
-      <p className="mt-3 text-gray-600 text-sm font-medium text-center">
-        {text}
-      </p>
-    )}
-  </div>
-);
-
+  )
 }
