@@ -406,7 +406,7 @@ if(!response.ok){
 }
 const data =await response.json();
 if(data.message==="success"){
-
+var payment_id=JSON.stringify(data.result);
     const eventDetails = {
       sub_type: "proceed_payment",
       description: "Initiate the payment for visa."
@@ -423,7 +423,7 @@ if(data.message==="success"){
       const user_details = user_local_data ? JSON.parse(user_local_data) : "";
 debugger
       if (user_details) {
-        // const payload = {
+        // const payload1 = {
         //   name: VisaDetails.firstName,
         //   partnerAccountId: "OT-CXP-SUPERJET-f65c1d89",
         //   items: [
@@ -651,7 +651,7 @@ debugger
               onClick={(e) => handleSubmit(e)}
               className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4"
             >
-             {t("Make Payment")}
+             {t("Confirm and Pay")}
             </Button>
           </div>
         </div>
