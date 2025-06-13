@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import config from "./api-config";
 
 type Country = { country: string };
 
@@ -6,12 +7,13 @@ export const useCountryList = () => {
   const [countries, setCountries] = useState<string[]>([]);
   const [load, setLoad] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const base_url=config.BASE_URL;
 
   useEffect(() => {
     const createOrganizationAndFetchCountries = async () => {
       try {
         console.log("Creating organization...");
-        const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+        const orgResponse = await fetch(base_url+"/create_organization", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -35,7 +37,7 @@ export const useCountryList = () => {
 
         localStorage.setItem("vendor_key", vendorKey);
 
-        const countryResponse = await fetch("https://stg-api.superjetom.com/country", {
+        const countryResponse = await fetch(base_url+"/country", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -4,9 +4,10 @@
  */
 
 import apiClient from "./api-client"
+import config from "./api-config"
 
 // Update API Base URL to use the staging URL instead of production
-const API_BASE_URL = "https://stg-api.superjetom.com"
+const base_url = config.BASE_URL
 
 /**
  * Helper function to make API calls through our proxy
@@ -20,7 +21,7 @@ async function callProxyApi(endpoint: string, body: any, authToken?: string) {
     headers["Authorization"] = `Bearer ${authToken}`
   }
 
-  const response = await fetch(API_BASE_URL+`/${endpoint}`, {
+  const response = await fetch(base_url+`/${endpoint}`, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -570,7 +571,7 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
     "timestamp": new Date()
 }
  try{
-  const response= await fetch(API_BASE_URL+"/omantel_event",{
+  const response= await fetch(base_url+"/omantel_event",{
     method:"POST",
     headers:{
       Authorization:access_token,
@@ -609,7 +610,7 @@ export async function createCardUserApplication(vendor_key:String,visa_data:{
 }){
   // event->send type,sub_type,description,user
  try{
-  const response= await fetch(API_BASE_URL+"/add_order_cart",{
+  const response= await fetch(base_url+"/add_order_cart",{
     method:"POST",
     headers:{
       Authorization:"Bearer "+vendor_key,
@@ -655,7 +656,7 @@ const data = {
 
 }
  try{
-  const response= await fetch(API_BASE_URL+"/omantelnotification",{
+  const response= await fetch(base_url+"/omantelnotification",{
     method:"POST",
     headers:{
       Authorization: headers?.authorization,
@@ -762,7 +763,7 @@ const data = {
     "timestamp": new Date()
 }
  try{
-  const response= await fetch(API_BASE_URL+"/omantel_create_order",{
+  const response= await fetch(base_url+"/omantel_create_order",{
     method:"POST",
     headers:{
       Authorization: headers?.authorization,
@@ -820,7 +821,7 @@ const data = {
     "timestamp": new Date()
 }
  try{
-  const response= await fetch(API_BASE_URL+"/omantel_order_update",{
+  const response= await fetch(base_url+"/omantel_order_update",{
     method:"POST",
     headers:{
       Authorization: headers?.authorization,
@@ -847,7 +848,7 @@ const data = {
 
 export async function getVendorKey(){
   try{
-   const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+   const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

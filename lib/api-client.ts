@@ -1,11 +1,9 @@
-// Simplify the API client to focus on the countries API
-/**
- * API Client for the Visa Application Service
- * This client handles all API calls and authentication
- */
+import config from "./api-config"
 
 // API Base URL - Updated to staging URL
-const API_BASE_URL = "https://stg-api.superjetom.com"
+
+
+const base_url=config.BASE_URL;
 
 // Storage keys
 const VENDOR_KEY_STORAGE_KEY = "vendor_key" // Changed to match the key used in other functions
@@ -86,7 +84,7 @@ class ApiClient {
    */
   private debugRequest(endpoint: string, options: RequestInit, data: any): void {
     console.group(`🔍 API Request Debug: ${endpoint}`)
-    console.log("URL:", `${API_BASE_URL}/${endpoint}`)
+    console.log("URL:", `${base_url}/${endpoint}`)
     console.log("Method:", options.method)
     console.log("Headers:", options.headers)
     console.log("Body:", data)
@@ -164,7 +162,7 @@ class ApiClient {
 
     try {
       // Use a direct URL without joining paths to avoid issues
-      const url = endpoint.includes("http") ? endpoint : `${API_BASE_URL}/${endpoint}`
+      const url = endpoint.includes("http") ? endpoint : `${base_url}/${endpoint}`
       console.log(`Making API request to: ${url}`)
 
       const response = await fetch(url, options)
@@ -181,7 +179,7 @@ class ApiClient {
 
         try {
           // Try to create a new organization to get a fresh token
-          const refreshResponse = await fetch(`${API_BASE_URL}/create_organization`, {
+          const refreshResponse = await fetch(`${base_url}/create_organization`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

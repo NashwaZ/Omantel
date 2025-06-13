@@ -11,7 +11,7 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 
 // Import the CustomInput component at the top of the file
 import { CustomInput } from "@/components/ui/custom-input"
-
+import config from "@/lib/api-config"
 
 export default function HeaderToken() {
 
@@ -21,7 +21,7 @@ export default function HeaderToken() {
     const [x_cxp_session_id, setXcxpsessionid] = useState('')
     const [x_partner_user_id, setXpartneruserid] = useState('')
     const [language, setLanguage] = useState('en');
-
+    const base_url=config.BASE_URL;
 
 
     const validationCheck = Authorizationtoken && x_unique_id && x_cxp_session_id && x_partner_user_id &&language;
@@ -37,7 +37,7 @@ export default function HeaderToken() {
         setLoading(true)
         debugger
         try {
-            const responce = await fetch("https://stg-api.superjetom.com/omantelheader", {
+            const responce = await fetch(base_url+"/omantelheader", {
                 method: 'GET',
                 headers: {
                     'Authorization': Authorizationtoken,
