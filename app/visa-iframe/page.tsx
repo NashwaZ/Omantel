@@ -35,6 +35,7 @@ export default function CrossSiteTrackingWarning() {
       'Visa form Window',
       `width=${screen.availWidth},height=${screen.availHeight},left=0,top=0`
     );
+    
 
     if (!childWindowRef.current) {
       console.error('Failed to open the visa form window. Please check popup blocker settings.');
@@ -82,11 +83,11 @@ export default function CrossSiteTrackingWarning() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
+    <div className="min-h-screen flex flex-col items-center justify-center" dir="ltr">
     <div className="omantel-loading mb-4">
       <div className="omantel-loading-spinner"></div>
     </div>
-    <p className="text-gray-600 mb-4">Preparing visa application form...</p>
+    <p className="text-gray-600 mb-4" >Preparing visa application form...</p>
   
     {/* <Button onClick={handleOpenWindow} disabled={!iframeUrl}>
       Open Visa Form

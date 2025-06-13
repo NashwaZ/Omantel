@@ -17,6 +17,8 @@ import { usePathname } from "next/navigation";
 import { LanguagesIcon } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator"
 
+import config from "@/lib/api-config"
+
 // Import country data directly
 // import { allCountries } from "@/lib/countries"
 
@@ -78,6 +80,8 @@ created_at:"",
 
   const { i18n, t } = useTranslation();
 
+  const base_url=config.BASE_URL;
+  
 const getDirection = (lang: string): "ltr" | "rtl" => {
   return lang==='ar' ? "rtl" : "ltr";
 };
@@ -380,7 +384,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 //   try {
 //     if (headerdata1) {
 //       debugger
-//       const response = await fetch('https://stg-api.superjetom.com/omanteltoken', {
+//       const response = await fetch(base_url+'/omanteltoken', {
 //         method: 'GET',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -417,7 +421,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     try{
       // Step 1: Create organization to get vendor key
      console.log("Creating organization...")
-      const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+      const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -469,7 +473,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       head_id: get_h_id
     }
 
-  const response = await fetch("https://stg-api.superjetom.com/omantel_sso_basic",{
+  const response = await fetch(base_url+"/omantel_sso_basic",{
     method:"POST",
     headers:{
       "Content-Type":"application/json"
@@ -498,15 +502,22 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       setPassingParams({accessToken:data.result.authorization,partnerUserId:data.result.userid})
         setAccessToken(data.result.authorization);
         setPartnerUserId(data.result.userid);
-        localStorage.setItem("app_language",values.language);
-      setLocale(values.language);
+      var lang=  localStorage.getItem("app_language");
+      if(lang)
+         setLocale(lang);
       
-      i18n.changeLanguage(values.language).then(()=>{
- updateHtmlAttributes(values.language);
+      if(!lang){
+        localStorage.setItem("app_language",values.language);
+        lang=values.language;
+      setLocale(values.language);
+      }
+      if(lang){
+      i18n.changeLanguage(lang).then(()=>{
+ updateHtmlAttributes(String(lang));
       localStorage.setItem("sso_header", JSON.stringify(header_data));
-    
+      
         })
-     
+      }
 
       // initApi(values);
 
@@ -543,7 +554,7 @@ useEffect(() => {
       
   try {
   
-      const response = await fetch('https://stg-api.superjetom.com/omantel_user_traveller_check', {
+      const response = await fetch(base_url+'/omantel_user_traveller_check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

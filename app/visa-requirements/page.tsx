@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation"
 import { Label } from "@/components/ui/label"
 import LoadingIndicator from "@/components/loading-indicator";
+import config from "@/lib/api-config";
 
 export default function VisaRequirements() {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,7 @@ export default function VisaRequirements() {
  const [vendorKey,setVendorKey]=useState("");
  const [formSubmit,setFormSubmit]=useState(false);
   const router = useRouter()
+  const base_url=config.BASE_URL;
 
 const handleChangeFile = (
   e:any,
@@ -51,7 +53,7 @@ const handleChangeFile = (
     try{
       // Step 1: Create organization to get vendor key
      console.log("Creating organization...")
-      const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+      const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,7 +104,7 @@ useEffect(()=>{
     const country={
     "destination":destination
 }
-    const response=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
+    const response=await fetch(base_url+"/visa_required_doc",{
       method:"POST",
       headers:{
        "Authorization":"Bearer "+vendorKey,
@@ -159,7 +161,7 @@ for(let k=0;k<fileList.length;k++){
     const formData=new FormData();
     formData.append("image",file_data);
     formData.append("document_type",extension? extension : "")
-    const response = await fetch('https://stg-api.superjetom.com/upload_documentss3',{
+    const response = await fetch(base_url+'/upload_documentss3',{
       method:"POST",
       headers:{
         "Authorization":"Bearer "+vendorKey
@@ -182,7 +184,7 @@ for(let k=0;k<fileList.length;k++){
   }
 }
 debugger
-const UpdateFileInfoResponse=await fetch("https://stg-api.superjetom.com/upload_documents",{
+const UpdateFileInfoResponse=await fetch(base_url+"/upload_documents",{
   method:"POST",
   headers:{
     "Authorization":"Bearer "+vendorKey,

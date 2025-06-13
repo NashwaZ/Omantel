@@ -18,6 +18,7 @@ import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
 import { Progress } from "@/components/ui/progress"
 import Loading from "./loading"
+import config from "@/lib/api-config"
 
 
 import { useTranslation } from "react-i18next"
@@ -28,7 +29,7 @@ import { ChevronDown, ChevronUp, FileText, Info, XCircle, Paperclip } from "luci
 export default function VisaApplication() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
+  const base_url=config.BASE_URL;
   // Get query parameters with fallbacks
   // const destination = localStorage.getItem("visa_destination") || "";
   // const citizenship =  localStorage.getItem("visa_citizenship") || "";
@@ -194,7 +195,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     try{
       // Step 1: Create organization to get vendor key
      console.log("Creating organization...")
-      const orgResponse = await fetch("https://stg-api.superjetom.com/create_organization", {
+      const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -380,7 +381,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
             const formData=new FormData();
             formData.append("image",file_data);
             formData.append("document_type",each_file_obj)
-            const response = await fetch('https://stg-api.superjetom.com/upload_documentss3',{
+            const response = await fetch(base_url+'/upload_documentss3',{
               method:"POST",
               headers:{
                 "Authorization":"Bearer "+vendorKey
@@ -403,7 +404,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
           }
         }
         debugger
-        const UpdateFileInfoResponse=await fetch("https://stg-api.superjetom.com/upload_documents",{
+        const UpdateFileInfoResponse=await fetch(base_url+"/upload_documents",{
           method:"POST",
           headers:{
             "Authorization":"Bearer "+vendorKey,
@@ -554,7 +555,7 @@ useEffect(()=>{
     const country={
     "destination":destination1
 }
-    const response=await fetch("https://stg-api.superjetom.com/visa_required_doc",{
+    const response=await fetch(base_url+"/visa_required_doc",{
       method:"POST",
       headers:{
        "Authorization":"Bearer "+vendorKey,

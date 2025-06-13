@@ -11,6 +11,7 @@ import { getVisaPrograms } from "@/lib/api"
 import { sendEventMsgToCEPApp } from "@/lib/api"
 import { useTranslation } from "react-i18next"
 import "@/lib/i18n"
+import config from "@/lib/api-config"
 
 const VisaResultsPage = () => {
   const router = useRouter()
@@ -26,6 +27,8 @@ const VisaResultsPage = () => {
     const [locale,setLocale]=useState("en");
 
      const { t , i18n } = useTranslation();
+
+     const base_url=config.BASE_URL;
 
   // Get query parameters
   const destination = searchParams?.get("destination") || "Unknown Destination"
@@ -387,7 +390,7 @@ const VisaResultsPage = () => {
     if (safeVisaPrograms.length > 0) {
       const convertFee = async (currency:string,fee: string, programId: string) => {
         try {
-          const response = await fetch("https://stg-api.superjetom.com/amount_convertion", {
+          const response = await fetch(base_url+"/amount_convertion", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

@@ -108,7 +108,7 @@
 //      const programs_details=programs_JSON?JSON.parse(programs_JSON):"";
 //      if(user_details && programs_details && destination && passportCountry){
          
-//           fetch("https://stg-api.superjetom.com/amount_convertion", {
+//           fetch(base_url+"/amount_convertion", {
 //             method: "POST",
 //             headers: {
 //               "Content-Type": "application/json",
@@ -306,7 +306,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next"
 import  "@/lib/i18n"
 import { getVendorKey } from "@/lib/api";
-
+import config from "@/lib/api-config";
 
 declare global {
   interface Window {
@@ -324,7 +324,7 @@ export default function MakePayment() {
       const [convertedFees, setConvertedFees] = useState({ fee: "" });
   const router = useRouter();
   
-         
+   const base_url=config.BASE_URL;      
 const { t,i18n } = useTranslation();
 
 const getDirection = (lang: string): "ltr" | "rtl" => {
@@ -393,7 +393,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       order_id:get_program_id
     }
     const vendor_key= await getVendorKey();
-const response =await fetch( "https://stg-api.superjetom.com/omantel_payment",{
+const response =await fetch( base_url+"/omantel_payment",{
   method:"POST",
   headers:{
     Authorization:"Bearer "+vendor_key,
@@ -465,7 +465,7 @@ debugger
     const programs_details = programs_JSON ? JSON.parse(programs_JSON) : "";
 
     if (user_details && programs_details && destination && passportCountry) {
-      fetch("https://stg-api.superjetom.com/amount_convertion", {
+      fetch(base_url+"/amount_convertion", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

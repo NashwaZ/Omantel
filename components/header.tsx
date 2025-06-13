@@ -60,8 +60,12 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       if (userData) {
         setUserDetails(JSON.parse(userData));
       }
+       var lang=  localStorage.getItem("app_language");
+      if(lang)
+         setLanguage(lang);
+      
   
-      if (headersData) {
+      if (!lang && headersData) {
         setLanguage(JSON.parse(headersData)?.language);
       }
   
@@ -75,6 +79,33 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   
     return () => clearInterval(interval);
   }, []);
+
+  
+  //   const getUserData=() => {
+  //     debugger
+  //     let parse_user_data;
+  //     let   parse_header;
+  //     const get_user_data = localStorage.getItem("user_info_cep");
+  //     if (get_user_data) {
+  //     parse_user_data = JSON.parse(get_user_data);
+  //       setUserDetails(parse_user_data);
+
+  //     }
+  //     const get_headersData = localStorage.getItem("sso_header");
+  //     if (get_headersData) {
+  //     parse_header = JSON.parse(get_headersData);
+  //       setLanguage(parse_header?.language || "en");
+  //     }
+  //     if(!parse_user_data || !parse_header){
+  //       setTimeout(getUserData, 1000); 
+  //     }
+     
+  //   }
+
+  //   useEffect(()=>{
+  //  getUserData();
+  //   },[])
+
   
 
   const handleBack = () => {

@@ -1,5 +1,6 @@
 // The base URL for the external API
-const API_BASE_URL = "https://stg-api.superjetom.com"
+import config from "@/lib/api-config"
+const base_url = config.BASE_URL;
 
 export async function POST(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     // Make the API request
-    const apiResponse = await fetch(`${API_BASE_URL}/${endpoint}`, {
+    const apiResponse = await fetch(`${base_url}/${endpoint}`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
