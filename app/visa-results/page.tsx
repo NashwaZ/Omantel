@@ -811,7 +811,7 @@ setIsSubmitLoad(false)
           {/* Loading, error and empty states */}
           {loading ? (
             <div className="flex justify-center items-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <LoadingIndicator size="large" text="Loading visa programs..." />
+              <LoadingIndicator size="large" text="" />
             </div>
           ) : error ? (
             <div className="bg-red-50 border border-red-200 text-red-700 p-8 rounded-2xl text-center shadow-sm">

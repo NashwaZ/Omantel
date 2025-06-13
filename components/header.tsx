@@ -33,22 +33,49 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
 
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const get_user_data = localStorage.getItem("user_info_cep");
-      if (get_user_data) {
-        const parse_user_data = JSON.parse(get_user_data);
-        setUserDetails(parse_user_data);
-      }
-      const get_headersData=localStorage.getItem("sso_header");
-      if(get_headersData){
-        const parse_header=JSON.parse(get_headersData);
-        setLanguage(parse_header?.language);
-      }
-    }, 1000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     const get_user_data = localStorage.getItem("user_info_cep");
+  //     if (get_user_data) {
+  //       const parse_user_data = JSON.parse(get_user_data);
+  //       setUserDetails(parse_user_data);
+  //     }
+  //     const get_headersData=localStorage.getItem("sso_header");
+  //     if(get_headersData){
+  //       const parse_header=JSON.parse(get_headersData);
+  //       setLanguage(parse_header?.language);
+  //     }
+  //   }, 1000);
 
-    return () => clearTimeout(timer); // cleanup on unmount
+  //   return () => clearTimeout(timer); // cleanup on unmount
+  // }, []);
+  useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 5;
+  
+    const interval = setInterval(() => {
+      const userData = localStorage.getItem("user_info_cep");
+      const headersData = localStorage.getItem("sso_header");
+  
+      if (userData) {
+        setUserDetails(JSON.parse(userData));
+      }
+  
+      if (headersData) {
+        setLanguage(JSON.parse(headersData)?.language);
+      }
+  
+      // Stop polling when both are set or max attempts reached
+      if ((userData && headersData) || attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+  
+      attempts++;
+    }, 500); // Check every 500ms
+  
+    return () => clearInterval(interval);
   }, []);
+  
 
   const handleBack = () => {
     router.back()
@@ -165,7 +192,8 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name+""+userDetails?.last_name}</span>
+              {/* <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name+" "+userDetails?.last_name}</span> */}
+              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name}</span>
             </div>
            </div>
            }

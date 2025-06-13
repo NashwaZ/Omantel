@@ -1138,7 +1138,7 @@ return (size/1024).toFixed(0);
                         <LoadingIndicator size="small" />
                       </div>
                     ) : (
-                      t("Submit Application")
+                      t("Start Visa Application")
                     )}
                   </Button>
                   </div>
