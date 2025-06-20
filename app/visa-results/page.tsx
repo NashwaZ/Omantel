@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { getVisaPrograms } from "@/lib/api"
 import { sendEventMsgToCEPApp } from "@/lib/api"
 import { useTranslation } from "react-i18next"
+import {getVendorKey, createCartUserApplication } from "@/lib/api"
 import "@/lib/i18n"
 import config from "@/lib/api-config"
 
@@ -38,6 +39,13 @@ const VisaResultsPage = () => {
   // State for country images and converted fees
   const [countryImages, setCountryImages] = useState<Record<string, string>>({})
   const [convertedFees, setConvertedFees] = useState<Record<string, string>>({})
+
+  const [visaHistory,setVisaHistory]=useState([]);
+
+
+
+ 
+  
 
   // Ensure visaPrograms is always an array before rendering
   const safeVisaPrograms = Array.isArray(visaPrograms) ? visaPrograms : []
@@ -615,11 +623,26 @@ const VisaResultsPage = () => {
   }
 
   const handleApply = async(programId: string) => {
-    setIsSubmitLoad(true);
+    
 
+    if(visaHistory.length>5){
+      return;
+    }
+    debugger
+    setIsSubmitLoad(true);
     localStorage.setItem("visa_citizenship",citizenship);
     localStorage.setItem("visa_destination",destination);
-    localStorage.setItem("visa_travelDate",travelDate);
+  
+const [day, month, year] = travelDate.split("-");
+const travel_date = new Date(`${year}-${month}-${day}`); // Convert to YYYY-MM-DD
+
+  const formatDate = travel_date.toISOString().slice(0, 10);
+  console.log(formatDate); // "2025-10-23"
+
+    localStorage.setItem("visa_travelDate",formatDate);
+
+      const get_user_data=localStorage.getItem("user_info_cep");
+      const parse_user_data = get_user_data?JSON.parse(get_user_data):"";
 
     console.log("Applying for program with ID:", programId)
     
@@ -631,7 +654,32 @@ const VisaResultsPage = () => {
       const auth_token=localStorage.getItem("sso_header");
     const header=auth_token?JSON.parse(auth_token):"";
     const accessToken=header?.authorization;
-    
+    const visa_program=safeVisaPrograms[0];
+    const visa_info={  
+     "user_id" : parse_user_data?.id,
+      "traveller_id" : null , //travellerResponse.result[0].id, 
+       "destination" : destination.toLowerCase(), 
+      "citizenship" :  citizenship.toLowerCase(),
+      "citizenship_code" : visa_program?.citizenship,
+      "destination_code" : visa_program?.destination,
+      "travel_date":formatDate,
+      "program_id" : visa_program?.id,
+      "fee" : visa_program?.fee,
+      "currency":visa_program?.currency ,
+      "commission" : visa_program?.commision,
+      "commission_type" : visa_program?.commision_type || "flat rate",
+      "deleted":"no"
+    }
+    const vendor_key =await getVendorKey();
+        
+          try {
+         
+         
+            const cardResponse =await createCartUserApplication(vendor_key,visa_info);
+            localStorage.setItem("added_cart_details",JSON.stringify(cardResponse));
+          }catch(err){
+             console.error("adding evisa to cartgood to go Api : ",err);
+          }
     const eventDetails = {
       sub_type: "Visa Application",
       description: "User is applying for a visa."
@@ -646,6 +694,51 @@ setIsSubmitLoad(false)
   const getPlaceholderImageUrl = (destination: string) => {
     return `https://source.unsplash.com/400x300/?${destination}`
   }
+  useEffect(()=>{
+    const getVisaHistoryData=async()=>{
+              debugger
+              try{ 
+               const getHeader=localStorage.getItem("sso_header");
+               let getUserId;
+               if(getHeader){
+                getUserId=JSON.parse(getHeader)?.userid;
+                // setHeaderData(JSON.parse(getHeader));
+               }
+                  const user_data ={
+                    user_id:getUserId 
+                }
+
+                const vendorKey=await getVendorKey();
+                 const response =await fetch(base_url+"/get_visa_history",{
+                    method:"POST",
+                    headers:{
+                        "Authorization":"Bearer "+vendorKey,
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify(user_data)
+            })
+
+            if(!response.ok){
+                 throw new Error("visa history Api :"+response.statusText)
+            }
+            const data = await response.json();
+            if(data.message==="success"){
+                setVisaHistory(data.result);
+            }
+        }
+
+                catch(err){
+                    console.error(err);
+                }
+            }
+            getVisaHistoryData();
+            },[]
+          )
+       
+          const handleNavigate=(e:any)=>{
+            e.preventDefault();
+             router.push("/visa-pending-history")
+          }
 
   return (
     <div className="min-h-screen flex flex-col bg-hayyak-background">
@@ -698,7 +791,7 @@ setIsSubmitLoad(false)
 
             <div className="text-center mb-8">
               <div className="inline-flex items-center mb-3 px-3 py-1 bg-gray-100 rounded-full">
-                <svg className="w-4 h-4 text-[#ea6e00] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[#ea6e00] me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -718,7 +811,7 @@ setIsSubmitLoad(false)
 
             {/* Travel Date */}
             <div className="bg-slate-100 p-4 rounded-xl flex items-center">
-              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+              <div className="bg-orange-100 p-2.5 rounded-full me-4">
                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -736,7 +829,7 @@ setIsSubmitLoad(false)
 
            {/* Destination */}
             <div className="bg-slate-100 p-4 rounded-xl flex items-center">
-              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+              <div className="bg-orange-100 p-2.5 rounded-full me-4">
                 
                    <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -749,13 +842,13 @@ setIsSubmitLoad(false)
               </div>
               <div className="text-left">
                 <p className="text-sm text-slate-500 ">{t("Destination")}</p>
-                <p className="font-semibold text-slate-700">{destination}</p>
+                <p className="font-semibold text-slate-700">{t(destination)}</p>
               </div>
             </div>
 
            {/* Citizenship */}
             <div className="bg-slate-100 p-4 rounded-xl flex items-center">
-              <div className="bg-orange-100 p-2.5 rounded-full mr-4">
+              <div className="bg-orange-100 p-2.5 rounded-full me-4">
                
                   <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -768,7 +861,7 @@ setIsSubmitLoad(false)
               </div>
               <div className="text-left">
                 <p className="text-sm text-slate-500 text-left">{t('Citizenship')}</p>
-                <p className="font-semibold text-slate-700">{citizenship}</p>
+                <p className="font-semibold text-slate-700">{t(citizenship)}</p>
               </div>
             </div>
             
@@ -857,13 +950,13 @@ setIsSubmitLoad(false)
                 {safeVisaPrograms.map((program, index) => (
                   
                   <div key={program.id || index} className="bg-white  shadow-md overflow-hidden">
-  {program.program_type && (
+  {/* {program.program_type && (
                 <div className="flex justify-center mb-7">
                   <div className="inline-block bg-orange-500 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md">
                     {program.program_type}
                   </div>
                 </div>
-              )}
+              )} */}
                     <div className="flex flex-col md:flex-row">
 
                     
@@ -945,7 +1038,7 @@ setIsSubmitLoad(false)
                          && <div className="w-full  mb-4">
                           <div className="border border-gray-200 rounded-xl p-4 mb-4">
                             <div className="flex items-center text-orange-600 font-semibold mb-3">
-                        <Info size={18} className="mr-2" />
+                        <Info size={18} className="me-2" />
                           {t("Visa")} {t("Details")}
                       </div>
 
@@ -975,7 +1068,7 @@ setIsSubmitLoad(false)
                                 <span className="text-gray-600 caption">{t("Processing")}:</span>
                                 <span className="body-small text-gray-900">
                                 {program.suggested_processing_time
-                                    ? `${safeRenderText(program.suggested_processing_time)} days`
+                                    ? `${safeRenderText(program.suggested_processing_time)} ${t("days")}`
                                     : t("Not specified")}
                                 </span>
                               </div>
@@ -985,7 +1078,7 @@ setIsSubmitLoad(false)
                                 <span className="text-gray-600 caption">{t("Max")} {t("Stay")}:</span>
                                 <span className="body-small text-gray-900">
                                   {program.max_stay
-                                    ? `${safeRenderText(program.max_stay).replace(".0", "")} days`
+                                    ? `${safeRenderText(program.max_stay).replace(".0", "")} ${t("days")}`
                                     : t("Not specified")}
                                 </span>
                               </div>
@@ -995,7 +1088,7 @@ setIsSubmitLoad(false)
                                 <span className="text-gray-600 caption">{t("Validity")}:</span>
                                 <span className="body-small text-gray-900">
                                    {program.validity
-                                    ? `${safeRenderText(program.validity).replace(".0", "")} days`
+                                    ? `${safeRenderText(program.validity).replace(".0", "")} ${t("days")}`
                                     : t("Not specified")}
                                 </span>
                               </div>
@@ -1092,8 +1185,8 @@ setIsSubmitLoad(false)
                             </div>
                           </div>
                         )}
-                        {program.available ===false && program.required==true &&
-                           <div className="bg-amber-50 border border-amber-200 text-red-700 p-8 rounded-2xl text-center shadow-sm">
+                        {program.available ===false && (program.required==true || program.required==false )&&
+                           <div className="bg-amber-50 border border-amber-200 text-red-700 p-8 rounded-2xl text-center shadow-sm mt-3">
               {/* <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4"> */}
                 {/* <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -1116,8 +1209,10 @@ setIsSubmitLoad(false)
                         }
 
                         {/* Apply button */}
-                  {(( program.available && program.required )  &&  <Button
+                  {(( program.available && program.required )  ?
+                  <Button
                           onClick={() => handleApply(program.id)}
+                          disabled={ visaHistory && visaHistory?.length>=5}
                           className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4 w-full"
                         >
                            {isSubmitLoad ? (
@@ -1128,7 +1223,33 @@ setIsSubmitLoad(false)
                                              t("Apply Now")
                                               )}
                          
-                        </Button>)}
+                        </Button>:<></>)}
+                {  visaHistory && visaHistory?.length>=5
+                   ?
+                        // <Button
+                        //   onClick={(e) => handleNavigate(e)}
+                        //   className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4 w-full"
+                        // >
+                        //    {isSubmitLoad ? (
+                        //                         <div className="flex items-center justify-center">
+                        //                           <LoadingIndicator size="small" />
+                        //                         </div>
+                        //                       ) : (
+                        //                      t("Clear pending records")
+                        //                       )}
+                         
+                        // </Button>
+                      <>
+  <div className="text-red-600">
+   {t("Limit: 5 records. Remove unused orders before applying.")}
+    <a href="/visa-pending-history" className="text-blue-800 underline ms-1">
+      {t("Click here")}
+    </a>
+  </div>
+</>
+                        :
+                        <></>
+                      }
                       </div>
 
                     

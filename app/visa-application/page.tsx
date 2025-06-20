@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Currency } from "lucide-react"
 import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
-import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCardUserApplication } from "@/lib/api"
+import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCartUserApplication } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
 import { CustomInput } from "@/components/ui/custom-input"
 import { Progress } from "@/components/ui/progress"
@@ -77,7 +77,7 @@ const [isLoading, setIsLoading] = useState(true);
 
 //  const [vendorKey,setVendorKey]=useState("");
  const [formSubmit,setFormSubmit]=useState(false);
- const [destinationCountry,setDestinationCountry]=useState<String|null|undefined>();
+ const [destinationCountry,setDestinationCountry]=useState("");
   // const router = useRouter()
 
 const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef})
@@ -237,6 +237,47 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     e.preventDefault()
     console.log("Form submitted:", formData)
 
+
+           
+        //       debugger
+        //       try{ 
+        //        const getHeader=localStorage.getItem("sso_header");
+        //        let getUserId;
+        //        if(getHeader){
+        //         getUserId=JSON.parse(getHeader)?.userid;
+        //         // setHeaderData(JSON.parse(getHeader));
+        //        }
+        //           const user_data ={
+        //             user_id:getUserId 
+        //         }
+        //          const response =await fetch(base_url+"/get_visa_history",{
+        //             method:"POST",
+        //             headers:{
+        //                 "Authorization":"Bearer "+vendorKey,
+        //                 "Content-Type":"application/json"
+        //             },
+        //             body:JSON.stringify(user_data)
+        //     })
+
+        //     if(!response.ok){
+        //          throw new Error("visa history Api :"+response.statusText)
+        //     }
+        //     const data = await response.json();
+        //     if(data.message==="success"){
+        //         if(data.result.length>5){
+        //           router.push("/visa-pending-history");
+        //           return;
+        //         }
+        //     }
+        // }
+
+        //         catch(err){
+        //             console.error(err);
+        //         }
+          
+
+
+
    
     // Store form data in localStorage for recovery
     localStorage.setItem("visa_application_form", JSON.stringify(formData))
@@ -296,8 +337,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         travellerResponse = await createTravellerOmantel(travellerData)
 
         console.log("Traveller created successfully:", travellerResponse)
-        
-        
+       
 
       } catch (error) {
         console.error("Error creating traveller:", error)
@@ -340,27 +380,31 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
       console.log("Creating iframe order with data:", orderData)
               
-   const visa_info={  
- "user_id" : parse_user_data?.id,
-  "traveller_id" : travellerResponse.result[0].id, 
-   "destination" : destination.toLowerCase(), 
-  "citizenship" :  citizenship.toLowerCase(),
-  "citizenship_code" : visa_program?.citizenship,
-  "destination_code" : visa_program?.destination,
-  "program_id" : visa_program?.id,
-  "fee" : visa_program?.fee,
-  "currency":visa_program?.currency ,
-  "commission" : visa_program?.commision,
-  "commission_type" : visa_program?.commision_type || "flat rate"
-}
+//    const visa_info={  
+//  "user_id" : parse_user_data?.id,
+//   "traveller_id" : travellerResponse.result[0].id, 
+//    "destination" : destination.toLowerCase(), 
+//   "citizenship" :  citizenship.toLowerCase(),
+//   "citizenship_code" : visa_program?.citizenship,
+//   "destination_code" : visa_program?.destination,
+//   "program_id" : visa_program?.id,
+//   "fee" : visa_program?.fee,
+//   "currency":visa_program?.currency ,
+//   "commission" : visa_program?.commision,
+//   "commission_type" : visa_program?.commision_type || "flat rate"
+// }
       let orderResponse
 
       try {
      
      
-        const cardResponse =await createCardUserApplication(vendorKey,visa_info);
-        localStorage.setItem("added_card_details",JSON.stringify(cardResponse));
-      
+        // const cardResponse =await createCartUserApplication(vendorKey,visa_info);
+        const get_cart_details = localStorage.getItem("added_cart_details");
+     let cartResponse;
+if (get_cart_details) {
+  const parsedData = JSON.parse(get_cart_details); // parsedData is now an object
+  cartResponse = parsedData.result[0]; // Now this is valid
+}
         
          const get_user=localStorage.getItem("user_info_cep");
             const userInfo=get_user?JSON.parse(get_user):"";
@@ -394,7 +438,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
               //  const get_card_details=localStorage.getItem("added_card_details");
               //  const parse_card=get_card_details && JSON.parse(get_card_details);
             const obj={
-                cart_id:cardResponse.result[0]?.id,
+                cart_id:cartResponse?.id,
                 document_type:each_file_obj,
                 document:data.fileUrl
             }
@@ -423,10 +467,41 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         // Navigate to payment confirmation page
           console.log("Iframe order created successfully:", orderResponse)
 
+
+
         // Check if we have a valid iframe_deeplink_url
         if (!orderResponse?.result?.iframe_deeplink_url) {
           throw new Error("Backend issue: Missing iframe_deeplink_url in response. Please try again later.")
         }
+debugger
+        const local_cart_data= localStorage.getItem("added_cart_details");
+      const omantel_order=localStorage.getItem("omantel_order_insertion");
+      
+        const iframe_insert_id=omantel_order?JSON.parse(omantel_order).id:"";
+        let cart_id;
+        if(local_cart_data){
+          let cart_data = JSON.parse(local_cart_data);
+          cart_id = cart_data.result[0].id;
+        }
+        const update_cart_data={
+          traveller_id:travellerResponse.result[0].id,
+          omantel_order_id:iframe_insert_id,
+          cart_id:cart_id,
+          document_status:"complete"
+        }
+
+        const omantel_cart_response =await fetch(base_url+"/update_omantel_cart_ids",{
+          method:"POST",
+          headers:{
+            "Authorization":"Bearer "+vendorKey,
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify(update_cart_data)
+        });
+        if(!omantel_cart_response.ok){
+          throw new Error("the update cart Api : "+omantel_cart_response.statusText)
+        }
+
              const eventDetails = {
               sub_type: "Form Submission - Next Stage",
               description: "User is submitting the form to proceed to the next stage."
@@ -437,30 +512,34 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       } catch (error) {
         console.error("Error creating iframe order:", error)
         // Check if we're in development/preview mode and continue with mock data
-        if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
-          console.log("Development mode detected, continuing with mock data")
+        // if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
+        //   console.log("Development mode detected, continuing with mock data")
           // The createIframeOrderVisaOmantel function will handle creating mock data
-          orderResponse = await createIframeOrderVisaOmantel(orderData)
+          // orderResponse = await createIframeOrderVisaOmantel(orderData)
 
    
-          // router.push("/payment-confirmation")
-          router.push("/visa-iframe")
-        } else {
-          throw error // Re-throw in production
-        }
+          // // router.push("/payment-confirmation")
+          // router.push("/visa-iframe")
+        // } else {
+        //   throw error // Re-throw in production
+        // }
       }
-    } catch (error) {
-      console.error("Error during submission:", error)
-      setSubmissionError(
-        error instanceof Error
-          ? error.message
-          : "Backend issue: An error occurred while processing your application. Please try again later.",
-      )
-    } finally {
+    // } catch (error) {
+    //   console.error("Error during submission:", error)
+    //   setSubmissionError(
+    //     error instanceof Error
+    //       ? error.message
+    //       : "Backend issue: An error occurred while processing your application. Please try again later.",
+    //   )
+    // } 
+    finally {
       setIsSubmitting(false)
     }
   }
-
+  catch(err){
+    console.error(err);
+  }
+  }
   const handleBack = () => {
     router.back()
   }
@@ -551,7 +630,9 @@ useEffect(()=>{
     try{
     // Add file submission logic here
    const destination1 :string | null | undefined=localStorage.getItem("visa_destination");
+   if(destination1){
    setDestinationCountry(destination1)
+   }
     const country={
     "destination":destination1
 }
@@ -636,7 +717,7 @@ return (size/1024).toFixed(0);
               <form autoComplete="off" onSubmit={handleSubmit} className="space-y-8"  >
                 {/* Personal Information */}
                 <div>
-                   <div  className="flex"><Info className="h-5 w-5 mr-2 text-[#ea6e00] " style={{position:"relative",top:"4px"}} />
+                   <div  className="flex"><Info className="h-5 w-5 me-2 text-[#ea6e00] " style={{position:"relative",top:"4px"}} />
                   <h3 className="heading-4 mb-4">{t("Personal")} {t("Information")}</h3></div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
@@ -917,8 +998,8 @@ return (size/1024).toFixed(0);
 
   <div className="border-t pt-8">
                   <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                    <Paperclip className="h-5 w-5 mr-2 text-[#ea6e00]" />
-                   {t("Document Requirements for")} {destinationCountry}
+                    <Paperclip className="h-5 w-5 me-2 text-[#ea6e00]" />
+                   {t("Document Requirements for")} {destinationCountry ?t(destinationCountry):""}
                   </h3>
 
                   
@@ -933,15 +1014,20 @@ return (size/1024).toFixed(0);
                         <>
                         <ul className="list-disc list-inside space-y-1 text-amber-700">
                           {requirements.map((doc, index) => (
-                            <li key={index}>{doc.required_documents}</li> // For USA, this should show "Passport Photo"
+                            <li key={index}>{i18n.language=="en"?doc.required_documents:doc.required_documents_arabic}</li> // For USA, this should show "Passport Photo"
                           ))}
                         </ul>
                          <div className="mt-3">
                         <h4 className="font-semibold text-amber-800 mb-2">{t("Additional Information & Guidelines:")}</h4>
-                           {requirements.map((doc, index) => (
+                           {
+                           requirements.map((doc, index) => (
+                            doc?.additional_information?
                         <p className="text-amber-700 text-sm leading-relaxed">
-                          {doc?.additional_information} {/* For USA, this shows passport validity */}
+                          {i18n.language=="en"?doc?.additional_information:doc?.additional_information_arabic}
+                         
+                           {/* For USA, this shows passport validity */}
                         </p>
+                        :<></>
                           ))}
                           <p className="text-amber-700 text-sm leading-relaxed">{t("The accepted file formats are JPEG, JPG, PNG, and PDF.")}</p>
                       </div>
@@ -989,7 +1075,7 @@ return (size/1024).toFixed(0);
 </span>
 
 
-       &nbsp; {req.required_documents}
+       &nbsp; {i18n.language=="en"?req.required_documents:req.required_documents_arabic}
             </Button>
             <div className="text-sm" style={{color:"rgb(239 68 68)"}}>{attemptedSubmit && !filesData[req.required_documents.replace(/ /g, "_")]?.name ?`required.`:"" }</div>
             </>
@@ -1113,8 +1199,9 @@ return (size/1024).toFixed(0);
                       id="marketingConsent"
                       checked={formData.marketingConsent}
                       onCheckedChange={handleCheckboxChange}
+                      className="me-2"
                     />
-                    <Label htmlFor="marketingConsent" className="body-small font-normal leading-tight cursor-pointer">
+                    <Label htmlFor="marketingConsent" className="body-small font-normal  leading-tight cursor-pointer">
                        {t("I want to receive E-Visa updates, product launches and personalized offers. I can opt out anytime.")}
                       </Label>
                   </div>
