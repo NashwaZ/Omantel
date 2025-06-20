@@ -485,6 +485,8 @@ export async function createIframeOrderVisaOmantel(orderData: {
         localStorage.setItem("iframe_url", data.result.iframe_deeplink_url)
         localStorage.setItem("signin_url",data.result.deeplink)
         console.log("Iframe URL stored:", data.result.iframe_deeplink_url)
+
+        localStorage.setItem("omantel_order_insertion",JSON.stringify({id:data.result.insertion_id}))
       } else {
         console.error("No iframe_deeplink_url found in API response:", data)
         throw new Error("Backend issue: Missing iframe_deeplink_url in response. Please try again later.")
@@ -506,25 +508,25 @@ export async function createIframeOrderVisaOmantel(orderData: {
   } catch (error) {
     console.error("Failed to create iframe order:", error)
 
-    // In development/preview mode, we can use mock data
-    if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
-      console.log("Development mode detected, using mock data")
-      const mockIframeUrl = "https://omantel.sandbox-simplevisa.net/iframe/mock-order"
-      const mockOrderId = `order_${Math.random().toString(36).substring(2, 10)}`
+    // // In development/preview mode, we can use mock data
+    // if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
+    //   console.log("Development mode detected, using mock data")
+    //   const mockIframeUrl = "https://omantel.sandbox-simplevisa.net/iframe/mock-order"
+    //   const mockOrderId = `order_${Math.random().toString(36).substring(2, 10)}`
 
-      localStorage.setItem("iframe_url", mockIframeUrl)
-      localStorage.setItem("order_id", mockOrderId)
+    //   localStorage.setItem("iframe_url", mockIframeUrl)
+    //   localStorage.setItem("order_id", mockOrderId)
 
-      return {
-        success: true,
-        _isMockData: true,
-        result: {
-          iframe_deeplink_url: mockIframeUrl,
-          order_id: mockOrderId,
-          reference_no: orderData.reference_no,
-        },
-      }
-    }
+    //   return {
+    //     success: true,
+    //     _isMockData: true,
+    //     result: {
+    //       iframe_deeplink_url: mockIframeUrl,
+    //       order_id: mockOrderId,
+    //       reference_no: orderData.reference_no,
+    //     },
+    //   }
+    // }
 
     // In production, we should throw the error
     throw new Error(
@@ -541,7 +543,7 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
      return;
   }
   const data =  {
-    "event": {
+    "partnerEvent": {
         "cxp_session_id": parse_h_data?.sessionid,
         "event_type":"TRANSACTION",
         "sub_type": event.sub_type ,
@@ -595,9 +597,9 @@ export async function sendEventMsgToCEPApp(event:any,user:any,access_token:strin
  }
 }
 
-export async function createCardUserApplication(vendor_key:String,visa_data:{  
+export async function createCartUserApplication(vendor_key:String,visa_data:{  
   "user_id" :string|number,
-  "traveller_id" : string|number, 
+  "traveller_id" : string|number|null, 
    "destination" :string, 
   "citizenship" : string,
   "citizenship_code" : string,
@@ -606,7 +608,8 @@ export async function createCardUserApplication(vendor_key:String,visa_data:{
   "fee" : string|number ,
   "currency": string,
   "commission" : string|number,
-  "commission_type" : string|number
+  "commission_type" : string|number,
+  "deleted":string
 }){
   // event->send type,sub_type,description,user
  try{
@@ -869,7 +872,7 @@ export async function getVendorKey(){
 
   }
   catch(err){
-    return err;
+    return "";
   }
 }
 /**

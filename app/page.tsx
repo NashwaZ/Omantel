@@ -39,6 +39,8 @@ const { countries,load } = useCountryList();
   const [searchData,setSearchData]=useState({
     destination: "",
     citizenship: "",
+    destination_arabic:"",
+    citizenship_arabic:""
   })
   const [partnerUserId,setPartnerUserId]=useState(null)
   const [locale,setLocale]=useState("en")
@@ -421,6 +423,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     try{
       // Step 1: Create organization to get vendor key
      console.log("Creating organization...")
+     localStorage.clear();
       const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
@@ -679,13 +682,13 @@ useEffect(() => {
                       id="destination-search"
                       placeholder={t("Search for a country")+"..."}
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
-                      value={searchData.destination}
+                      value={i18n.language=="en"?searchData.destination:searchData.destination_arabic}
                       onChange={(e) => {
                         const destination =searchData.destination;
                         if(e.target.value.length<destination.length){
                             setFormData((prev) => ({ ...prev, destination:"" }))
                         }
-                        setSearchData((prev) => ({ ...prev, destination: e.target.value }))
+                        setSearchData((prev) => ({ ...prev, destination: e.target.value,destination_arabic:e.target.value }))
                         const dropdown = document.getElementById("destination-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
@@ -725,28 +728,56 @@ useEffect(() => {
                       className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto hidden transition-all duration-200"
                       style={{ boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)" }}
                     >
-                      {countries.length > 0 ? (
-                        countries
-                          .filter(
-                            (country) =>
-                              searchData.destination === "" ||
-                              country.toLowerCase().includes(searchData.destination.toLowerCase()),
-                          )
-                          .map((country) => (
-                            <div
-                              key={country}
-                              className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
-                              onClick={() => {
-                                setFormData((prev) => ({ ...prev, destination: country }))
-                                setSearchData((prev) => ({ ...prev, destination: country }))
-                                const dropdown = document.getElementById("destination-dropdown")
-                                if (dropdown) dropdown.style.display = "none"
-                              }}
-                            >
-                              {country}
-                            </div>
-                          ))
-                      ) : (
+                 {countries.length > 0 ? (
+  i18n.language === "en"
+    ? countries
+        .filter(
+          (country: any) =>
+            searchData.destination === "" ||
+            country.country.toLowerCase().includes(searchData.destination.toLowerCase())
+        )
+        .map((country: any) => (
+          <div
+            key={country.country}
+            className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+            onClick={() => {
+               setFormData((prev) => ({ ...prev, destination: country.country }));
+              setSearchData((prev) => ({ ...prev,destination: country.country , destination_arabic: country.arabic_country }));
+              const dropdown = document.getElementById("destination-dropdown");
+              if (dropdown) dropdown.style.display = "none";
+            }}
+          >
+            {country.country}
+          </div>
+        ))
+    : countries
+        .filter(
+          (country: any) =>
+            searchData.destination === "" ||
+            (country.arabic_country ?? "").toLowerCase().includes(searchData.destination.toLowerCase())
+        )
+        .map((country: any) => (
+        
+
+          country.arabic_country?<div
+            key={country.country}
+            className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, destination: country.country }));
+              setSearchData((prev) => ({ ...prev,destination: country.country , destination_arabic: country.arabic_country }));
+              const dropdown = document.getElementById("destination-dropdown");
+              if (dropdown) dropdown.style.display = "none";
+            }}
+          >
+            {country.arabic_country}
+          </div>
+          :
+          <></>
+       
+        ))
+)
+
+ : (
                         <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
                       )}
                     </div>
@@ -763,13 +794,14 @@ useEffect(() => {
                       id="citizenship-search"
                       placeholder={t("Search for a country")+"..."}
                       className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
-                      value={searchData.citizenship}
+                      value={i18n.language=="en"?searchData.citizenship:searchData.citizenship_arabic}
+                    
                       onChange={(e) => {
                         const citizenship =searchData.citizenship;
                         if(e.target.value.length<citizenship.length){
                             setFormData((prev) => ({ ...prev, citizenship:"" }))
                         }
-                        setSearchData((prev) => ({ ...prev, citizenship: e.target.value }))
+                        setSearchData((prev) => ({ ...prev, citizenship: e.target.value,citizenship_arabic:e.target.value }))
                         const dropdown = document.getElementById("citizenship-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
@@ -809,29 +841,57 @@ useEffect(() => {
                       className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto hidden transition-all duration-200"
                       style={{ boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)" }}
                     >
-                      {countries.length > 0 ? (
-                        countries
-                          .filter(
-                            (country) =>
-                              searchData.citizenship === "" ||
-                              country.toLowerCase().includes(searchData.citizenship.toLowerCase()),
-                          )
-                          .map((country) => (
-                            <div
-                              key={country}
-                              className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
-                              onClick={() => {
-                                setFormData((prev) => ({ ...prev, citizenship: country }))
-                                setSearchData((prev) => ({ ...prev, citizenship: country }))
-                                const dropdown = document.getElementById("citizenship-dropdown")
-                                if (dropdown) dropdown.style.display = "none"
-                              }}
-                            >
-                              {country}
-                            </div>
-                          ))
-                      ) : (
-                         <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
+                     {countries.length > 0 ? (
+  i18n.language === "en"
+    ? countries
+        .filter(
+          (country: any) =>
+            searchData.citizenship === "" ||
+            country.country.toLowerCase().includes(searchData.citizenship.toLowerCase())
+        )
+        .map((country: any) => (
+          <div
+            key={country.country}
+            className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, citizenship: country.country }));
+              setSearchData((prev) => ({ ...prev, citizenship: country.country,citizenship_arabic:country.arabic_country }));
+              const dropdown = document.getElementById("citizenship-dropdown");
+              if (dropdown) dropdown.style.display = "none";
+            }}
+          >
+            {country.country}
+          </div>
+        ))
+    : countries
+        .filter(
+          (country: any) =>
+            searchData.citizenship === "" ||
+            (country.arabic_country ?? "").toLowerCase().includes(searchData.citizenship.toLowerCase())
+        )
+        .map((country: any) => (
+        
+
+          country.arabic_country?<div
+            key={country.country}
+            className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, citizenship: country.country }));
+              setSearchData((prev) => ({ ...prev, citizenship: country.country,citizenship_arabic: country.arabic_country }));
+              const dropdown = document.getElementById("citizenship-dropdown");
+              if (dropdown) dropdown.style.display = "none";
+            }}
+          >
+            {country.arabic_country}
+          </div>
+          :
+          <></>
+       
+        ))
+)
+
+ : (
+                        <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
                       )}
                     </div>
                   </div>

@@ -1420,6 +1420,17 @@
 "Make Payment":"قم بالدفع",
 "Language":"لغة",
 "Start Visa Application":"ابدأ طلب التأشيرة",
-"Confirm and Pay":"تأكيد والدفع"
-
+"Confirm and Pay":"تأكيد والدفع",
+"Limit: 5 records. Remove unused orders before applying.":"الحد الأقصى: ٥ سجلات. يُرجى إزالة الطلبات غير المستخدمة قبل التقديم.",
+"Click here":"انقر هنا",
+"Pending Visa Records":"سجلات التأشيرة المعلقة",
+"Notes":"ملحوظات",
+"Only 5 pending visa orders can be maintained. Remove older or unused ones to continue.":"لا يمكن الاحتفاظ إلا بخمسة طلبات تأشيرة معلقة. يُرجى حذف الطلبات القديمة أو غير المستخدمة للمتابعة.",
+"Order Status":"حالة الطلب",
+"In Progress":"في تَقَدم",
+"Start Process":"بدء العملية",
+"Loading pending records...":"جاري تحميل السجلات المعلقة...",
+"Loading application form...":"جاري تحميل نموذج الطلب...",
+"Preparing visa application form...":"إعداد نموذج طلب التأشيرة...",
+"days":"أيام"
 }

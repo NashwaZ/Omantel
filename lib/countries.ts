@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import config from "./api-config";
 
-type Country = { country: string };
+type Country = { country: string ,arabic_country:string};
 
 export const useCountryList = () => {
   const [countries, setCountries] = useState<string[]>([]);
@@ -51,7 +51,11 @@ export const useCountryList = () => {
 
         const data = await countryResponse.json();
         if (data.message === "success") {
-          const filteredCountries = data.result.map((c: Country) => c.country);
+          // const filteredCountries = data.result.map((c: Country) => c.country);
+          const filteredCountries = data.result.map((c: Country) => ({
+  country: c.country,
+  arabic_country: c.arabic_country,
+}));
           setCountries(filteredCountries);
         } else {
           throw new Error("Failed to retrieve countries");

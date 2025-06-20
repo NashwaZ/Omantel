@@ -3,11 +3,14 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from "react-i18next"
+import  "@/lib/i18n"
 
 export default function CrossSiteTrackingWarning() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const childWindowRef = useRef<Window | null>(null);
-
+   const { t,i18n } = useTranslation();
+   
   useEffect(() => {
     const storedIframeUrl = localStorage.getItem('iframe_url');
     if (storedIframeUrl) {
@@ -87,7 +90,7 @@ export default function CrossSiteTrackingWarning() {
     <div className="omantel-loading mb-4">
       <div className="omantel-loading-spinner"></div>
     </div>
-    <p className="text-gray-600 mb-4" >Preparing visa application form...</p>
+    <p className="text-gray-600 mb-4" >{t("Preparing visa application form...")}</p>
   
     {/* <Button onClick={handleOpenWindow} disabled={!iframeUrl}>
       Open Visa Form

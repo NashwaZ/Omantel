@@ -31,6 +31,17 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     document.documentElement.lang = lang;
   };
 
+  useEffect(()=>{
+   const getLang = localStorage.getItem("app_language");
+   if(getLang){
+   
+      i18n.changeLanguage(getLang).then(()=>{
+ updateHtmlAttributes(getLang);
+   })
+   
+  }
+  },[])
+
 
 
   // useEffect(() => {
@@ -180,7 +191,12 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
               className="flex items-center px-8 sm:px-5"
               // aria-label={t.languageToggle || "Toggle language"}
             >
-              <LanguagesIcon className="h-4 w-4" />
+              {/* <LanguagesIcon className="h-4 w-4" /> */}
+              <div className="relative " style={{bottom:"1px"}} ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16.9753 13H21V11H16.9753C16.7245 5.94668 14.5927 2 12 2C9.40733 2 7.27555 5.94668 7.02469 11H3V13H7.02469C7.27555 18.0533 9.40733 22 12 22C14.5927 22 16.7245 18.0533 16.9753 13ZM14.9726 13C14.8571 15.094 14.3857 16.8986 13.7467 18.1766C12.9482 19.7737 12.2151 20 12 20C11.7849 20 11.0518 19.7737 10.2533 18.1766C9.61429 16.8986 9.14295 15.094 9.02739 13H14.9726ZM9.02739 11C9.14295 8.90602 9.61429 7.10143 10.2533 5.82336C11.0518 4.22632 11.7849 4 12 4C12.2151 4 12.9482 4.22632 13.7467 5.82336C14.3857 7.10143 14.8571 8.90602 14.9726 11H9.02739Z" fill="#121319"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#191213"/>
+</svg></div>
+
            {
             language=="en"?
               <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">EN &nbsp;<svg
@@ -193,7 +209,8 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   strokeWidth="2"
   strokeLinecap="round"
   strokeLinejoin="round"
-  className="inline"
+className="inline "
+
 >
   <path d="M5 12h14" />
   <path d="m12 5 7 7-7 7" />
@@ -219,10 +236,30 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 }
             </Button>
            <div className="flex border py-2 px-8 " style={{borderRadius:"16px",background:"#fcf3e6" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#ea6e00] relative top-[2px]">
-    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+          <svg
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="text-[#ea6e00] relative top-[2px]"
+>
+  <path
+    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+  <path
+    d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+</svg>
+
               {/* <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name+" "+userDetails?.last_name}</span> */}
               <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name}</span>
             </div>
