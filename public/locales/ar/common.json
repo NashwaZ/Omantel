@@ -1432,5 +1432,7 @@
 "Loading pending records...":"جاري تحميل السجلات المعلقة...",
 "Loading application form...":"جاري تحميل نموذج الطلب...",
 "Preparing visa application form...":"إعداد نموذج طلب التأشيرة...",
-"days":"أيام"
+"days":"أيام",
+"Please select a citizenship country":"الرجاء اختيار بلد الجنسية",
+"Please select a travel date":"الرجاء تحديد تاريخ السفر"
 }
