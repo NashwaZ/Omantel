@@ -46,7 +46,7 @@ export default function VisaApplication() {
     lastName: "",
     email: "",
     phone: "",
-    marketingConsent: false,
+    marketingConsent: true,
      // building: "",
     // floor: "",
     // apartment: "",
@@ -1189,7 +1189,7 @@ return (size/1024).toFixed(0);
 
 
                 {/* Consent and Information */}
-                <div className="space-y-4">
+                {/* <div className="space-y-2">
                   <p className="body-small text-gray-600">
                     {t("We use this to create your E-Visa and send you updates about your application")}
                   </p>
@@ -1205,7 +1205,7 @@ return (size/1024).toFixed(0);
                        {t("I want to receive E-Visa updates, product launches and personalized offers. I can opt out anytime.")}
                       </Label>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Submit Button */}
                 <div className="pt-4">
