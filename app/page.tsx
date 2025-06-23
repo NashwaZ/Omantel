@@ -26,6 +26,9 @@ import config from "@/lib/api-config"
 import { CustomInput } from "@/components/ui/custom-input"
 import { useCountryList } from "@/lib/countries"
 import { Description } from "@radix-ui/react-toast"
+import { enUS, arSA } from "date-fns/locale";
+// const { i18n, t } = useTranslation();
+// const currentLocale = i18n.language; // 'en' or 'ar'
 
 export default function VisaSearch() {
   const router = useRouter()
@@ -809,7 +812,7 @@ useEffect(() => {
                         const dropdown = document.getElementById("citizenship-dropdown")
                         if (dropdown) dropdown.style.display = "block"
                       }}
-                      error={attemptedSubmit && !formData.citizenship ?locale=="en"?"Please select a citizenship country":"يرجى اختيار بلد المواطنة" : ""}
+                      error={attemptedSubmit && !formData.citizenship ?t("Please select a citizenship country") : ""}
                       success={formData.citizenship !== ""}
                     />
                     <button
@@ -910,8 +913,7 @@ useEffect(() => {
                     >
                     <CalendarIcon className={`mr-3 h-5 w-5 text-[#ea6e00] ml-[15px]`} />
 
-                     
-                        {date ? format(date, "PPP") : t("When are you traveling?")} 
+                        {date ? format(date, "PPP" ,{ locale: i18n.language !== "en" ? arSA : enUS }) : t("When are you traveling?")} 
                     
                     </button>
 
@@ -931,7 +933,8 @@ useEffect(() => {
                     )}
 
                     {attemptedSubmit && !date && (
-                      <div className="text-red-500 caption mt-1">{locale=="en"?"Please select a travel date":"الرجاء تحديد تاريخ السفر"}</div>
+                      // <div className="text-red-500 caption mt-1">{locale=="en"?"Please select a travel date":"الرجاء تحديد تاريخ السفر"}</div>
+                      <div className="text-red-500 caption mt-1"> {t("Please select a travel date")} </div>
                     )}
                   </div>
                 </div>
