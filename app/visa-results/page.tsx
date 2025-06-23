@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import LoadingIndicator from "@/components/loading-indicator"
 import Image from "next/image"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams,usePathname } from "next/navigation"
 import { getVisaPrograms } from "@/lib/api"
 import { sendEventMsgToCEPApp } from "@/lib/api"
 import { useTranslation } from "react-i18next"
@@ -28,7 +28,7 @@ const VisaResultsPage = () => {
     const [locale,setLocale]=useState("en");
 
      const { t , i18n } = useTranslation();
-
+  
      const base_url=config.BASE_URL;
 
   // Get query parameters
@@ -41,7 +41,7 @@ const VisaResultsPage = () => {
   const [convertedFees, setConvertedFees] = useState<Record<string, string>>({})
 
   const [visaHistory,setVisaHistory]=useState([]);
-
+  const pathName=usePathname();
 
 
  
@@ -694,8 +694,7 @@ setIsSubmitLoad(false)
   const getPlaceholderImageUrl = (destination: string) => {
     return `https://source.unsplash.com/400x300/?${destination}`
   }
-  useEffect(()=>{
-    const getVisaHistoryData=async()=>{
+      const getVisaHistoryData=async()=>{
               debugger
               try{ 
                const getHeader=localStorage.getItem("sso_header");
@@ -731,9 +730,10 @@ setIsSubmitLoad(false)
                     console.error(err);
                 }
             }
+  useEffect(()=>{
+
             getVisaHistoryData();
-            },[]
-          )
+            },[pathName])
        
           const handleNavigate=(e:any)=>{
             e.preventDefault();
