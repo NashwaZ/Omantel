@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import LoadingIndicator from "@/components/loading-indicator"
 import Image from "next/image"
-import { useRouter, useSearchParams,usePathname } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { getVisaPrograms } from "@/lib/api"
 import { sendEventMsgToCEPApp } from "@/lib/api"
 import { useTranslation } from "react-i18next"
@@ -41,7 +41,8 @@ const VisaResultsPage = () => {
   const [convertedFees, setConvertedFees] = useState<Record<string, string>>({})
 
   const [visaHistory,setVisaHistory]=useState([]);
-  const pathName=usePathname();
+  
+  const [userId,setUserId]=useState({user_id:""});
 
 
  
@@ -694,10 +695,9 @@ setIsSubmitLoad(false)
   const getPlaceholderImageUrl = (destination: string) => {
     return `https://source.unsplash.com/400x300/?${destination}`
   }
-      const getVisaHistoryData=async()=>{
-              debugger
-              try{ 
-               const getHeader=localStorage.getItem("sso_header");
+
+  useEffect(()=>{
+     const getHeader=localStorage.getItem("sso_header");
                let getUserId;
                if(getHeader){
                 getUserId=JSON.parse(getHeader)?.userid;
@@ -706,6 +706,14 @@ setIsSubmitLoad(false)
                   const user_data ={
                     user_id:getUserId 
                 }
+                setUserId(user_data);
+
+  },[])
+  useEffect(()=>{
+      const getVisaHistoryData=async(user_data:{user_id:any})=>{
+              debugger
+              try{ 
+             
 
                 const vendorKey=await getVendorKey();
                  const response =await fetch(base_url+"/get_visa_history",{
@@ -730,10 +738,11 @@ setIsSubmitLoad(false)
                     console.error(err);
                 }
             }
-  useEffect(()=>{
+             if(userId.user_id){
+            getVisaHistoryData(userId);
+            }
 
-            getVisaHistoryData();
-            },[pathName])
+  },[userId.user_id])
        
           const handleNavigate=(e:any)=>{
             e.preventDefault();
