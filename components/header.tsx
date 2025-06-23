@@ -60,62 +60,69 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
   //   return () => clearTimeout(timer); // cleanup on unmount
   // }, []);
-  useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 5;
+  // useEffect(() => {
+  //   let attempts = 0;
+  //   const maxAttempts = 5;
   
-    const interval = setInterval(() => {
-      const userData = localStorage.getItem("user_info_cep");
-      const headersData = localStorage.getItem("sso_header");
+  //   const interval = setInterval(() => {
+  //     const userData = localStorage.getItem("user_info_cep");
+  //     const headersData = localStorage.getItem("sso_header");
   
-      if (userData) {
-        setUserDetails(JSON.parse(userData));
-      }
-       var lang=  localStorage.getItem("app_language");
-      if(lang)
-         setLanguage(lang);
+  //     if (userData) {
+  //       setUserDetails(JSON.parse(userData));
+  //     }
+  //      var lang=  localStorage.getItem("app_language");
+  //     if(lang)
+  //        setLanguage(lang);
       
   
-      if (!lang && headersData) {
-        setLanguage(JSON.parse(headersData)?.language);
-      }
+  //     if (!lang && headersData) {
+  //       setLanguage(JSON.parse(headersData)?.language);
+  //     }
   
-      // Stop polling when both are set or max attempts reached
-      if ((userData && headersData) || attempts >= maxAttempts) {
-        clearInterval(interval);
-      }
+  //     // Stop polling when both are set or max attempts reached
+  //     if ((userData && headersData) || attempts >= maxAttempts) {
+  //       clearInterval(interval);
+  //     }
   
-      attempts++;
-    }, 500); // Check every 500ms
+  //     attempts++;
+  //   }, 500); // Check every 500ms
   
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   
-  //   const getUserData=() => {
-  //     debugger
-  //     let parse_user_data;
-  //     let   parse_header;
-  //     const get_user_data = localStorage.getItem("user_info_cep");
-  //     if (get_user_data) {
-  //     parse_user_data = JSON.parse(get_user_data);
-  //       setUserDetails(parse_user_data);
+    const getUserData=() => {
+      debugger
+      let parse_user_data;
+      let   parse_header;
+      const get_user_data = localStorage.getItem("user_info_cep");
+      if (get_user_data) {
+      parse_user_data = JSON.parse(get_user_data);
+        setUserDetails(parse_user_data);
 
-  //     }
-  //     const get_headersData = localStorage.getItem("sso_header");
-  //     if (get_headersData) {
-  //     parse_header = JSON.parse(get_headersData);
-  //       setLanguage(parse_header?.language || "en");
-  //     }
-  //     if(!parse_user_data || !parse_header){
-  //       setTimeout(getUserData, 1000); 
-  //     }
+      }
+
+       var lang=  localStorage.getItem("app_language");
+      if(lang){
+         setLanguage(lang);
+         return;
+      }
+
+      const get_headersData = localStorage.getItem("sso_header");
+      if (!lang && get_headersData) {
+      parse_header = JSON.parse(get_headersData);
+        setLanguage(parse_header?.language || "en");
+      }
+      if(!parse_user_data && !parse_header){
+        setTimeout(getUserData, 1000); 
+      }
      
-  //   }
+    }
 
-  //   useEffect(()=>{
-  //  getUserData();
-  //   },[])
+    useEffect(()=>{
+   getUserData();
+    },[])
 
   
 
