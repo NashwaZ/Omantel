@@ -155,7 +155,7 @@ export default function ApiStorageManager() {
           variant="outline"
           size="sm"
           className="fixed opacity-0 pointer-events-none"
-          style={{ position: "absolute", left: "-9999px", bottom: "-9999px" }}
+          // style={{ position: "absolute", left: "-9999px", bottom: "-9999px" }}
           aria-hidden="true"
         >
           <Database className="h-4 w-4 mr-2" />

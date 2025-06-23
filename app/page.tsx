@@ -426,7 +426,11 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     try{
       // Step 1: Create organization to get vendor key
      console.log("Creating organization...")
+     const storedLang=localStorage.getItem("app_language");
      localStorage.clear();
+     if(storedLang){
+     localStorage.setItem("app_language",storedLang);
+     }
       const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
