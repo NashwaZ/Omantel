@@ -92,16 +92,11 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   // }, []);
 
   
-    const getUserData=() => {
+    const getLang=() => {
       debugger
-      let parse_user_data;
+      
       let   parse_header;
-      const get_user_data = localStorage.getItem("user_info_cep");
-      if (get_user_data) {
-      parse_user_data = JSON.parse(get_user_data);
-        setUserDetails(parse_user_data);
-
-      }
+     
 
        var lang=  localStorage.getItem("app_language");
       if(lang){
@@ -114,13 +109,26 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       parse_header = JSON.parse(get_headersData);
         setLanguage(parse_header?.language || "en");
       }
-      if(!parse_user_data && !parse_header){
-        setTimeout(getUserData, 1000); 
+      if(!parse_header){
+        setTimeout(getLang, 1000); 
       }
      
     }
+    const getUserData=()=>{
+let parse_user_data;
+ const get_user_data = localStorage.getItem("user_info_cep");
+      if (get_user_data) {
+      parse_user_data = JSON.parse(get_user_data);
+        setUserDetails(parse_user_data);
+
+      }
+         if(!parse_user_data){
+        setTimeout(getUserData, 1000); 
+      }
+    }
 
     useEffect(()=>{
+   getLang();
    getUserData();
     },[])
 

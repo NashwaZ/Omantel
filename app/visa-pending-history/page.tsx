@@ -37,6 +37,7 @@ export default  function VisaHistory() {
     const base_url=config.BASE_URL;
     const router=useRouter();
     const [isLoading,setIsLoading]=useState(true);
+    const [deletingId,setDeletingId]=useState("")
 
        useEffect(()=>{
          const getLanguage=localStorage.getItem("app_language");
@@ -147,7 +148,7 @@ export default  function VisaHistory() {
         const handleDeleteVisaHistory=async(e:any,id:number|string)=>{
 
             e.preventDefault();
-
+               
           try { 
             const req_data ={
                 id:id
@@ -163,6 +164,7 @@ export default  function VisaHistory() {
             if(!response.ok){
                 throw new Error("could not delete visa details");
             }
+            setDeletingId(String(id));
             const data =await response.json();
             if(data.message==="success"){
                 getVisaHistoryData();
@@ -201,13 +203,14 @@ export default  function VisaHistory() {
 <div className="flex gap-[12px] flex-wrap">
     
     {visaHistory.length>0 && visaHistory?.map((history:any,index)=>(
-    <Card className="p-[12px] sm:w-full md:w-[49%] relative" key={index}>
+    <Card className={`p-[12px] sm:w-full md:w-[49%] relative transition-all duration-500 ease-in-out  ${
+            deletingId == history.id ? "opacity-0 scale-95 -translate-y-4" : ""
+          }`} key={index}>
         <CardHeader className="w-full mb-[10px]">
             <div className="flex justify-between w-full">
            <CardTitle> Order #{history.program_id.split("-")[0]}</CardTitle>
-             <div  onClick={(e)=>{handleDeleteVisaHistory(e,history?.id)}}>
+             <div  onClick={(e)=>{handleDeleteVisaHistory(e,history?.id)}} style={{cursor:"pointer"}}>
          <span style={{color:"red"}} 
-    
       >
    <svg
   width="24"
