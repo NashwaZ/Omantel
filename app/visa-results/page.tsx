@@ -27,14 +27,34 @@ const VisaResultsPage = () => {
   const [countryFlags, setCountryFlags] = useState<{ from?: string; to?: string }>({})
     const [locale,setLocale]=useState("en");
 
+
      const { t , i18n } = useTranslation();
   
      const base_url=config.BASE_URL;
 
   // Get query parameters
+
   const destination = searchParams?.get("destination") || "Unknown Destination"
   const citizenship = searchParams?.get("citizenship") || "Unknown Citizenship"
   const travelDate = searchParams?.get("travelDate") || new Date().toISOString()
+
+useEffect(()=>{ 
+  
+  if(destination && citizenship && travelDate){
+     localStorage.setItem("visa_citizenship",citizenship);
+    localStorage.setItem("visa_destination",destination);
+  
+    
+// const [day, month, year] = travelDate.split("-");
+
+// const travel_date = new Date(`${year}-${month}-${day}`); // Convert to YYYY-MM-DD
+
+//   const format_date = travel_date.toISOString().slice(0, 10);
+//   // console.log(format_date); // "2025-10-23"
+
+    localStorage.setItem("visa_travelDate",travelDate);
+
+  }},[destination,citizenship,travelDate])
 
   // State for country images and converted fees
   const [countryImages, setCountryImages] = useState<Record<string, string>>({})
@@ -631,16 +651,7 @@ const VisaResultsPage = () => {
     }
     debugger
     setIsSubmitLoad(true);
-    localStorage.setItem("visa_citizenship",citizenship);
-    localStorage.setItem("visa_destination",destination);
-  
-const [day, month, year] = travelDate.split("-");
-const travel_date = new Date(`${year}-${month}-${day}`); // Convert to YYYY-MM-DD
-
-  const formatDate = travel_date.toISOString().slice(0, 10);
-  console.log(formatDate); // "2025-10-23"
-
-    localStorage.setItem("visa_travelDate",formatDate);
+   
 
       const get_user_data=localStorage.getItem("user_info_cep");
       const parse_user_data = get_user_data?JSON.parse(get_user_data):"";
@@ -663,7 +674,7 @@ const travel_date = new Date(`${year}-${month}-${day}`); // Convert to YYYY-MM-D
       "citizenship" :  citizenship.toLowerCase(),
       "citizenship_code" : visa_program?.citizenship,
       "destination_code" : visa_program?.destination,
-      "travel_date":formatDate,
+      "travel_date":travelDate,
       "program_id" : visa_program?.id,
       "fee" : visa_program?.fee,
       "currency":visa_program?.currency ,

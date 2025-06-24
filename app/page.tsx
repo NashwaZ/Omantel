@@ -618,7 +618,7 @@ useEffect(() => {
     }
  setLoading(true);
       // Format date for API in DD-MM-YYYY format
-      const formattedDate = date ? format(date, "dd-MM-yyyy") : "12-04-2025"
+      const formattedDate = date ? format(date, "yyyy-MM-dd") : "12-04-2025"
 
        const eventDetails = {
          sub_type:"Visa Search",

@@ -390,6 +390,7 @@ export async function createTravellerOmantel(userData: {
   email: string
   first_name: string
   last_name: string
+  phone:string
   locale: string,
   omantel_user_id:number|string
 }): Promise<any> {
