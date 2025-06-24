@@ -203,7 +203,7 @@ export default  function VisaHistory() {
 <div className="flex gap-[12px] flex-wrap">
     
     {visaHistory.length>0 && visaHistory?.map((history:any,index)=>(
-    <Card className={`p-[12px] sm:w-full md:w-[49%] relative transition-all duration-500 ease-in-out  ${
+    <Card className={`p-[12px] sm:w-full md:w-[49%] relative transition-all duration-100 ease-in-out  ${
             deletingId == history.id ? "opacity-0 scale-95 -translate-y-4" : ""
           }`} key={index}>
         <CardHeader className="w-full mb-[10px]">
