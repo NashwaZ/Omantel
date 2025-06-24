@@ -1434,5 +1434,12 @@
 "Preparing visa application form...":"إعداد نموذج طلب التأشيرة...",
 "days":"أيام",
 "Please select a citizenship country":"الرجاء اختيار بلد الجنسية",
-"Please select a travel date":"الرجاء تحديد تاريخ السفر"
+"Please select a travel date":"الرجاء تحديد تاريخ السفر",
+"Pending":"قيد الانتظار",
+"Order Date":"تاريخ الطلب",
+"Travel Date":"تاريخ السفر",
+"Payment Status":"حالة الدفع",
+"Visa History":"تاريخ التأشيرة"
+
+
 }

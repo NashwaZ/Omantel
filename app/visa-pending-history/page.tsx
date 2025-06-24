@@ -302,7 +302,11 @@ export default  function VisaHistory() {
     disabled={!Boolean(visaHistory?.length<5)}
     onClick={(e)=>{
              e.preventDefault();
-            router.back();
+             debugger
+             const destination=localStorage.getItem("visa_destination");
+             const citizenship=localStorage.getItem("visa_citizenship");
+             const travel_date=localStorage.getItem("visa_travelDate");
+            router.push(`/visa-results/?destination=${destination}&citizenship=${citizenship}&travelDate=${travel_date}`);
          }}>
      {t("Back to apply")}
   </Button>
