@@ -303,10 +303,11 @@ export default  function VisaHistory() {
     onClick={(e)=>{
              e.preventDefault();
              debugger
-             const destination=localStorage.getItem("visa_destination");
-             const citizenship=localStorage.getItem("visa_citizenship");
-             const travel_date=localStorage.getItem("visa_travelDate");
-            router.push(`/visa-results/?destination=${destination}&citizenship=${citizenship}&travelDate=${travel_date}`);
+            //  const destination=localStorage.getItem("visa_destination");
+            //  const citizenship=localStorage.getItem("visa_citizenship");
+            //  const travel_date=localStorage.getItem("visa_travelDate");
+            // router.push(`/visa-results/?destination=${destination}&citizenship=${citizenship}&travelDate=${travel_date}`);
+            router.back();
          }}>
      {t("Back to apply")}
   </Button>

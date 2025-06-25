@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AlertCircle, WifiOff,CheckCircle2,Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -26,7 +26,7 @@ const VisaResultsPage = () => {
   const [usingMockData, setUsingMockData] = useState(false)
   const [countryFlags, setCountryFlags] = useState<{ from?: string; to?: string }>({})
     const [locale,setLocale]=useState("en");
-
+const hasRun = useRef(false);
 
      const { t , i18n } = useTranslation();
   
@@ -720,41 +720,68 @@ setIsSubmitLoad(false)
                 setUserId(user_data);
 
   },[])
-  useEffect(()=>{
-      const getVisaHistoryData=async(user_data:{user_id:any})=>{
-              debugger
-              try{ 
-             
 
-                const vendorKey=await getVendorKey();
-                 const response =await fetch(base_url+"/get_visa_history",{
-                    method:"POST",
-                    headers:{
-                        "Authorization":"Bearer "+vendorKey,
-                        "Content-Type":"application/json"
-                    },
-                    body:JSON.stringify(user_data)
-            })
+const getVisaHistoryData = async () => {
+  try {
+    
+    if (typeof window === "undefined") return;
 
-            if(!response.ok){
-                 throw new Error("visa history Api :"+response.statusText)
-            }
-            const data = await response.json();
-            if(data.message==="success"){
-                setVisaHistory(data.result);
-            }
-        }
+    const getHeader = localStorage.getItem("sso_header");
+    let getUserId = null;
 
-                catch(err){
-                    console.error(err);
-                }
-            }
-             if(userId.user_id){
-            getVisaHistoryData(userId);
-            }
+    if (getHeader) {
+      try {
+        getUserId = JSON.parse(getHeader)?.userid;
+      } catch (parseError) {
+        console.error("Invalid sso_header JSON:", parseError);
+        return;
+      }
+    }
 
-  },[userId.user_id])
-       
+    if (!getUserId) {
+      console.warn("User ID not found in sso_header");
+      return;
+    }
+
+    const user_data = {
+      user_id: getUserId,
+    };
+
+    const vendorKey = await getVendorKey();
+
+    const response = await fetch(`${base_url}/get_visa_history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${vendorKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user_data),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Visa History API Error:", response.status, response.statusText, data);
+      throw new Error(`Visa History API: ${response.status} ${response.statusText} - ${data?.message || "Unknown error"}`);
+    }
+
+    if (data.message === "success") {
+      setVisaHistory(data.result);
+    } else {
+      console.warn("API responded but not success:", data.message);
+    }
+
+  } catch (err) {
+    console.error("Failed to fetch visa history:", err);
+  }
+};
+
+     
+
+if (!hasRun.current) {
+  getVisaHistoryData();
+  hasRun.current = true;
+}
           const handleNavigate=(e:any)=>{
             e.preventDefault();
              router.push("/visa-pending-history")
