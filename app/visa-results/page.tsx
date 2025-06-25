@@ -776,22 +776,11 @@ const getVisaHistoryData = async () => {
   }
 };
 
- useEffect(() => {
-  const hasReloaded = localStorage.getItem("hasReloaded");
-
-  if (!hasReloaded) {
-    localStorage.setItem("hasReloaded", "true");
-    window.location.reload();
-  } else {
-    localStorage.removeItem("hasReloaded");
-  }
-}, []);
 
 
-if (!hasRun.current) {
+useEffect(()=>{
   getVisaHistoryData();
-  hasRun.current = true;
-}
+},[]);
           const handleNavigate=(e:any)=>{
             e.preventDefault();
              router.push("/visa-pending-history")
@@ -1299,9 +1288,9 @@ if (!hasRun.current) {
                       <>
   <div className="text-red-600">
    {t("Limit: 5 records. Remove unused orders before applying.")}
-    <a href="/visa-pending-history" className="text-blue-800 underline ms-1">
+    <div  className="text-blue-800 underline ms-1 inline" style={{cursor:"pointer"}} onClick={()=>{router.push("/visa-pending-history")}}>
       {t("Click here")}
-    </a>
+    </div>
   </div>
 </>
                         :
