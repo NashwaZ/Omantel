@@ -383,6 +383,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   });
 
   const handleSubmit = async (e: any) => {
+    try{
     e.preventDefault();
     debugger
     setIsClicked(true);
@@ -456,6 +457,13 @@ debugger
       console.warn('Not running inside React Native WebView.');
     }
   }
+}
+catch(err){
+  console.error(err);
+}
+finally{
+  setIsClicked(false)
+}
   };
 
   useEffect(() => {
@@ -546,7 +554,7 @@ debugger
 
   // Full-screen loading indicator
   if (isLoading) {
-    // return <LoadingIndicator fullScreen text={t("Loading payment gateway...")} />
+    return <LoadingIndicator fullScreen text={t("Loading payment gateway...")} />
   }
 
   // Full-screen iframe with no other content
