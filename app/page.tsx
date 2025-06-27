@@ -79,7 +79,7 @@ created_at:"",
   });
 
   const [accessToken,setAccessToken]=useState("");
-  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null})
+  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null,language:null})
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
@@ -509,7 +509,11 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         
       }
       setHeader(values);
-      setPassingParams({accessToken:data.result.authorization,partnerUserId:data.result.userid})
+      setPassingParams({
+        accessToken:data.result.authorization,
+        partnerUserId:data.result.userid,
+        language:data?.result.language
+      })
         setAccessToken(data.result.authorization);
         setPartnerUserId(data.result.userid);
       var lang=  localStorage.getItem("app_language");
@@ -559,7 +563,7 @@ useEffect(() => {
 
   useEffect(()=>{
 
-    const fetchUserData=async(token:string,user_id:any)=>{
+    const fetchUserData=async(token:string,user_id:any,lang:any)=>{
       debugger
       
   try {
@@ -568,7 +572,7 @@ useEffect(() => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-language':"en",
+          'x-language':lang,
           'Authorization': token,
           'user_id':user_id
         }
@@ -584,7 +588,13 @@ useEffect(() => {
         if(data.result.length>0){
 
         setUserInfo(data.result[0]);
-
+       const header_data= localStorage.getItem("sso_header");
+       if(header_data){
+        const parse_header=JSON.parse(header_data);
+        parse_header["userid"]=data.result[0].user_id;
+         localStorage.setItem("sso_header",JSON.stringify(parse_header));
+       }
+      
        localStorage.setItem("user_info_cep",JSON.stringify(data.result[0]));
        
       }
@@ -599,7 +609,7 @@ useEffect(() => {
     }
 
     if(passingParams?.accessToken ){
-      fetchUserData(passingParams?.accessToken,passingParams?.partnerUserId);
+      fetchUserData(passingParams?.accessToken,passingParams?.partnerUserId,passingParams?.language);
     }
     
   },[passingParams])
@@ -625,7 +635,7 @@ useEffect(() => {
          description: "User is searching for visa programs based on selected country."
        };
        
-      await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
+      // await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
       // Navigate to results page with query parameters
       router.push(
         `/visa-results?destination=${encodeURIComponent(formData.destination)}&citizenship=${encodeURIComponent(

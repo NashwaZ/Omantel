@@ -283,12 +283,12 @@ export default  function VisaHistory() {
                  <Button className="px-8" name={`history_${history.id}`}
                  disabled={visaHistory && visaHistory.length>=5} onClick={(e)=>inProgress(e,history)}>
              {t("In Progress")}
-                   &nbsp;<span className="text-[19px]">{">>>"}</span>
+                
                 </Button>
                 :  <Button className="px-8" name={`history_${history.id}`}
                  disabled={visaHistory && visaHistory.length>=5} onClick={(e)=>startProcess(e,history)}>
             {t("Start Process")}
-                   &nbsp;<span className="text-[19px]">{">>>"}</span>
+                   
                 </Button>
 }
                 </div>

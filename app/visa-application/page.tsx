@@ -311,7 +311,6 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       }
     }
      
-      
 
       setIsSubmitting(true)
       setSubmissionError(null)
@@ -507,9 +506,12 @@ debugger
               sub_type: "Form Submission - Next Stage",
               description: "User is submitting the form to proceed to the next stage."
             };
-             await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
+            //  await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
         // router.push("/payment-confirmation")
-        router.push("/visa-iframe")
+        // router.push("/visa-iframe")
+        const deeplink_url=orderResponse?.result?.iframe_deeplink_url
+        window.location.href=deeplink_url;
+
       } catch (error) {
         console.error("Error creating iframe order:", error)
         // Check if we're in development/preview mode and continue with mock data
