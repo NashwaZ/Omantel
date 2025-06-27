@@ -656,3 +656,15 @@ html[dir="rtl"] select {
   font-family: 'FSAlvar', serif !important;
 }
 
+@media only screen and (max-width: 767px) {
+  /* Your styles for mobile go here */
+
+html, body {
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+}
