@@ -697,7 +697,7 @@ useEffect(()=>{
       description: "User is applying for a visa."
     };
 
-          await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
+          // await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
 setIsSubmitLoad(false)
     // Navigate to the application page
     router.push(`/visa-application?programId=${encodeURIComponent(programId)}`)
@@ -707,31 +707,31 @@ setIsSubmitLoad(false)
     return `https://source.unsplash.com/400x300/?${destination}`
   }
 
-  useEffect(()=>{
-     const getHeader=localStorage.getItem("sso_header");
-               let getUserId;
-               if(getHeader){
-                getUserId=JSON.parse(getHeader)?.userid;
-                // setHeaderData(JSON.parse(getHeader));
-               }
-                  const user_data ={
-                    user_id:getUserId 
-                }
-                setUserId(user_data);
+  // useEffect(()=>{
+  //    const getHeader=localStorage.getItem("sso_header");
+  //              let getUserId;
+  //              if(getHeader){
+  //               getUserId=JSON.parse(getHeader)?.userid;
+  //               // setHeaderData(JSON.parse(getHeader));
+  //              }
+  //                 const user_data ={
+  //                   user_id:getUserId 
+  //               }
+  //               setUserId(user_data);
 
-  },[])
+  // },[])
 
 const getVisaHistoryData = async () => {
   try {
     
     if (typeof window === "undefined") return;
 
-    const getHeader = localStorage.getItem("sso_header");
+    const getHeader = localStorage.getItem("user_info_cep");
     let getUserId = null;
 
     if (getHeader) {
       try {
-        getUserId = JSON.parse(getHeader)?.userid;
+        getUserId = JSON.parse(getHeader)?.user_id;
       } catch (parseError) {
         console.error("Invalid sso_header JSON:", parseError);
         return;
@@ -931,7 +931,7 @@ useEffect(()=>{
           )}
 
           {/* Network error notification */}
-          {networkError && (
+          {/* {networkError && (
             <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center shadow-sm">
               <WifiOff className="h-5 w-5 mr-3 flex-shrink-0" />
               <div className="flex-1">
@@ -948,7 +948,7 @@ useEffect(()=>{
                  {t("Try again")}
                </Button>
             </div>
-          )}
+          )} */}
 
           {/* Loading, error and empty states */}
           {loading ? (

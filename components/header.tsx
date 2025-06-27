@@ -212,8 +212,8 @@ let parse_user_data;
             >
               {/* <LanguagesIcon className="h-4 w-4" /> */}
               <div className="relative " style={{bottom:"1px"}} ><svg
-    width="20"
-    height="20"
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -234,25 +234,10 @@ let parse_user_data;
 
            {
             language=="en"?
-              <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">EN &nbsp;<svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="16"
-  height="16"
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="currentColor"
-  strokeWidth="2"
-  strokeLinecap="round"
-  strokeLinejoin="round"
-className="inline "
-
->
-  <path d="M5 12h14" />
-  <path d="m12 5 7 7-7 7" />
-</svg>
- &nbsp;AR</div>
+              <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">AR &nbsp;</div>
  :
-   <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">AR &nbsp;<svg
+   <div className="flex sm:inline ml-2 rtl:mr-2 rtl:ml-0">EN &nbsp;
+   {/* <svg
   xmlns="http://www.w3.org/2000/svg"
   width="16"
   height="16"
@@ -267,18 +252,66 @@ className="inline "
   <path d="M5 12h14" />
   <path d="m12 5 7 7-7 7" />
 </svg>
- &nbsp;EN</div>
+ &nbsp;EN */}
+ </div>
 }
             </Button>
-               {/* <Button
+               <Button
               variant="outline"
               size="sm"
               onClick={handleNavigateHistory}
               className="flex items-center  px-3 md:px-8"
               // aria-label={t.languageToggle || "Toggle language"}
             >
-           My Orders
-            </Button> */}
+           {/* My Orders */}
+        <svg
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <g clipPath="url(#clip0_584_2301)">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M16.5137 21.5H8.16592C5.09955 21.5 2.74715 20.3925 3.41534 15.9348L4.19338 9.8936C4.60528 7.66934 6.02404 6.81808 7.26889 6.81808H17.4474C18.7105 6.81808 20.0469 7.73342 20.5229 9.8936L21.3009 15.9348C21.8684 19.889 19.5801 21.5 16.5137 21.5Z"
+      stroke="black"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.651 6.5984C16.651 4.21232 14.7167 2.27799 12.3306 2.27799C11.1816 2.27316 10.078 2.72619 9.26381 3.53695C8.44962 4.3477 7.99194 5.44939 7.99194 6.5984"
+      stroke="black"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.2964 11.1018H15.2506"
+      stroke="black"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.46569 11.1018H9.41992"
+      stroke="black"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_584_2301">
+      <rect width="24" height="24" fill="white" />
+    </clipPath>
+  </defs>
+</svg>
+
+
+            </Button>
            <div className="flex border py-2  px-3 md:px-8 " style={{borderRadius:"16px",background:"#fcf3e6" }}>
           <svg
   width="20"
@@ -305,7 +338,7 @@ className="inline "
 </svg>
 
               {/* <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name+" "+userDetails?.last_name}</span> */}
-              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name}</span>
+              <span className="sm:inline ml-2 rtl:mr-2 rtl:ml-0">  {userDetails?.first_name.length>12?userDetails?.first_name.substring(0,12)+"...":userDetails?.first_name}</span>
             </div>
            </div>
            }

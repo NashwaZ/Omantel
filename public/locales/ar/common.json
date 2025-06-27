@@ -1439,7 +1439,8 @@
 "Order Date":"تاريخ الطلب",
 "Travel Date":"تاريخ السفر",
 "Payment Status":"حالة الدفع",
-"Visa History":"تاريخ التأشيرة"
-
-
+"Visa History":"تاريخ التأشيرة",
+"New":"جديد",
+"Completed":"مكتمل",
+"Loading payment gateway...":"جاري تحميل بوابة الدفع..."
 }

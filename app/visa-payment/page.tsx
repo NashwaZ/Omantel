@@ -412,7 +412,7 @@ var payment_id=JSON.stringify(data.result);
       description: "Initiate the payment for visa."
     };
 
-    await sendEventMsgToCEPApp(eventDetails, userInfo, accessToken);
+    // await sendEventMsgToCEPApp(eventDetails, userInfo, accessToken);
     debugger
     if (
       typeof window !== 'undefined' &&
@@ -542,7 +542,7 @@ debugger
 
   // Full-screen loading indicator
   if (isLoading) {
-    return <LoadingIndicator fullScreen text="Loading payment gateway..." />
+    return <LoadingIndicator fullScreen text={t("Loading payment gateway...")} />
   }
 
   // Full-screen iframe with no other content

@@ -33,12 +33,17 @@ export default  function VisaHistory() {
     const [isLoading,setIsLoading]=useState(true);
     const [deletingId,setDeletingId]=useState("");
     const [moreBtnClicked,setMoreBtnClicked]=useState<number[]>([]);
+    const [iframeLink,setIframeLink]=useState("");
+    const [iframeOpen,setIframeOpen]=useState(false);
+    const [iframeLoading,setIframeLoading]=useState(false);
+    const iframe_base_url= config.IFRAME_BASE_URL;
 
        useEffect(()=>{
          const getLanguage=localStorage.getItem("app_language");
           if(getLanguage){
           setLocale(getLanguage);
           }
+          document.getElementsByTagName("html")[0].style.overflow = "auto";
         },[])
 
         const [visaHistory,setVisaHistory]= useState([]);
@@ -65,7 +70,7 @@ export default  function VisaHistory() {
             const getVisaHistoryData=async()=>{
               debugger
               try{ 
-               const getHeader=localStorage.getItem("sso_header");
+               const getHeader=localStorage.getItem("user_info_cep");
                let getUserId;
                if(getHeader){
                 getUserId=JSON.parse(getHeader)?.userid;
@@ -109,6 +114,14 @@ export default  function VisaHistory() {
 
         if(isLoading){
           return <Loading />
+        }
+
+ if(iframeLoading){
+          return <LoadingIndicator fullScreen text={t("Loading...")} size="large" />
+        }
+
+        const handleBack=()=>{
+          router.back();
         }
 
 const handleExpandRows=(id:any)=>{
@@ -182,12 +195,57 @@ const handleCollapseRows=(id:any)=>{
 
         // }
       
+        const openIframe=async(email:any,application_id:any)=>{
+        try{
+          debugger
+          const emails ={email:email}
+          const response= await fetch(base_url+"/visa_download_iframe_link",{
+            method:"POST",
+            headers:{
+             "Authorization":"Bearer "+vendorKey,
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify(emails)
+
+          })
+          if(response.ok){
+            const data = await response.json();
+            if(data.message==="success"){
+            if(data.result.deeplink){
+                
+                setIframeLink(data.result.deeplink);
+                 setIframeLoading(true);
+                setIframeOpen(true);
+               
+                const iframe_link={
+                  application_id:application_id,
+                  // iframe_url:`https://omantel.sandbox-simplevisa.net/applications/${application_id}/step/fill_form/?iframe=true`
+                  iframe_url:`${iframe_base_url}/applications/${application_id}/details/?iframe=true`
+                }
+                localStorage.setItem("status_iframe",JSON.stringify(iframe_link));
+               
+                const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
+                await delay(10000);
+                router.push("/check-visa-status-iframe");
+            
+            }
+          }
+          }
+        }
+        catch(err){
+          console.error("error at download iframe link : "+err);
+        }
+
+            
+        }
+        
    
     return (
        
         <>
         <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Main Content */}
+      { !iframeOpen ? 
+    
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
        
@@ -204,7 +262,7 @@ const handleCollapseRows=(id:any)=>{
 <div >
 {/* // className="md:flex  md:gap-[15px] md:flex-wrap"> */}
     
-    {visaHistory.length>0 && visaHistory?.map((history:any,index)=>(
+    {visaHistory.length>0 ? visaHistory?.map((history:any,index)=>(
     <Card className={`p-[15px] sm:w-full  mt-4 transition-all duration-100 ease-in-out  ${
             deletingId == history.id ? "opacity-0 scale-95 -translate-y-4" : ""
           }`} key={index}>
@@ -244,7 +302,7 @@ const handleCollapseRows=(id:any)=>{
                 </td>
                 <td className="pt-2">
                 <div className="flex justify-between">
-             <span> : &nbsp; {t(history?.status.substring(0,1).toUpperCase()+history?.status.substring(1))}</span>
+             <span> : &nbsp; {t(history?.order_status.substring(0,1).toUpperCase()+history?.order_status.substring(1))}</span>
                { moreBtnClicked && moreBtnClicked.includes(history.id)==false  ?  <span  style={{cursor:"pointer"}} onClick={()=>{handleExpandRows(history.id)}}>
                 <svg
     width="24"
@@ -387,7 +445,8 @@ const handleCollapseRows=(id:any)=>{
          
    
               <Button className="px-4 " name={`history_${history.id}`}
-              disabled={history.order_status!="success"}
+              disabled={history?.order_status.toLowerCase()==="completed"?false:true}
+              onClick={(e)=>{openIframe(history.email,JSON.parse(history.applications)[0].id)}}
                  >
                 Download
                  
@@ -400,7 +459,31 @@ const handleCollapseRows=(id:any)=>{
 }
           
           </Card>
-    ))}
+        
+    ))
+    :
+          <>
+          <div className="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-2xl text-center shadow-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-4">
+                <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <p className="heading-4 mb-3">{t("No record found")}</p>
+              {/* <p className="body-small mb-5">
+               {t("Please try a different destination or citizenship, or contact the embassy for more information.")}
+              </p> */}
+              <Button onClick={handleBack} className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white">
+                {t("Back")}
+              </Button>
+            </div>
+          </>
+          }
       
  
   </div>
@@ -408,6 +491,18 @@ const handleCollapseRows=(id:any)=>{
          
           </div>
           </main>
+          
+          :
+        
+     <iframe
+        src={iframeLink&&iframeLink+"?iframe=true"}
+        id="OmantelVisaStatus"
+        className="w-full h-full border-0"
+        frameBorder="0"
+        title="check status"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+      }
           </div>
         </>
     )
