@@ -323,6 +323,8 @@ export default function MakePayment() {
       const [header,setHeader]=useState(null);
       const [convertedFees, setConvertedFees] = useState({ fee: "" });
   const router = useRouter();
+
+  const [isClicked,setIsClicked]=useState(false);
   
    const base_url=config.BASE_URL;      
 const { t,i18n } = useTranslation();
@@ -383,6 +385,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     debugger
+    setIsClicked(true);
     const get_user = localStorage.getItem("user_info_cep");
     const userInfo = get_user ? JSON.parse(get_user) : "";
     const auth_token = localStorage.getItem("sso_header");
@@ -533,22 +536,23 @@ debugger
         // const accessToken=header?.authorization;
         
     
-    const notify="payment successful"
+    const notify={title:"E-visa order successfully created."}
     sendNotificationToCEPApp(notify,userInfo,header);
   },[])
+
   const handleBack = () => {
     router.back();
   }
 
   // Full-screen loading indicator
   if (isLoading) {
-    return <LoadingIndicator fullScreen text={t("Loading payment gateway...")} />
+    // return <LoadingIndicator fullScreen text={t("Loading payment gateway...")} />
   }
 
   // Full-screen iframe with no other content
   return (
-    <div className="fixed inset-0 w-full h-full">
-      <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
+    <div className=" inset-0 w-full h-full">
+      <div className="min-h-screen  bg-hayyak-background py-10 relative">
         <div className="container mx-auto ">
           <div className=" items-start mb-8" style={{ display: "block", textAlign: 'start', width: "100%" }}>
             {/* <Button
@@ -651,7 +655,14 @@ debugger
               onClick={(e) => handleSubmit(e)}
               className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4"
             >
-             {t("Confirm and Pay")}
+              {
+                isClicked?
+                 <div className="flex items-center justify-center">
+                  <LoadingIndicator size="small" />
+                </div>
+              :
+             t("Confirm and Pay")
+              }
             </Button>
           </div>
         </div>

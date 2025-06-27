@@ -634,14 +634,14 @@ export async function createCartUserApplication(vendor_key:String,visa_data:{
   return err;
  }
 }
-export async function sendNotificationToCEPApp(notification:any,user:any,headers:any){
+export async function sendNotificationToCEPApp(notification:{title:string},user:any,headers:any){
   debugger
 const data = {
   "notification_type": "TRANSACTIONAL",
   "notification_sub_type": "PAYMENT_CONFIRMATION",
   "message": {
       "id": "",
-      "title":"Payment Successful",
+      "title":notification.title,
       "description": "<Message to be sent to the user>",
       "channels": [
       "push"
