@@ -97,7 +97,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
   
     const getLang=() => {
-      debugger
+      
       
       let   parse_header;
      
@@ -143,7 +143,7 @@ let parse_user_data;
   }
 
   const toggleLanguage=()=>{
-    debugger
+    
     if(language=="en"){
       const set_language="ar"
     localStorage.setItem("app_language",set_language);

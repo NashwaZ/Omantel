@@ -649,7 +649,7 @@ useEffect(()=>{
     if(visaHistory.length>5){
       return;
     }
-    debugger
+    
     setIsSubmitLoad(true);
    
 
@@ -781,6 +781,7 @@ const getVisaHistoryData = async () => {
 useEffect(()=>{
   getVisaHistoryData();
 },[]);
+
           const handleNavigate=(e:any)=>{
             e.preventDefault();
              router.push("/visa-pending-history")

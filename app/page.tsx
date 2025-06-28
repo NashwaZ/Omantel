@@ -347,7 +347,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   }
 
 //   useEffect(() => {
-//     debugger
+
 //   const searchParams = new URLSearchParams(window.location.search);
 //   const base64Data = searchParams.get("data");
 
@@ -388,7 +388,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 // async function initApi(headerdata1: { accessToken: string | null; uniqueId: string | null; language: string | null; sessionId: string | null; partnerUserId: string | null }) {
 //   try {
 //     if (headerdata1) {
-//       debugger
+//  
 //       const response = await fetch(base_url+'/omanteltoken', {
 //         method: 'GET',
 //         headers: {
@@ -564,7 +564,7 @@ useEffect(() => {
   useEffect(()=>{
 
     const fetchUserData=async(token:string,user_id:any,lang:any)=>{
-      debugger
+     
       
   try {
   
@@ -622,11 +622,13 @@ useEffect(() => {
    
     setAttemptedSubmit(true)
     setApiError(null)
+     setLoading(true);
 
     if (!formData.destination || !formData.citizenship || !date) {
+      setLoading(false);
       return
     }
- setLoading(true);
+
       // Format date for API in DD-MM-YYYY format
       const formattedDate = date ? format(date, "yyyy-MM-dd") : "12-04-2025"
 
@@ -651,7 +653,7 @@ useEffect(() => {
   }
 
     const toggleLanguage=()=>{
-    debugger
+ 
     if(locale=="en"){
       const set_language="ar"
     localStorage.setItem("app_language",set_language);
@@ -965,10 +967,11 @@ useEffect(() => {
                   disabled={loading}
                 >
                   {loading ? (
+
                     <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-m" ></div>
-                      &nbsp;{t("Searching...")}
+                      <LoadingIndicator size="small" />
                     </div>
+                    
                   ) :  (
                     t("Check Visa Requirements")
                     )}

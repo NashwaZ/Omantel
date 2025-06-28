@@ -35,7 +35,7 @@ export default function HeaderToken() {
     const handlesubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        debugger
+       
         try {
             const responce = await fetch(base_url+"/omantelheader", {
                 method: 'GET',

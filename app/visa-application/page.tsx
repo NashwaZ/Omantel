@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Currency } from "lucide-react"
-import { useCountryList } from "@/lib/countries"
+// import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
 import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCartUserApplication } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
@@ -60,7 +60,7 @@ export default function VisaApplication() {
     })
 
   const [attemptedSubmit,setAttemptedSubmit]=useState(false);
-const { countries, error } = useCountryList();
+// const { countries, error } = useCountryList();
 
 const firstNameRef=useRef<HTMLInputElement>(null);
 const lastNameRef=useRef<HTMLInputElement>(null);
@@ -233,13 +233,13 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   },[])
   // Update the handleSubmit function to better handle API errors
   const handleSubmit = async (e: React.FormEvent) => {
-    debugger
+    
     e.preventDefault()
     console.log("Form submitted:", formData)
 
 
            
-        //       debugger
+        
         //       try{ 
         //        const getHeader=localStorage.getItem("sso_header");
         //        let getUserId;
@@ -447,7 +447,7 @@ if (get_cart_details) {
             }
           }
         }
-        debugger
+        
         const UpdateFileInfoResponse=await fetch(base_url+"/upload_documents",{
           method:"POST",
           headers:{
@@ -473,7 +473,7 @@ if (get_cart_details) {
         if (!orderResponse?.result?.iframe_deeplink_url) {
           throw new Error("Backend issue: Missing iframe_deeplink_url in response. Please try again later.")
         }
-debugger
+
         const local_cart_data= localStorage.getItem("added_cart_details");
       const omantel_order=localStorage.getItem("omantel_order_insertion");
       
@@ -535,9 +535,9 @@ debugger
     //       : "Backend issue: An error occurred while processing your application. Please try again later.",
     //   )
     // } 
-    finally {
-      setIsSubmitting(false)
-    }
+    // finally {
+    //   setIsSubmitting(false)
+    // }
   }
   catch(err){
     console.error(err);
@@ -591,7 +591,7 @@ const handleChangeFile = (
   e:any,
   index: number
 ) => {
-  debugger
+  
   const { name, id } = e.target;
   const allowedExt = ['pdf', 'png', 'jpeg', 'jpg'];
 

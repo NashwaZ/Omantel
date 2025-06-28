@@ -1442,5 +1442,6 @@
 "Visa History":"تاريخ التأشيرة",
 "New":"جديد",
 "Completed":"مكتمل",
-"Loading payment gateway...":"جاري تحميل بوابة الدفع..."
+"Loading payment gateway...":"جاري تحميل بوابة الدفع...",
+"No record found":"لم يتم العثور على أي سجل"
 }
