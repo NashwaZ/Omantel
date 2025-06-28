@@ -23,7 +23,7 @@ const handleChangeFile = (
   e:any,
   index: number
 ) => {
-  debugger
+  
   const { name, id } = e.target;
   const allowedExt = ['pdf', 'png', 'jpeg', 'jpg'];
 
@@ -90,7 +90,7 @@ const handleChangeFile = (
 
   },[])
 // useEffect(()=>{
-// debugger
+
 //   console.log(filesData);
 
 // },[filesData])
@@ -138,7 +138,7 @@ if(vendorKey){
 }
 },[vendorKey])
   const handleSubmit = async() => {
-    debugger
+    
    setFormSubmit(true);
     // console.log("Files submitted:", files);
     const key_names=Object.keys(filesData);
@@ -183,7 +183,7 @@ for(let k=0;k<fileList.length;k++){
     }
   }
 }
-debugger
+
 const UpdateFileInfoResponse=await fetch(base_url+"/upload_documents",{
   method:"POST",
   headers:{

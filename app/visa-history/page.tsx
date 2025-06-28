@@ -68,12 +68,12 @@ export default  function VisaHistory() {
 
    
             const getVisaHistoryData=async()=>{
-              debugger
+              
               try{ 
                const getHeader=localStorage.getItem("user_info_cep");
                let getUserId;
                if(getHeader){
-                getUserId=JSON.parse(getHeader)?.userid;
+                getUserId=JSON.parse(getHeader)?.user_id;
                 setHeaderData(JSON.parse(getHeader));
                }
                   const user_data ={
@@ -197,7 +197,7 @@ const handleCollapseRows=(id:any)=>{
       
         const openIframe=async(email:any,application_id:any)=>{
         try{
-          debugger
+          
           const emails ={email:email}
           const response= await fetch(base_url+"/visa_download_iframe_link",{
             method:"POST",

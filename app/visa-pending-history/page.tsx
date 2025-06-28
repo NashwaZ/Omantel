@@ -68,12 +68,12 @@ export default  function VisaHistory() {
 
    
             const getVisaHistoryData=async()=>{
-              debugger
+              
               try{ 
-               const getHeader=localStorage.getItem("sso_header");
+               const getHeader=localStorage.getItem("user_info_cep");
                let getUserId;
                if(getHeader){
-                getUserId=JSON.parse(getHeader)?.userid;
+                getUserId=JSON.parse(getHeader)?.user_id;
                 setHeaderData(JSON.parse(getHeader));
                }
                   const user_data ={
@@ -281,12 +281,12 @@ export default  function VisaHistory() {
          
     {(cartData && cartData['id'] )&& cartData?.id ==history.id?
                  <Button className="px-8" name={`history_${history.id}`}
-                 disabled={visaHistory && visaHistory.length>=5} onClick={(e)=>inProgress(e,history)}>
+                 disabled={visaHistory && visaHistory.length>5} onClick={(e)=>inProgress(e,history)}>
              {t("In Progress")}
                 
                 </Button>
                 :  <Button className="px-8" name={`history_${history.id}`}
-                 disabled={visaHistory && visaHistory.length>=5} onClick={(e)=>startProcess(e,history)}>
+                 disabled={visaHistory && visaHistory.length>5} onClick={(e)=>startProcess(e,history)}>
             {t("Start Process")}
                    
                 </Button>
@@ -302,7 +302,7 @@ export default  function VisaHistory() {
     disabled={!Boolean(visaHistory?.length<5)}
     onClick={(e)=>{
              e.preventDefault();
-             debugger
+             
             //  const destination=localStorage.getItem("visa_destination");
             //  const citizenship=localStorage.getItem("visa_citizenship");
             //  const travel_date=localStorage.getItem("visa_travelDate");

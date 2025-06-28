@@ -24,7 +24,7 @@ export default function PaymentConfirmation() {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      debugger
+     
       if (event.data?.type === 'formSubmitted') {
         const visaForm = document.getElementById('OmantelVisaApplicationForm');
         const nextStep = document.getElementById('nextStep');
@@ -48,7 +48,7 @@ export default function PaymentConfirmation() {
 useEffect(() => {
   // Define the handler
   const handleMessage = (event:MessageEvent) => {
-   debugger
+  
     console.log("Payment Callback Data:", event.data);
   };
 

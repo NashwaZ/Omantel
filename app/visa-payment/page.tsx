@@ -385,7 +385,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   const handleSubmit = async (e: any) => {
     try{
     e.preventDefault();
-    debugger
+    
     setIsClicked(true);
     const get_user = localStorage.getItem("user_info_cep");
     const userInfo = get_user ? JSON.parse(get_user) : "";
@@ -417,7 +417,7 @@ var payment_id=JSON.stringify(data.result);
     };
 
     // await sendEventMsgToCEPApp(eventDetails, userInfo, accessToken);
-    debugger
+    
     if (
       typeof window !== 'undefined' &&
       window.ReactNativeWebView &&
@@ -425,7 +425,7 @@ var payment_id=JSON.stringify(data.result);
     ) {
       const user_local_data = localStorage.getItem("visa_application_form");
       const user_details = user_local_data ? JSON.parse(user_local_data) : "";
-debugger
+
       if (user_details) {
         // const payload1 = {
         //   name: VisaDetails.firstName,

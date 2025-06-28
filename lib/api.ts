@@ -635,7 +635,26 @@ export async function createCartUserApplication(vendor_key:String,visa_data:{
  }
 }
 export async function sendNotificationToCEPApp(notification:{title:string},user:any,headers:any){
-  debugger
+  
+  try{
+
+ const response = await fetch(base_url + "/omantelrefreshtoken", {
+  method: "GET",
+  headers: {
+    "Authorization": headers?.authorization,
+    "x-language": headers?.language
+  }
+});
+
+if (!response.ok) {
+  const errorText = await response.text();
+  console.error(errorText);
+  throw new Error(`Token refresh failed: ${errorText}`);
+}
+
+const response_data = await response.json();
+const accesstoken = response_data?.result?.accessToken;
+
 const data = {
   "notification_type": "TRANSACTIONAL",
   "notification_sub_type": "PAYMENT_CONFIRMATION",
@@ -663,7 +682,7 @@ const data = {
   const response= await fetch(base_url+"/omantelnotification",{
     method:"POST",
     headers:{
-      Authorization: headers?.authorization,
+      Authorization: accesstoken,
       "x-language":headers?.language,
       "Content-Type":"application/json" 
     },
@@ -682,13 +701,16 @@ const data = {
   console.error('error  at sending event msg : ' + err);
   return "error";
  }
+}catch(err){
+  console.log("error at generate refresh token : ",err);
+}
 }
 
 
 
 
 export async function OmantelCreateOrder(notification:any,user:any,headers:any){
-debugger
+
 const data = {
     "partnerEvent": {
         "partnerSessionId": null,
@@ -793,7 +815,7 @@ const data = {
 }
 
 export async function OmantelUpdateOrder(notification:any,user:any,headers:any){
-debugger
+
 const data = {
     "partnerEvent": {
         "partnerSessionId": null,
