@@ -213,20 +213,23 @@ const handleCollapseRows=(id:any)=>{
             if(data.message==="success"){
             if(data.result.deeplink){
                 
-                setIframeLink(data.result.deeplink);
-                 setIframeLoading(true);
-                setIframeOpen(true);
+              const deeplink_url=data.result.deeplink;
+                window.location.href=deeplink_url;
+        
+                // setIframeLink(data.result.deeplink);
+                //  setIframeLoading(true);
+                // setIframeOpen(true);
                
-                const iframe_link={
-                  application_id:application_id,
-                  // iframe_url:`https://omantel.sandbox-simplevisa.net/applications/${application_id}/step/fill_form/?iframe=true`
-                  iframe_url:`${iframe_base_url}/applications/${application_id}/details/?iframe=true`
-                }
-                localStorage.setItem("status_iframe",JSON.stringify(iframe_link));
+                // const iframe_link={
+                //   application_id:application_id,
+                //   // iframe_url:`https://omantel.sandbox-simplevisa.net/applications/${application_id}/step/fill_form/?iframe=true`
+                //   iframe_url:`${iframe_base_url}/applications/${application_id}/details/?iframe=true`
+                // }
+                // localStorage.setItem("status_iframe",JSON.stringify(iframe_link));
                
-                const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
-                await delay(10000);
-                router.push("/check-visa-status-iframe");
+                // const delay = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
+                // await delay(10000);
+                // router.push("/check-visa-status-iframe");
             
             }
           }
