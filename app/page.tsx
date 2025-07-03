@@ -27,6 +27,7 @@ import { CustomInput } from "@/components/ui/custom-input"
 import { useCountryList } from "@/lib/countries"
 import { Description } from "@radix-ui/react-toast"
 import { enUS, arSA } from "date-fns/locale";
+import { unique } from "next/dist/build/utils"
 // const { i18n, t } = useTranslation();
 // const currentLocale = i18n.language; // 'en' or 'ar'
 
@@ -79,7 +80,7 @@ created_at:"",
   });
 
   const [accessToken,setAccessToken]=useState("");
-  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null,language:null})
+  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null,language:null,deviceId:null,uniqueId:null});
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
@@ -500,19 +501,22 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
         const header_data=data.result;
 
-         var values={
-        "accessToken": header_data.authorization,
-        "uniqueId": header_data.uniqueid,
-        "language":header_data.language,
-        "sessionId":header_data.sessionid,
-        "partnerUserId": header_data.userid,
+      //    var values={
+      //   "accessToken": header_data.authorization,
+      //   "uniqueId": header_data.uniqueid,
+      //   "language":header_data.language,
+      //   "sessionId":header_data.sessionid,
+      //   "partnerUserId": header_data.userid,
+      //   "deviceId":header_data.deviceid  // check device id name 
         
-      }
-      setHeader(values);
+      // }
+      // setHeader(values);
       setPassingParams({
         accessToken:data.result.authorization,
         partnerUserId:data.result.userid,
-        language:data?.result.language
+        language:data?.result.language,
+        deviceId: data?.result.deviceid,   // check device id name ,
+        uniqueId: data?.result.uniqueid
       })
         setAccessToken(data.result.authorization);
         setPartnerUserId(data.result.userid);
@@ -521,9 +525,9 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
          setLocale(lang);
       
       if(!lang){
-        localStorage.setItem("app_language",values.language);
-        lang=values.language;
-      setLocale(values.language);
+        localStorage.setItem("app_language",data.result.language);
+        lang=data.result.language;
+      setLocale(data.result.language);
       }
       if(lang){
       i18n.changeLanguage(lang).then(()=>{
@@ -563,18 +567,21 @@ useEffect(() => {
 
   useEffect(()=>{
 
-    const fetchUserData=async(token:string,user_id:any,lang:any)=>{
+    const fetchUserData=async(token:string,headers:any,lang:any)=>{
      
       
   try {
   
+    const {partnerUserId, uniqueId,deviceId} = headers;
       const response = await fetch(base_url+'/omantel_user_traveller_check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-language':lang,
           'Authorization': token,
-          'user_id':user_id
+          'user_id':partnerUserId,
+          "unique_id":uniqueId,
+          "device_id": deviceId // check device id name
         }
       });
 
@@ -609,7 +616,7 @@ useEffect(() => {
     }
 
     if(passingParams?.accessToken ){
-      fetchUserData(passingParams?.accessToken,passingParams?.partnerUserId,passingParams?.language);
+      fetchUserData(passingParams?.accessToken,passingParams,passingParams?.language);
     }
     
   },[passingParams])

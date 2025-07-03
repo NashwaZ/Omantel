@@ -642,7 +642,9 @@ export async function sendNotificationToCEPApp(notification:{title:string},user:
   method: "GET",
   headers: {
     "Authorization": headers?.authorization,
-    "x-language": headers?.language
+    "x-language": headers?.language,
+    "x-device-id": headers?.deviceid, //check device id name
+    "x-unique-id":  headers?.uniqueid,
   }
 });
 
@@ -683,8 +685,10 @@ const data = {
     method:"POST",
     headers:{
       Authorization: accesstoken,
+      "Content-Type":"application/json",
+      "x-device-id":headers?.deviceid, //check device id name
+      "x-unique-id":headers?.uniqueid,
       "x-language":headers?.language,
-      "Content-Type":"application/json" 
     },
     body:JSON.stringify(data)
   });
