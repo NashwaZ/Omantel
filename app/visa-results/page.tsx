@@ -155,31 +155,31 @@ useEffect(()=>{
           arrivalDate: travelDate,
         }
 
-        console.log("Fetching visa programs with params:", params)
+        // console.log("Fetching visa programs with params:", params)
 
         // Call the API function
         const response = await getVisaPrograms(params)
 
-        console.log("Visa programs response:", response)
+        // console.log("Visa programs response:", response)
 
         // More detailed logging of the response structure
-        console.log("Raw API Response:", JSON.stringify(response, null, 2))
-        console.log("Response Keys:", Object.keys(response || {}))
+        // console.log("Raw API Response:", JSON.stringify(response, null, 2))
+        // console.log("Response Keys:", Object.keys(response || {}))
         if (response && response.result) {
-          console.log("Result Keys:", Object.keys(response.result))
-          console.log("Result Type:", typeof response.result)
+          // console.log("Result Keys:", Object.keys(response.result))
+          // console.log("Result Type:", typeof response.result)
           if (Array.isArray(response.result)) {
-            console.log("Result is Array with length:", response.result.length)
+            // console.log("Result is Array with length:", response.result.length)
             if (response.result.length > 0) {
-              console.log("First item in result array:", response.result[0])
+              // console.log("First item in result array:", response.result[0])
             }
           } else if (typeof response.result === "object") {
-            console.log("Result is Object with keys:", Object.keys(response.result))
+            // console.log("Result is Object with keys:", Object.keys(response.result))
             if (response.result.programs) {
-              console.log("Programs type:", typeof response.result.programs)
-              console.log("Programs is array:", Array.isArray(response.result.programs))
+              // console.log("Programs type:", typeof response.result.programs)
+              // console.log("Programs is array:", Array.isArray(response.result.programs))
               if (Array.isArray(response.result.programs) && response.result.programs.length > 0) {
-                console.log("First program:", response.result.programs[0])
+                // console.log("First program:", response.result.programs[0])
               }
             }
           }
@@ -240,14 +240,14 @@ useEffect(()=>{
         if (response) {
           // Case 1: Nested programs structure
           if (response.result && response.result.programs && Array.isArray(response.result.programs)) {
-            console.log("Found programs in nested structure:", response.result.programs)
+            // console.log("Found programs in nested structure:", response.result.programs)
             const sanitizedPrograms = processPrograms(response.result.programs)
             setVisaPrograms(sanitizedPrograms)
 
             // Store country flags if available
             if (response.country_flags) {
               setCountryFlags(response.country_flags)
-              console.log("Country flags found:", response.country_flags)
+              // console.log("Country flags found:", response.country_flags)
             }
 
             // Store program IDs for later use
@@ -257,14 +257,14 @@ useEffect(()=>{
                 .map((program) => program.id)
 
               localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-              console.log("Stored program IDs from nested structure:", programIds)
+              // console.log("Stored program IDs from nested structure:", programIds)
             }
 
             setUsingMockData(false)
           }
           // Case 2: Direct array in result
           else if (response.result && Array.isArray(response.result)) {
-            console.log("Found programs in direct structure:", response.result)
+            // console.log("Found programs in direct structure:", response.result)
             const sanitizedPrograms = processPrograms(response.result)
             setVisaPrograms(sanitizedPrograms)
 
@@ -274,7 +274,7 @@ useEffect(()=>{
                 .map((program) => program.id)
 
               localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-              console.log("Stored program IDs:", programIds)
+              // console.log("Stored program IDs:", programIds)
             }
 
             setUsingMockData(false)
@@ -284,7 +284,7 @@ useEffect(()=>{
             // Try to extract programs from the object
             const extractedPrograms = Object.values(response.result)
             if (Array.isArray(extractedPrograms) && extractedPrograms.length > 0) {
-              console.log("Extracted programs from object:", extractedPrograms)
+              // console.log("Extracted programs from object:", extractedPrograms)
               const sanitizedPrograms = processPrograms(extractedPrograms)
               setVisaPrograms(sanitizedPrograms)
 
@@ -294,7 +294,7 @@ useEffect(()=>{
 
               if (programIds.length > 0) {
                 localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-                console.log("Stored program IDs from extracted programs:", programIds)
+                // console.log("Stored program IDs from extracted programs:", programIds)
               }
 
               setUsingMockData(false)
@@ -304,7 +304,7 @@ useEffect(()=>{
             // Case 4: Programs might be directly in the response
             const programsInResponse = response.programs
             if (programsInResponse && Array.isArray(programsInResponse) && programsInResponse.length > 0) {
-              console.log("Found programs directly in response:", programsInResponse)
+              // console.log("Found programs directly in response:", programsInResponse)
               const sanitizedPrograms = processPrograms(programsInResponse)
               setVisaPrograms(sanitizedPrograms)
 
@@ -314,7 +314,7 @@ useEffect(()=>{
 
               if (programIds.length > 0) {
                 localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-                console.log("Stored program IDs from response programs:", programIds)
+                // console.log("Stored program IDs from response programs:", programIds)
               }
 
               setUsingMockData(false)
@@ -322,7 +322,7 @@ useEffect(()=>{
             }
 
             // If we got here, we couldn't find a valid programs array
-            console.log("No valid programs structure found, using mock data")
+            // console.log("No valid programs structure found, using mock data")
             setVisaPrograms([
               {
                 id: "mock_program_1",
@@ -350,7 +350,7 @@ useEffect(()=>{
             setUsingMockData(true)
           } else {
             // No valid data found
-            console.log("No valid data structure found in response:", response)
+            // console.log("No valid data structure found in response:", response)
             setVisaPrograms([
               {
                 id: "mock_program_1",
@@ -532,21 +532,21 @@ useEffect(()=>{
         if (response) {
           // Case 1: Nested programs structure
           if (response.result && response.result.programs && Array.isArray(response.result.programs)) {
-            console.log("Found programs in nested structure:", response.result.programs)
+            // console.log("Found programs in nested structure:", response.result.programs)
             const sanitizedPrograms = processPrograms(response.result.programs)
             setVisaPrograms(sanitizedPrograms)
 
             // Store country flags if available
             if (response.country_flags) {
               setCountryFlags(response.country_flags)
-              console.log("Country flags found:", response.country_flags)
+              // console.log("Country flags found:", response.country_flags)
             }
 
             setUsingMockData(false)
           }
           // Case 2: Direct array in result
           else if (response.result && Array.isArray(response.result)) {
-            console.log("Found programs in direct structure:", response.result)
+            // console.log("Found programs in direct structure:", response.result)
             const sanitizedPrograms = processPrograms(response.result)
             setVisaPrograms(sanitizedPrograms)
             setUsingMockData(false)
@@ -556,7 +556,7 @@ useEffect(()=>{
             // Try to extract programs from the object
             const extractedPrograms = Object.values(response.result)
             if (Array.isArray(extractedPrograms) && extractedPrograms.length > 0) {
-              console.log("Extracted programs from object:", extractedPrograms)
+              // console.log("Extracted programs from object:", extractedPrograms)
               const sanitizedPrograms = processPrograms(extractedPrograms)
               setVisaPrograms(sanitizedPrograms)
               setUsingMockData(false)
@@ -566,7 +566,7 @@ useEffect(()=>{
             // Case 4: Programs might be directly in the response
             const programsInResponse = response.programs
             if (programsInResponse && Array.isArray(programsInResponse) && programsInResponse.length > 0) {
-              console.log("Found programs directly in response:", programsInResponse)
+              // console.log("Found programs directly in response:", programsInResponse)
               const sanitizedPrograms = processPrograms(programsInResponse)
               setVisaPrograms(sanitizedPrograms)
               setUsingMockData(false)
@@ -574,7 +574,7 @@ useEffect(()=>{
             }
 
             // If we got here, we couldn't find a valid programs array
-            console.log("No valid programs structure found, using mock data")
+            // console.log("No valid programs structure found, using mock data")
             setVisaPrograms([
               {
                 id: "mock_program_1",
@@ -591,7 +591,7 @@ useEffect(()=>{
             setUsingMockData(true)
           } else {
             // No valid data found
-            console.log("No valid data structure found in response:", response)
+            // console.log("No valid data structure found in response:", response)
             setVisaPrograms([
               {
                 id: "mock_program_1",
@@ -656,7 +656,7 @@ useEffect(()=>{
       const get_user_data=localStorage.getItem("user_info_cep");
       const parse_user_data = get_user_data?JSON.parse(get_user_data):"";
 
-    console.log("Applying for program with ID:", programId)
+    // console.log("Applying for program with ID:", programId)
     
 
     // Store the selected program ID for the iframe API
@@ -1028,7 +1028,7 @@ useEffect(()=>{
                       </div>
 
                       {/* Content */}
-                      <div className="p-6 md:w-3/5 flex flex-col items-center text-start">
+                      <div className="p-6 md:w-3/5 flex flex-col items-center text-start" style={{marginBottom:"20px"}} >
                         <div className="mb-2 flex items-center">
                            {/* <h2 className="mb-2 text-[20px] font-semibold" > {destination}&nbsp;&nbsp; </h2> */}
                           {program.available !== false ? (

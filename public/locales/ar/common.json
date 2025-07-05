@@ -1443,5 +1443,12 @@
 "New":"جديد",
 "Completed":"مكتمل",
 "Loading payment gateway...":"جاري تحميل بوابة الدفع...",
-"No record found":"لم يتم العثور على أي سجل"
+"No record found":"لم يتم العثور على أي سجل",
+"Back to apply":"العودة إلى التقديم",
+"First name is required.":"الاسم الأول مطلوب.",
+"Last name is required.":"الاسم الأخير مطلوب.",
+"Phone no should contain at least 7 digits.":"يجب أن يحتوي رقم الهاتف على 7 أرقام على الأقل.",
+"Phone no is required.":"رقم الهاتف مطلوب.",
+"Please enter a valid email address.":"يرجى إدخال عنوان بريد إلكتروني صالح.",
+"Email is required.":"البريد الإلكتروني مطلوب."
 }

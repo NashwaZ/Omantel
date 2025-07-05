@@ -133,7 +133,7 @@ export default  function VisaHistory() {
                  arrivalDate: history?.travel_date,
                }
 
-        console.log("Fetching visa programs with params:", params)
+        // console.log("Fetching visa programs with params:", params)
 
         // Call the API function
         const response = await getVisaPrograms(params)

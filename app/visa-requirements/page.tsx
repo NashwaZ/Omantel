@@ -52,7 +52,7 @@ const handleChangeFile = (
     const createOrganization=async()=>{
     try{
       // Step 1: Create organization to get vendor key
-     console.log("Creating organization...")
+    //  console.log("Creating organization...")
       const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
@@ -67,7 +67,7 @@ const handleChangeFile = (
      
        const orgData = await orgResponse.json();
 
-      console.log("Organization created successfully", orgData)
+      // console.log("Organization created successfully", orgData)
 
       // Extract and store vendor key
     
@@ -76,7 +76,7 @@ const handleChangeFile = (
         vendor_key = orgData.result[0].vendor_key
         localStorage.setItem("vendor_key", vendor_key);
         setVendorKey(vendor_key);
-        console.log("Vendor key stored successfully:", vendor_key)
+        // console.log("Vendor key stored successfully:", vendor_key)
       } else {
         throw new Error("No vendor key found in response")
       }

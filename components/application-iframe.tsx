@@ -60,7 +60,7 @@ export default function ApplicationIframe({ iframeUrl, orderId }: ApplicationIfr
           return
         }
 
-        console.log("Received message from iframe:", event.data)
+        // console.log("Received message from iframe:", event.data)
 
         // Handle form submission
         if (event?.data?.type === "formSubmitted") {
