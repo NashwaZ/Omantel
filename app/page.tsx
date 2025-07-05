@@ -422,11 +422,13 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 // }
 
 
+
+
   useEffect(()=>{
     const createOrganization=async()=>{
     try{
       // Step 1: Create organization to get vendor key
-     console.log("Creating organization...")
+    //  console.log("Creating organization...")
      const storedLang=localStorage.getItem("app_language");
      localStorage.clear();
      if(storedLang){
@@ -446,7 +448,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
      
        const orgData = await orgResponse.json();
 
-      console.log("Organization created successfully", orgData)
+      // console.log("Organization created successfully", orgData)
 
       // Extract and store vendor key
     
@@ -455,7 +457,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         vendor_key = orgData.result[0].vendor_key
         localStorage.setItem("vendor_key", vendor_key);
         setVendorKey(vendor_key);
-        console.log("Vendor key stored successfully:", vendorKey)
+        // console.log("Vendor key stored successfully:", vendorKey)
       } else {
         throw new Error("No vendor key found in response")
       }
@@ -687,7 +689,9 @@ useEffect(() => {
   return (
     <>
       
-    <div className="min-h-screen flex flex-col justify-center bg-hayyak-background py-10 relative">
+    <div className="min-h-screen  flex flex-col justify-center bg-hayyak-background py-10 relative"  style={{
+    height: calendarOpen ? "150vh" : "100vh"
+  }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
         <div className="text-center mb-5xl">
           <h1 className=" heading-1 mb-4">{t('E-Visa')} {t('Application')} {t('Service')}</h1>
@@ -730,8 +734,14 @@ useEffect(() => {
                       className={`absolute end-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed`}
                       onClick={() => {
                         const dropdown = document.getElementById("destination-dropdown")
+                        const searchInput = document.getElementById("destination-search") as HTMLInputElement;
+
                         if (dropdown) {
                           dropdown.style.display = dropdown.style.display === "none" ? "block" : "none"
+
+                        }
+                        if(searchInput){
+                            searchInput.focus();
                         }
                       }}
                     >
@@ -843,8 +853,13 @@ useEffect(() => {
                       className={`absolute end-0  top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed`}
                       onClick={() => {
                         const dropdown = document.getElementById("citizenship-dropdown")
+                        const searchInput = document.getElementById("citizenship-search") as HTMLInputElement;
                         if (dropdown) {
                           dropdown.style.display = dropdown.style.display === "none" ? "block" : "none"
+                        }
+
+                           if(searchInput){
+                            searchInput.focus();
                         }
                       }}
                     >

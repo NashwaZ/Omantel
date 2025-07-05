@@ -49,7 +49,7 @@ useEffect(() => {
   // Define the handler
   const handleMessage = (event:MessageEvent) => {
   
-    console.log("Payment Callback Data:", event.data);
+    // console.log("Payment Callback Data:", event.data);
   };
 
   // Add event listener

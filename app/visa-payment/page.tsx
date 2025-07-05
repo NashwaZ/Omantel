@@ -494,8 +494,10 @@ finally{
             firstName: user_details.firstName,
             lastName: user_details.lastName,
             email: user_details.email,
-            fee: programs_details.result.programs[0].fee + " (" + Number(data.result).toFixed(3) + " OMR)",
-            currency: programs_details.result.programs[0].currency
+            // fee: programs_details.result.programs[0].fee + " (" +  + " OMR)",
+            fee:Number(data.result).toFixed(3),
+            // currency: programs_details.result.programs[0].currency
+          currency:"OMR"
           };
 
           setVisaDetails(v_details);

@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Currency } from "lucide-react"
-// import { useCountryList } from "@/lib/countries"
+import { ArrowLeft, Currency, GitCommitHorizontalIcon } from "lucide-react"
+import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
 import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCartUserApplication } from "@/lib/api"
 import LoadingIndicator from "@/components/loading-indicator"
@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next"
 import  "@/lib/i18n"
 
 import { ChevronDown, ChevronUp, FileText, Info, XCircle, Paperclip } from "lucide-react"
+import { count } from "console"
 
 export default function VisaApplication() {
   const router = useRouter()
@@ -47,20 +48,27 @@ export default function VisaApplication() {
     email: "",
     phone: "",
     marketingConsent: true,
+    country_code:"",
      // building: "",
     // floor: "",
     // apartment: "",
     // street: "",
     // city: "",
     // state: "",
-    // country: citizenship || ""
+    // country:""
   })
     const [searchData,setSearchData]=useState({
-      country:""
+      country:"",
+      country_arabic:""
     })
 
+    const [EmailError,setEmailError]=useState("");
+    const [PhoneError,setPhoneError]=useState("");
+    const [firstNameError,setFirstNameError]=useState("");
+    const [lastNameError,setLastNameError]=useState("");
+
   const [attemptedSubmit,setAttemptedSubmit]=useState(false);
-// const { countries, error } = useCountryList();
+const { countries,load, error } = useCountryList();
 
 const firstNameRef=useRef<HTMLInputElement>(null);
 const lastNameRef=useRef<HTMLInputElement>(null);
@@ -105,8 +113,38 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
     setCitizenship(storedCitizenship);
     setTravelDate(storedTravelDate);
     setVisaDetails(parse_visa_details);
+
+
+
+
+
     window.scrollTo(0,0)
+
+
   }, []);
+
+  useEffect(()=>{
+       type Country = {
+  country: string;
+  country_code: string;
+  [key: string]: any;
+};
+
+
+const selectedCountry: Country | undefined |string = countries.find(
+  (c:any) => c.country === citizenship
+);
+setFormData((prev) => ({
+  ...prev,
+  country_code:
+    typeof selectedCountry === "object" &&
+    selectedCountry !== null &&
+    "country_code" in selectedCountry
+      ? (selectedCountry as any).country_code
+      : ""
+}));
+
+  },[countries,citizenship])
 
 
   // // Try to recover data from localStorage if URL parameters are missing
@@ -139,10 +177,85 @@ const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef
 return count;
 }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+const handleInputChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+
+  const { name } = e.target;
+ const value=e.target.value.trimStart(); // Trim leading spaces
+  if(name==="firstName" || name==="lastName"){
+      const pattern = /^[a-zA-Z ]+$/;
+  if( pattern.test(value) || value.length<=0 ){
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
+
+  }
+
+  else if(name==="phone"){
+    const phonePattern=/^[0-9]+$/;
+    if(phonePattern.test(value) || value.length<=0){
+      if(value.length<=15){
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        // setPhoneError("");
+      }
+    }
+  }
+  else if(name==="email"){ 
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+  }
+
+};
+
+const checkNameFormat = (e:any) => {
+  const name = e.target.name;
+  const value = e.target.value.trim();
+  if(name=="firstName"){
+  if(value.length<=0){
+    setFirstNameError("First name is required.");
+  }
+  else{
+    setFirstNameError("");
+  }
+}
+else if(name=="lastName"){
+  if(value.length<=0){
+    setLastNameError("Last name is required.");
+  }
+  else{
+    setLastNameError("");
+  }
+}
+}
+
+const checkPhoneFormat = (e:any) => {
+  // debugger
+  const phone = e.target.value.trim();
+
+ 
+    if(phone && phone.length<7){
+    setPhoneError("Phone no should contain at least 7 digits.");
+   
+  }
+  else if(phone.length<=0){
+    setPhoneError("Phone no is required.");
+  } else {
+    setPhoneError("");
+  }
+}
+
+const checkEmailFormat = (e:any) => {
+ const email = e.target.value.trim();
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (email && !emailPattern.test(email)) {
+    setEmailError("Please enter a valid email address.");
+  }
+  else if(email.length<=0){
+    setEmailError("Email is required.");
+  } else {
+    setEmailError("");
+  }
+}
 
   // const handleSelectChange = (name: string, value: string) => {
   //   setFormData((prev) => ({ ...prev, [name]: value }))
@@ -189,12 +302,35 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       setLocale(getLanguage);
       }
     },[])
+
+
+    
+  // useEffect(() => {
+  //   function handleClickOutside(event: MouseEvent) {
+  //     const destinationDropdown = document.getElementById("destination-dropdown")
+ 
+  //     if (
+  //       destinationDropdown &&
+  //       destinationDropdown.style.display === "block" &&
+  //       !document.getElementById("destination-search")?.contains(event.target as Node) &&
+  //       !destinationDropdown.contains(event.target as Node)
+  //     ) {
+  //       destinationDropdown.style.display = "none"
+  //     }
+
+  //   } 
+
+  //   document.addEventListener("mousedown", handleClickOutside)
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside)
+  //   }
+  // }, [])
   
  useEffect(()=>{
     const createOrganization=async()=>{
     try{
       // Step 1: Create organization to get vendor key
-     console.log("Creating organization...")
+    //  console.log("Creating organization...")
       const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
@@ -209,7 +345,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
      
        const orgData = await orgResponse.json();
 
-      console.log("Organization created successfully", orgData)
+      // console.log("Organization created successfully", orgData)
 
       // Extract and store vendor key
     
@@ -218,7 +354,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         vendor_key = orgData.result[0].vendor_key
         localStorage.setItem("vendor_key", vendor_key);
         setVendorKey(vendor_key);
-        console.log("Vendor key stored successfully:", vendor_key)
+        // console.log("Vendor key stored successfully:", vendor_key)
       } else {
         throw new Error("No vendor key found in response")
       }
@@ -235,7 +371,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   const handleSubmit = async (e: React.FormEvent) => {
     
     e.preventDefault()
-    console.log("Form submitted:", formData)
+    // console.log("Form submitted:", formData)
 
 
            
@@ -301,6 +437,18 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       return;
       }
       }
+     const checkError ={firstName:firstNameError,lastName:lastNameError,email:EmailError,phone:PhoneError};
+      const errorKeys = Object.keys(checkError);
+      for (const key of errorKeys) {
+        if (checkError[key as keyof typeof checkError]) {
+          const inputRef = formRef.current[key as keyof typeof formRef.current];
+          inputRef?.current?.focus();
+          return;
+        }
+      }
+    
+
+      
 
        const key_names=Object.keys(filesData);
     for(let i=0;i<key_names.length;i++){
@@ -321,29 +469,41 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         console.error("User ID is required to create a traveller. ");
         return;
       }
-      const travellerData = {
-        email: formData.email,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone:formData.phone,
-        locale: "en",
-        omantel_user_id:parse_user_data?.id
-      }
 
-      console.log("Creating traveller with data:", travellerData)
+//       type Country = {
+//   country: string;
+//   country_code: string;
+//   [key: string]: any;
+// };
+
+
+// const selectedCountry: Country | undefined |string = countries.find(
+//   (c:any) => c.country === citizenship
+// );
+
+const travellerData = {
+  email: formData.email,
+  first_name: formData.firstName,
+  last_name: formData.lastName,
+  phone: formData.country_code+" "+formData.phone,
+  locale: "en",
+  omantel_user_id: parse_user_data?.id,
+};
+
+      // console.log("Creating traveller with data:", travellerData)
       let travellerResponse
 
       try {
         travellerResponse = await createTravellerOmantel(travellerData)
 
-        console.log("Traveller created successfully:", travellerResponse)
+        // console.log("Traveller created successfully:", travellerResponse)
        
 
       } catch (error) {
         console.error("Error creating traveller:", error)
         // Check if we're in development/preview mode and continue with mock data
         if (process.env.NODE_ENV !== "production" || window.location.hostname.includes("localhost")) {
-          console.log("Development mode detected, continuing with mock data")
+          // console.log("Development mode detected, continuing with mock data")
           // The createTravellerOmantel function will handle creating mock data
           travellerResponse = await createTravellerOmantel(travellerData)
 
@@ -354,7 +514,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 
       // Step 2: Create iframe order for visa with 15-character reference number
       const referenceNo = generateReferenceNumber()
-      console.log("Generated reference number:", referenceNo)
+      // console.log("Generated reference number:", referenceNo)
 
       const get_local_visa=localStorage.getItem("visa_programs_data");
       const parse_visa_data =get_local_visa? JSON.parse(get_local_visa):"";
@@ -378,7 +538,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         travel_date:travelDate
       }
 
-      console.log("Creating iframe order with data:", orderData)
+      // console.log("Creating iframe order with data:", orderData)
               
 //    const visa_info={  
 //  "user_id" : parse_user_data?.id,
@@ -465,7 +625,7 @@ if (get_cart_details) {
 
            orderResponse = await createIframeOrderVisaOmantel(orderData)
         // Navigate to payment confirmation page
-          console.log("Iframe order created successfully:", orderResponse)
+          // console.log("Iframe order created successfully:", orderResponse)
 
 
 
@@ -685,6 +845,9 @@ const getSizeOfFile=(size:any)=>{
 return (size/1024).toFixed(0);
 }
 
+
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Main Content */}
@@ -734,9 +897,10 @@ return (size/1024).toFixed(0);
                           className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        onBlur={checkNameFormat}
                         placeholder={t("Enter your first name")}
-                         error={attemptedSubmit && !formData.firstName ? "First name is required." : ""}
-                      success={formData.firstName !== ""}
+                         error={firstNameError!==""?t(firstNameError):""}
+                      success={formData.firstName !== "" && firstNameError===""}
                        
                       />
                      
@@ -752,9 +916,10 @@ return (size/1024).toFixed(0);
                         className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        onBlur={checkNameFormat}
                          placeholder={t("Enter your last name")}
-                         error={attemptedSubmit && !formData.lastName ? "Last name is required." : ""}
-                      success={formData.lastName !== ""}
+                         error={lastNameError!==""?t(lastNameError):""}
+                      success={formData.lastName !== "" && lastNameError===""}
                         
                       />
                     </div>
@@ -770,27 +935,170 @@ return (size/1024).toFixed(0);
                         className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.email}
                         onChange={handleInputChange}
+                        onBlur={checkEmailFormat}
                         placeholder={t("Enter your email address")}
-                        error={attemptedSubmit && !formData.email ? "Email is required." : ""}
-                        success={formData.email !== ""} 
+                        error={ EmailError!==""?t(EmailError):""}
+                        success={formData.email !== "" && EmailError===""} 
                       />
                     </div>
+
+
+                    {/* country */}
+
+                     {/* <div className="space-y-2">
+                                      <Label htmlFor="destination" className="label font-medium">
+                                      {t("Country")}
+                                      </Label>
+                                      <div className="relative">
+                                        <CustomInput
+                                          type="text"
+                                          id="destination-search"
+                                          placeholder={t("Search for a country")+"..."}
+                                          className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
+                                          value={i18n.language=="en"?searchData.country:searchData.country_arabic}
+                                          onChange={(e) => {
+                                            const destination =searchData.country;
+                                            if(e.target.value.length<destination.length){
+                                                setFormData((prev) => ({ ...prev, country:"" }))
+                                            }
+                                            setSearchData((prev) => ({ ...prev, country: e.target.value,country_arabic:e.target.value }))
+                                            const dropdown = document.getElementById("destination-dropdown")
+                                            if (dropdown) dropdown.style.display = "block"
+                                          }}
+                                          onFocus={() => {
+                                            const dropdown = document.getElementById("destination-dropdown")
+                                            if (dropdown) dropdown.style.display = "block"
+                                          }}
+                                          error={attemptedSubmit && !formData.country ? t("Please select a country") : ""}
+                                          success={formData.country !== ""}
+                                        />
+                                        <button
+                                          type="button"
+                                          className={`absolute end-0 top-0 h-12 px-l text-hayyak hover:text-hayyak-hover active:text-hayyak-pressed`}
+                                          onClick={() => {
+                                            const dropdown = document.getElementById("destination-dropdown")
+                                            if (dropdown) {
+                                              dropdown.style.display = dropdown.style.display === "none" ? "block" : "none"
+                                            }
+                                          }}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                          >
+                                            <path d="m6 9 6 6 6-6" />
+                                          </svg>
+                                        </button>
+                                        <div
+                                          id="destination-dropdown"
+                                          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto hidden transition-all duration-200"
+                                          style={{ boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)" }}
+                                        >
+                                     {countries.length > 0 ? (
+                      i18n.language === "en"
+                        ? countries
+                            .filter(
+                              (country: any) =>
+                                searchData.country === "" ||
+                                country.country.toLowerCase().includes(searchData.country.toLowerCase())
+                            )
+                            .map((country: any) => (
+                              <div
+                                key={country.country}
+                                className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                                onClick={() => {
+                                   setFormData((prev) => ({ ...prev, country: country.country }));
+                                  setSearchData((prev) => ({ ...prev,country: country.country , country_arabic: country.arabic_country }));
+                                  const dropdown = document.getElementById("destination-dropdown");
+                                  if (dropdown) dropdown.style.display = "none";
+                                }}
+                              >
+                                {country.country}
+                              </div>
+                            ))
+                        : countries
+                            .filter(
+                              (country: any) =>
+                                searchData.country === "" ||
+                                (country.arabic_country ?? "").toLowerCase().includes(searchData.country.toLowerCase())
+                            )
+                            .map((country: any) => (
+                            
+                    
+                              country.arabic_country?<div
+                                key={country.country}
+                                className="px-4 py-3 cursor-pointer body-small hover:bg-hayyak-light transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                                onClick={() => {
+                                  setFormData((prev) => ({ ...prev, country: country.country }));
+                                  setSearchData((prev) => ({ ...prev,country: country.country , country_arabic: country.arabic_country }));
+                                  const dropdown = document.getElementById("destination-dropdown");
+                                  if (dropdown) dropdown.style.display = "none";
+                                }}
+                              >
+                                {country.arabic_country}
+                              </div>
+                              :
+                              <></>
+                           
+                            ))
+                    )
+                    
+                     : (
+                                            <div className="px-4 py-3 body-small text-gray-500">{load ?locale=="en"?"Loading ...":"تحميل ...": locale=="en" ? "No countries found":"لم يتم العثور على أي دولة"}</div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div> */}
+
+              
+
                      <div className="space-y-2">
                       <Label htmlFor="phone" className="label">
                         {t("Phone")} {t("Number")} *
                       </Label>
+<div className="flex gap-3">
+  <div className="w-[30%]">
+                      <CustomInput
+                        id="code"
+                        name="code"
+                        // ref={phoneNoRef}
+                        className="h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
+                        value={formData.country_code}
+                        disabled={true}
+                        // onChange={handleInputChange}
+                        // onBlur={checkPhoneFormat}
+                        //  placeholder={t("Enter your phone number")}
+                        success={formData.country_code !== ""}
+                        // error={PhoneError!==""?PhoneError:""}
+
+                        // error={attemptedSubmit && !formData.phone ?error.phone?error.phone: "Phone no is required." : ""}
+                      />
+                  </div>
+                  
                       <CustomInput
                         id="phone"
                         name="phone"
                         ref={phoneNoRef}
-                        className="w-full h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
+                        className="h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
                         value={formData.phone}
                         onChange={handleInputChange}
+                        onBlur={checkPhoneFormat}
                          placeholder={t("Enter your phone number")}
-                        success={formData.phone !== ""}
-                        error={attemptedSubmit && !formData.phone ? "Phone no is required." : ""}
+                        success={formData.phone !== "" && PhoneError===""}
+                        error={PhoneError!==""?t(PhoneError):""}
+
+                        // error={attemptedSubmit && !formData.phone ?error.phone?error.phone: "Phone no is required." : ""}
                       />
+                   </div>
                     </div>
+
                   </div>
                 </div>
 
@@ -903,7 +1211,7 @@ return (size/1024).toFixed(0);
                           ))}
                         </SelectContent>
                       </Select>
-                    </div> */}
+                    </div> 
                    {/* <div className="space-y-2 col-span-1 sm:col-span-2">
                                       <Label htmlFor="destination" className="label font-medium">
                                        Country *

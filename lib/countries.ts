@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import config from "./api-config";
 
-type Country = { country: string ,arabic_country:string};
+// type Country = { country: string ,arabic_country:string,country_code:string};
 
 export const useCountryList = () => {
   const [countries, setCountries] = useState<string[]>([]);
@@ -12,7 +12,7 @@ export const useCountryList = () => {
   useEffect(() => {
     const createOrganizationAndFetchCountries = async () => {
       try {
-        console.log("Creating organization...");
+        // console.log("Creating organization...");
         const orgResponse = await fetch(base_url+"/create_organization", {
           method: "POST",
           headers: {
@@ -26,7 +26,7 @@ export const useCountryList = () => {
         }
 
         const orgData = await orgResponse.json();
-        console.log("Organization created successfully", orgData);
+        // console.log("Organization created successfully", orgData);
 
         const vendorKey =
           orgData?.result?.[0]?.vendor_key ?? "";
@@ -52,11 +52,12 @@ export const useCountryList = () => {
         const data = await countryResponse.json();
         if (data.message === "success") {
           // const filteredCountries = data.result.map((c: Country) => c.country);
-          const filteredCountries = data.result.map((c: Country) => ({
-  country: c.country,
-  arabic_country: c.arabic_country,
-}));
-          setCountries(filteredCountries);
+//           const filteredCountries = data.result.map((c: Country) => ({
+//   country: c.country,
+//   arabic_country: c.arabic_country,
+//   country_code: c.country_code || ""
+// }));
+          setCountries(data.result);
         } else {
           throw new Error("Failed to retrieve countries");
         }

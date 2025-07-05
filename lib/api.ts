@@ -35,9 +35,9 @@ async function callProxyApi(endpoint: string, body: any, authToken?: string) {
 
   // Special handling for create_organization endpoint
   if (endpoint === "create_organization" && data?.result?.[0]?.vendor_key) {
-    console.log("Vendor key received from create_organization:", data.result[0].vendor_key)
+    // console.log("Vendor key received from create_organization:", data.result[0].vendor_key)
     localStorage.setItem("vendor_key", data.result[0].vendor_key)
-    console.log("Vendor key stored in localStorage:", data.result[0].vendor_key)
+    // console.log("Vendor key stored in localStorage:", data.result[0].vendor_key)
   }
 
   return data
@@ -58,9 +58,9 @@ export async function createOrganization(organizationName: string): Promise<any>
     // Store the vendor key in localStorage if available
     if (data && data.result && data.result.length > 0 && data.result[0].vendor_key) {
       const vendorKey = data.result[0].vendor_key
-      console.log("Vendor key extracted from create_organization response:", vendorKey)
+      // console.log("Vendor key extracted from create_organization response:", vendorKey)
       localStorage.setItem("vendor_key", vendorKey)
-      console.log("Vendor key stored in localStorage:", vendorKey)
+      // console.log("Vendor key stored in localStorage:", vendorKey)
     } else {
       console.error("No vendor key found in create_organization response:", data)
     }
@@ -175,7 +175,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
         // Store the new vendor key
         const newVendorKey = orgData.result[0].vendor_key
         localStorage.setItem("vendor_key", newVendorKey)
-        console.log("New vendor key generated and stored:", newVendorKey)
+        // console.log("New vendor key generated and stored:", newVendorKey)
       } else {
         console.error("No vendor key found in organization response:", orgData)
         throw new Error("No vendor key found in organization response")
@@ -196,10 +196,10 @@ export async function getVisaPrograms(params: any): Promise<any> {
       arrivalDate: params.arrivalDate || params.travelDate, // Support both parameter names
     }
 
-    console.log("Making visa programs API call with:", {
-      vendorKey: currentVendorKey ? `${currentVendorKey.substring(0, 10)}...` : "missing",
-      requestBody,
-    })
+    // console.log("Making visa programs API call with:", {
+    //   vendorKey: currentVendorKey ? `${currentVendorKey.substring(0, 10)}...` : "missing",
+    //   requestBody,
+    // })
 
     // Make the API call with proper authorization through our proxy
     let data = await callProxyApi("get_visa_programs_omantel", requestBody, currentVendorKey)
@@ -208,7 +208,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
     localStorage.setItem("visa_programs_data", JSON.stringify(data))
 
     // Enhanced response processing
-    console.log("Raw API response data:", JSON.stringify(data, null, 2))
+    // console.log("Raw API response data:", JSON.stringify(data, null, 2))
 
     // Ensure we have a valid result structure
     if (!data) {
@@ -228,7 +228,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
       }
       // Case 3: result is an object that needs to be converted to an array
       else if (typeof data.result === "object") {
-        console.log("Converting result object to array:", Object.keys(data.result))
+        // console.log("Converting result object to array:", Object.keys(data.result))
         data.result = Object.values(data.result)
       }
       // Case 4: result is something else, convert to empty array
@@ -239,7 +239,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
     }
     // Case 5: No result property but has programs directly
     else if (data.programs && Array.isArray(data.programs)) {
-      console.log("API returned programs directly:", data.programs.length)
+      // console.log("API returned programs directly:", data.programs.length)
       data.result = { programs: data.programs }
     }
     // Case 6: No valid data structure, create empty result
@@ -254,7 +254,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
 
       if (programIds.length > 0) {
         localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-        console.log("Stored program IDs:", programIds)
+        // console.log("Stored program IDs:", programIds)
       }
     } else if (
       data.result &&
@@ -268,7 +268,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
 
       if (programIds.length > 0) {
         localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
-        console.log("Stored program IDs from nested structure:", programIds)
+        // console.log("Stored program IDs from nested structure:", programIds)
       }
     }
 
@@ -281,7 +281,7 @@ export async function getVisaPrograms(params: any): Promise<any> {
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData)
-        console.log("Using cached visa programs data")
+        // console.log("Using cached visa programs data")
 
         // Ensure result is an array
         if (parsedData && parsedData.result && !Array.isArray(parsedData.result)) {
@@ -415,7 +415,7 @@ export async function createTravellerOmantel(userData: {
       // Store the access token in localStorage if available
       if (data && data.result && data.result.length > 0 && data.result[0].access_token) {
         localStorage.setItem("traveller_access_token", data.result[0].access_token)
-        console.log("Traveller access token stored:", data.result[0].access_token)
+        // console.log("Traveller access token stored:", data.result[0].access_token)
       }
 
       return data
@@ -428,7 +428,7 @@ export async function createTravellerOmantel(userData: {
     console.error("Failed to create traveller:", error)
 
     // FALLBACK: Create a mock traveller response for development/preview
-    console.log("Using fallback mock data for traveller creation")
+    // console.log("Using fallback mock data for traveller creation")
     const mockAccessToken = `mock_token_${Math.random().toString(36).substring(2, 15)}`
     localStorage.setItem("traveller_access_token", mockAccessToken)
 
@@ -479,13 +479,13 @@ export async function createIframeOrderVisaOmantel(orderData: {
     try {
       const data = await callProxyApi("order_visa_omantel", orderData, accessToken)
 
-      console.log("Iframe order API response:", data)
+      // console.log("Iframe order API response:", data)
 
       // Store the iframe URL if available - ONLY use iframe_deeplink_url, no fallbacks
       if (data && data.result && data.result.iframe_deeplink_url) {
         localStorage.setItem("iframe_url", data.result.iframe_deeplink_url)
         localStorage.setItem("signin_url",data.result.deeplink)
-        console.log("Iframe URL stored:", data.result.iframe_deeplink_url)
+        // console.log("Iframe URL stored:", data.result.iframe_deeplink_url)
 
         localStorage.setItem("omantel_order_insertion",JSON.stringify({id:data.result.insertion_id}))
       } else {
@@ -496,7 +496,7 @@ export async function createIframeOrderVisaOmantel(orderData: {
       // Store the order ID if available
       if (data && data.result && data.result.order_id) {
         localStorage.setItem("order_id", data.result.order_id)
-        console.log("Order ID stored:", data.result.order_id)
+        // console.log("Order ID stored:", data.result.order_id)
       }
 
       return data
@@ -892,7 +892,7 @@ export async function getVendorKey(){
      
        const orgData = await orgResponse.json();
 
-      console.log("Organization created successfully", orgData);
+      // console.log("Organization created successfully", orgData);
        const  vendor_key = orgData.result[0].vendor_key
         localStorage.setItem("vendor_key", vendor_key);
       return vendor_key;

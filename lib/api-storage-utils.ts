@@ -41,28 +41,28 @@ export function storeApiResponse(
     if (endpoint.includes("create_organization") || url.includes("create_organization")) {
       if (responseBody?.result?.[0]?.vendor_key) {
         localStorage.setItem("vendor_key", responseBody.result[0].vendor_key)
-        console.log("Vendor key stored:", responseBody.result[0].vendor_key)
+        // console.log("Vendor key stored:", responseBody.result[0].vendor_key)
       }
     }
 
     if (endpoint.includes("create_traveller_omantel") || url.includes("create_traveller_omantel")) {
       localStorage.setItem("traveller_data", JSON.stringify(responseBody))
-      console.log("Traveller data stored:", responseBody)
+      // console.log("Traveller data stored:", responseBody)
 
       if (responseBody?.result?.[0]?.access_token) {
         localStorage.setItem("traveller_access_token", responseBody.result[0].access_token)
-        console.log("Traveller access token stored:", responseBody.result[0].access_token)
+        // console.log("Traveller access token stored:", responseBody.result[0].access_token)
       }
     }
 
     if (endpoint.includes("get_visa_programs_omantel") || url.includes("get_visa_programs_omantel")) {
       localStorage.setItem("visa_programs_data", JSON.stringify(responseBody))
-      console.log("Visa programs data stored:", responseBody)
+      // console.log("Visa programs data stored:", responseBody)
 
       // Store the first program ID for easy access
       if (responseBody?.result?.programs?.[0]?.id) {
         localStorage.setItem("selected_program_id", responseBody.result.programs[0].id)
-        console.log("Selected program ID stored:", responseBody.result.programs[0].id)
+        // console.log("Selected program ID stored:", responseBody.result.programs[0].id)
       }
     }
 
@@ -128,7 +128,7 @@ export function getStoredProgramId(): string | null {
   // First try to get from dedicated storage
   const storedProgramId = localStorage.getItem("program_id") || localStorage.getItem("selected_program_id")
   if (storedProgramId) {
-    console.log("Using stored program ID:", storedProgramId)
+    // console.log("Using stored program ID:", storedProgramId)
     return storedProgramId
   }
 
@@ -141,15 +141,15 @@ export function getStoredProgramId(): string | null {
       // Check all possible paths where the program ID might be stored
       if (data?.result?.programs?.[0]?.id) {
         const programId = data.result.programs[0].id
-        console.log("Found program ID in visa_programs_data.result.programs:", programId)
+        // console.log("Found program ID in visa_programs_data.result.programs:", programId)
         return programId
       } else if (data?.programs?.[0]?.id) {
         const programId = data.programs[0].id
-        console.log("Found program ID in visa_programs_data.programs:", programId)
+        // console.log("Found program ID in visa_programs_data.programs:", programId)
         return programId
       } else if (Array.isArray(data?.result) && data.result[0]?.id) {
         const programId = data.result[0].id
-        console.log("Found program ID in visa_programs_data.result array:", programId)
+        // console.log("Found program ID in visa_programs_data.result array:", programId)
         return programId
       }
     }
@@ -172,15 +172,15 @@ export function getStoredProgramId(): string | null {
         // Check all possible paths
         if (responseBody?.result?.programs?.[0]?.id) {
           const programId = responseBody.result.programs[0].id
-          console.log("Found program ID in stored API response:", programId)
+          // console.log("Found program ID in stored API response:", programId)
           return programId
         } else if (responseBody?.programs?.[0]?.id) {
           const programId = responseBody.programs[0].id
-          console.log("Found program ID in stored API response (alt path):", programId)
+          // console.log("Found program ID in stored API response (alt path):", programId)
           return programId
         } else if (Array.isArray(responseBody?.result) && responseBody.result[0]?.id) {
           const programId = responseBody.result[0].id
-          console.log("Found program ID in stored API response (result array):", programId)
+          // console.log("Found program ID in stored API response (result array):", programId)
           return programId
         }
       } catch (e) {

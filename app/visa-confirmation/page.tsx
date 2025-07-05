@@ -23,7 +23,7 @@ export default function VisaConfirmation() {
       setError("No iframe URL provided. Please try again.")
       setLoading(false)
     } else {
-      console.log("Iframe URL received:", iframeUrl)
+      // console.log("Iframe URL received:", iframeUrl)
       setLoading(false)
     }
   }, [iframeUrl])
