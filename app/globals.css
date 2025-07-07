@@ -656,6 +656,11 @@ html[dir="rtl"] select {
   font-family: 'FSAlvar', serif !important;
 }
 
+.adjust-h-size{
+  height: 130vh !important;
+  justify-content: start !important;
+}
+
 @media only screen and (max-width: 767px) {
   /* Your styles for mobile go here */
 
@@ -667,4 +672,14 @@ html, body {
 body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
 }
+
+
+.min-h-screen.bottom-space {
+        margin-bottom: 20px;
+        padding-bottom: 55px;
+}
+.adjust-h-size{
+  height: 115vh !important;
+}
+
 }
