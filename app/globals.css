@@ -657,29 +657,46 @@ html[dir="rtl"] select {
 }
 
 .adjust-h-size{
-  height: 130vh !important;
-  justify-content: start !important;
-}
-
-@media only screen and (max-width: 767px) {
-  /* Your styles for mobile go here */
-
-html, body {
-  overflow: auto;
-  scrollbar-width: none; /* Firefox */
-}
-
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
-}
-
-
-.min-h-screen.bottom-space {
-        margin-bottom: 20px;
-        padding-bottom: 55px;
-}
-.adjust-h-size{
-  height: 115vh !important;
-}
-
-}
+  height: calc(100vh + 90px) !important;
+    justify-content: start !important;
+  }
+  
+  @media only screen and (max-width: 767px) {
+    /* Your styles for mobile go here */
+  
+  html, body {
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  
+  
+  .min-h-screen.bottom-space {
+          margin-bottom: 20px;
+          padding-bottom: 55px;
+  }
+  }
+  
+  
+  
+  
+  @media only screen and (min-height: 750px) {
+    /* Your styles for mobile go here */
+  .adjust-h-size {
+    height: calc(100vh) !important;
+    padding-bottom: 0px !important;
+  }
+  
+  }
+  
+  @media only screen and (max-height: 750px) {
+    /* Your styles for mobile go here */
+  .adjust-h-size {
+     height: calc(100vh + 220px) !important;
+     padding-bottom: 0px !important;
+   }
+  
+  }

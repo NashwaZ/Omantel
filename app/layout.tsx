@@ -49,7 +49,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ApiInitializer />
           <Header />
-          <main className="min-h-screen bottom-space">{children}</main>
+          <main className="min-h-screen bottom-space bg-gray-50">{children}</main>
           <ApiStorageManager />
           <ApiDebugPanel />
         </ThemeProvider>

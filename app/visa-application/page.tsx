@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Currency, GitCommitHorizontalIcon } from "lucide-react"
+import { ArrowLeft, Currency } from "lucide-react"
 import { useCountryList } from "@/lib/countries"
 import ApiDebugPanel from "@/components/api-debug-panel"
 import {sendEventMsgToCEPApp,createTravellerOmantel, createIframeOrderVisaOmantel, generateReferenceNumber, createCartUserApplication } from "@/lib/api"
@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next"
 import  "@/lib/i18n"
 
 import { ChevronDown, ChevronUp, FileText, Info, XCircle, Paperclip } from "lucide-react"
-import { count } from "console"
+// import { count } from "console"
 
 export default function VisaApplication() {
   const router = useRouter()
