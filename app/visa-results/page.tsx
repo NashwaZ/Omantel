@@ -1256,7 +1256,7 @@ useEffect(()=>{
                         }
 
                         {/* Apply button */}
-                  {(( program.available && program.required )  ?
+                  {/* {(( program.available && program.required )  ?
                   <Button
                           onClick={() => handleApply(program.id)}
                           disabled={ visaHistory && visaHistory?.length>=5}
@@ -1296,7 +1296,41 @@ useEffect(()=>{
 </>
                         :
                         <></>
-                      }
+                      } */}
+                        {/* Apply button */}
+                        {((program.available && program.required) ?
+                          <>
+                            <Button
+                              onClick={() => handleApply(program.id)}
+                              disabled={visaHistory && visaHistory?.length >= 5}
+                              className="bg-[#ea6e00] hover:bg-[#ea6e00] rounded-[16px] px-16 text-white mt-4 w-full"
+                            >
+                              {isSubmitLoad ? (
+                                <div className="flex items-center justify-center">
+                                  <LoadingIndicator size="small" />
+                                </div>
+                              ) : (
+                                t("Apply Now")
+                              )}
+
+                            </Button>
+                            {visaHistory && visaHistory?.length >= 5
+                              ?
+
+                              <>
+                                <div className="text-red-600">
+                                  {t("Limit: 5 records. Remove unused orders before applying.")}
+                                  <div className="text-blue-800 underline ms-1 inline" style={{ cursor: "pointer" }} onClick={() => { router.push("/visa-pending-history") }}>
+                                    {t("Click here")}
+                                  </div>
+                                </div>
+                              </>
+
+                              :
+                              <></>
+                            }
+                          </>
+                          : <></>)}
                       </div>
 
                     
