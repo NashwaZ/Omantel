@@ -48,7 +48,7 @@ export default function VisaApplication() {
     email: "",
     phone: "",
     marketingConsent: true,
-    country_code:"",
+    countryCode:"",
      // building: "",
     // floor: "",
     // apartment: "",
@@ -75,6 +75,9 @@ const lastNameRef=useRef<HTMLInputElement>(null);
 const emailRef=useRef<HTMLInputElement>(null);
 const countrySearchRef=useRef<HTMLInputElement>(null);
 const phoneNoRef=useRef<HTMLInputElement>(null);
+const countryCodeRef=useRef<HTMLInputElement>(null);
+const [phoneCodeError,setPhoneCodeError]=useState("")
+
 const [userInfo,setUserInfo]=useState();
 const [vendorKey,setVendorKey]=useState("");
 const [isLoading, setIsLoading] = useState(true);
@@ -88,7 +91,7 @@ const [isLoading, setIsLoading] = useState(true);
  const [destinationCountry,setDestinationCountry]=useState("");
   // const router = useRouter()
 
-const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef})
+const formRef=useRef({firstName:firstNameRef,lastName:lastNameRef,email:emailRef,country:countrySearchRef,phone:phoneNoRef,countryCode:countryCodeRef})
 
   // Add these state variables at the top of the component with the other state variables
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -136,7 +139,7 @@ const selectedCountry: Country | undefined |string = countries.find(
 );
 setFormData((prev) => ({
   ...prev,
-  country_code:
+  countryCode:
     typeof selectedCountry === "object" &&
     selectedCountry !== null &&
     "country_code" in selectedCountry
@@ -200,10 +203,22 @@ const handleInputChange = (
       }
     }
   }
-  else if(name==="email"){ 
+  else if(name==="countryCode"){
+    debugger 
+     const {name,value}=e.target;
+  const filterValue=value.substring(1);
+  const codePattern = /^[0-9]+$/;
+    if(codePattern.test(filterValue) || filterValue.length<=0){
+
+      if(filterValue.length<=3){
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+      }
+    }
   }
+  else{
+setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+  
 
 };
 
@@ -268,7 +283,7 @@ const checkEmailFormat = (e:any) => {
    
 
 
-     const validationCheck=formData?.firstName && formData?.lastName && formData?.marketingConsent && formData?.phone && (getUploadedFileLength()===requirements.length)
+     const validationCheck=formData?.firstName && formData?.lastName && formData?.marketingConsent && formData.countryCode.substring(1) && formData?.phone && (getUploadedFileLength()===requirements.length)
 
 
 
@@ -428,7 +443,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       setAttemptedSubmit(true);
        setFormSubmit(true);
      
-      const fields:String[] =["firstName","lastName","email","phone"];
+      const fields:String[] =["firstName","lastName","email","phone","countryCode"];
       for(let i=0;i<fields.length;i++){
         const key=fields[i] as keyof typeof formData;
           if(!formData[key]){
@@ -437,7 +452,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       return;
       }
       }
-     const checkError ={firstName:firstNameError,lastName:lastNameError,email:EmailError,phone:PhoneError};
+     const checkError ={firstName:firstNameError,lastName:lastNameError,email:EmailError,phone:PhoneError,countryCode:phoneCodeError};
       const errorKeys = Object.keys(checkError);
       for (const key of errorKeys) {
         if (checkError[key as keyof typeof checkError]) {
@@ -485,7 +500,7 @@ const travellerData = {
   email: formData.email,
   first_name: formData.firstName,
   last_name: formData.lastName,
-  phone: formData.country_code+" "+formData.phone,
+  phone: formData.countryCode+" "+formData.phone,
   locale: "en",
   omantel_user_id: parse_user_data?.id,
 };
@@ -846,6 +861,23 @@ return (size/1024).toFixed(0);
 }
 
 
+const checkPhoneCodeFormat=(e:any)=>{
+
+  const {name,value}=e.target;
+  const filterValue=value.split("+")[1]
+  const codePattern = /^[0-9]+$/;
+
+  if(!codePattern.test(filterValue) || filterValue.length==0){
+
+     setPhoneCodeError("code");
+  }
+  else{
+    setPhoneCodeError("");
+  }
+
+
+}
+
 
 
   return (
@@ -1066,17 +1098,17 @@ return (size/1024).toFixed(0);
 <div className="flex gap-3">
   <div className="w-[30%]">
                       <CustomInput
-                        id="code"
-                        name="code"
-                        // ref={phoneNoRef}
+                        id="countryCode"
+                        name="countryCode"
+                        ref={countryCodeRef}
                         className="h-12 px-4 body-small focus:outline-none focus:ring-2 focus:ring-hayyak focus:border-transparent transition-all duration-200"
-                        value={formData.country_code}
-                        disabled={true}
-                        // onChange={handleInputChange}
-                        // onBlur={checkPhoneFormat}
+                        value={(formData.countryCode.includes("+")?"":"+")+formData.countryCode}
+                        // disabled={true}
+                        onChange={handleInputChange}
+                        onBlur={checkPhoneCodeFormat}
                         //  placeholder={t("Enter your phone number")}
-                        success={formData.country_code !== ""}
-                        // error={PhoneError!==""?PhoneError:""}
+                        success={formData.countryCode.substring(1) !== ""}
+                        error={phoneCodeError?phoneCodeError:""}
 
                         // error={attemptedSubmit && !formData.phone ?error.phone?error.phone: "Phone no is required." : ""}
                       />
