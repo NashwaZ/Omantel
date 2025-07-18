@@ -16,6 +16,7 @@ import '@/lib/i18n'
 import { usePathname } from "next/navigation";
 import { LanguagesIcon } from "lucide-react";
 import LoadingIndicator from "@/components/LoadingIndicator"
+import Loading from "./loading"
 
 import config from "@/lib/api-config"
 
@@ -55,6 +56,7 @@ const { countries,load } = useCountryList();
   });
 
    const pathname = usePathname();
+   const [isLoading,setIsLoading]=useState(true)
 
 const [userInfo,setUserInfo]=useState({ 
 email:"",
@@ -429,11 +431,12 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     try{
       // Step 1: Create organization to get vendor key
     //  console.log("Creating organization...")
-     const storedLang=localStorage.getItem("app_language");
+
+    //  const storedLang=localStorage.getItem("app_language");
      localStorage.clear();
-     if(storedLang){
-     localStorage.setItem("app_language",storedLang);
-     }
+    //  if(storedLang){
+    //  localStorage.setItem("app_language",storedLang);
+    //  }
       const orgResponse = await fetch(base_url+"/create_organization", {
         method: "POST",
         headers: {
@@ -474,6 +477,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   useEffect(()=>{
 
   const call_SSO= async ()=>{  
+    try{
     const url=window.location.search;
     const getParams=new URLSearchParams(url)
     const h_id=getParams.get("id");
@@ -550,6 +554,13 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
 }
     }
   }
+  catch(err){
+    console.error("sso header err : ",err)
+  }
+  finally{
+    setIsLoading(false);
+  }
+  }
 if(vendorKey){
   call_SSO();
 }
@@ -623,7 +634,9 @@ useEffect(() => {
     
   },[passingParams])
 
-
+if(isLoading){
+   return <Loading />
+}
 
   // Update the handleSubmit function to properly create organization
   const handleSubmit = async (e: React.FormEvent) => {
