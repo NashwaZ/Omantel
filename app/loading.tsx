@@ -6,5 +6,5 @@ import  "@/lib/i18n"
 
 export default function Loading() {
     const { t,i18n } = useTranslation();
-    return <LoadingIndicator fullScreen text={t("Loading...")} size="large" />
+    return <LoadingIndicator fullScreen size="large" />
 }
