@@ -210,7 +210,7 @@ const handleInputChange = (
   const codePattern = /^[0-9]+$/;
     if(codePattern.test(filterValue) || filterValue.length<=0){
 
-      if(filterValue.length<=3){
+      if(filterValue.length<=4){
     setFormData((prev) => ({ ...prev, [name]: value }));
       }
     }
