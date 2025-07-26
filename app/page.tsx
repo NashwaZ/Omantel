@@ -82,7 +82,7 @@ created_at:"",
   });
 
   const [accessToken,setAccessToken]=useState("");
-  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null,language:null,deviceId:null,uniqueId:null});
+  const [passingParams,setPassingParams]=useState({accessToken:null,partnerUserId:null,language:null,deviceId:null,uniqueId:null,tokenId:null});
 
   const validationCheck=formData?.destination && formData?.citizenship && date;
 
@@ -506,6 +506,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     if(data.message==='success'){
 
         const header_data=data.result;
+        // console.log(header_data);
 
       //    var values={
       //   "accessToken": header_data.authorization,
@@ -522,7 +523,8 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
         partnerUserId:data.result.userid,
         language:data?.result.language,
         deviceId: data?.result.deviceid,   // check device id name ,
-        uniqueId: data?.result.uniqueid
+        uniqueId: data?.result.uniqueid,
+        tokenId:data?.result.id
       })
         setAccessToken(data.result.authorization);
         setPartnerUserId(data.result.userid);
@@ -585,8 +587,8 @@ useEffect(() => {
       
   try {
   
-    const {partnerUserId, uniqueId,deviceId} = headers;
-      const response = await fetch(base_url+'/omantel_user_traveller_check', {
+    const {partnerUserId, uniqueId,deviceId,tokenId} = headers;
+      const response = await fetch(base_url+'/omantel_user_creation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -594,7 +596,8 @@ useEffect(() => {
           'Authorization': token,
           'user_id':partnerUserId,
           "unique_id":uniqueId,
-          "device_id": deviceId // check device id name
+          "device_id": deviceId,
+          "token_id":tokenId
         }
       });
 
