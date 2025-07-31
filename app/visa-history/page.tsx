@@ -428,10 +428,26 @@ const handleCollapseRows=(id:any)=>{
               
                  <tr>
                   <td>
-                <p>{`${t("Fee")} (${history?.currency})`} </p>
+                <p>{`${t("Fee")}`} </p>
                 </td>
                 <td>
-              : &nbsp; {history?.fee+" "+history?.currency}
+              : &nbsp; {history?.fee_omr+" OMR"}
+                </td>
+                </tr>
+                <tr>
+                  <td>
+                <p>{`${t("VAT")}`} </p>
+                </td>
+                <td>
+              : &nbsp; {history?.tax+" OMR"}
+                </td>
+                </tr>
+                <tr>
+                  <td>
+                <p>{`${t("Total")}`} </p>
+                </td>
+                <td>
+              : &nbsp; {history?.total+" OMR"}
                 </td>
                 </tr>
                 </>

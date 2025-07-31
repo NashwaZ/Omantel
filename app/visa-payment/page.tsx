@@ -370,6 +370,9 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     email: string | null;
     fee: number | string | null;
     currency: string | null;
+    vatamt: number | string | null;
+    vatpct:number | string | null;
+    totalAmount:number | string | null;
   };
 
   const [VisaDetails, setVisaDetails] = useState<VisaDetails>({
@@ -379,6 +382,9 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
     lastName: "",
     email: "",
     fee: "",
+    vatamt: "",
+    vatpct:"",
+    totalAmount: "",
     currency: ""
   });
 
@@ -397,7 +403,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
       order_id:get_program_id
     }
     const vendor_key= await getVendorKey();
-const response =await fetch( base_url+"/omantel_payment",{
+const response =await fetch( base_url+"/omantel_payment_payload",{
   method:"POST",
   headers:{
     Authorization:"Bearer "+vendor_key,
@@ -488,16 +494,26 @@ finally{
       }).then((response) => response.json())
         .then((data) => {
           setConvertedFees({ fee: data.result });
+          
+        const amountInOMR: string = data.result; 
+        const amount = parseFloat(amountInOMR);
+        const roundedAmount = Number(amount.toFixed(3)); 
+        const vatPercent = 5;
+        const vatValue = amount * (vatPercent / 100);
+        const  roundedVat= Number(vatValue.toFixed(3)); 
+        const totalAmount = roundedAmount + roundedVat;
+        debugger
           const v_details = {
             destinationCountry: destination,
             passportCountry: passportCountry,
             firstName: user_details.firstName,
             lastName: user_details.lastName,
             email: user_details.email,
-            // fee: programs_details.result.programs[0].fee + " (" +  + " OMR)",
-            fee:Number(data.result).toFixed(3),
-            // currency: programs_details.result.programs[0].currency
-          currency:"OMR"
+            fee:roundedAmount.toFixed(3),
+            vatamt: roundedVat.toFixed(3),
+            vatpct:vatPercent,
+            totalAmount: totalAmount.toFixed(3),
+            currency:"OMR"
           };
 
           setVisaDetails(v_details);
@@ -513,7 +529,10 @@ finally{
             lastName: user_details.lastName,
             email: user_details.email,
             fee: programs_details.result.programs[0].fee,
-            currency: programs_details.result.programs[0].currency
+            currency: programs_details.result.programs[0].currency,
+            vatamt: '',
+            vatpct:'',
+            totalAmount: '',
           };
 
           setVisaDetails(v_details);
@@ -645,6 +664,22 @@ finally{
                     </td>
                     <td className="p-2">
                       <span className="body-small text-gray-900">  {VisaDetails?.fee}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-2">
+                      <span className="text-gray-600 caption"> {t("VAT")} ({VisaDetails?.vatpct}%):</span>
+                    </td>
+                    <td className="p-2">
+                      <span className="body-small text-gray-900">  {VisaDetails?.vatamt}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-2">
+                      <span className="text-gray-600 caption"> {t("Total")}:</span>
+                    </td>
+                    <td className="p-2">
+                      <span className="body-small text-gray-900">  {VisaDetails?.totalAmount}</span>
                     </td>
                   </tr>
                   <tr>
