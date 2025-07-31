@@ -477,7 +477,7 @@ export async function createIframeOrderVisaOmantel(orderData: {
 
     // Try to make the API call with proper error handling
     try {
-      const data = await callProxyApi("order_visa_omantel", orderData, accessToken)
+      const data = await callProxyApi("omantel_visa_order", orderData, accessToken)
 
       // console.log("Iframe order API response:", data)
 
