@@ -58,7 +58,7 @@ useEffect(()=>{
 
   // State for country images and converted fees
   const [countryImages, setCountryImages] = useState<Record<string, string>>({})
-  const [convertedFees, setConvertedFees] = useState<Record<string, string>>({})
+  const [convertedFees, setConvertedFees] = useState<Record<string, any>>({})
 
   const [visaHistory,setVisaHistory]=useState([]);
   
@@ -433,9 +433,29 @@ useEffect(()=>{
           if (response.ok) {
             const data = await response.json()
             if (data.result) {
+
+           
+        const amountInOMR1 =  data.result
+
+        if (!amountInOMR1) {
+          throw new Error('amountConvertionOMR returned undefined');
+        }
+
+        const amount = parseFloat(amountInOMR1);
+        const roundedAmount = Number(amount.toFixed(3));
+
+        const vatPercent = 5;
+        const vatValue = amount * (vatPercent / 100);
+        const roundedVat = Number(vatValue.toFixed(3));
+
+        const totalAmount = Number((roundedAmount + roundedVat).toFixed(3));
+
+
               setConvertedFees((prev) => ({
                 ...prev,
                 [programId]: Number(data.result).toFixed(3),
+                Vat: roundedVat,
+                TotalOMR: totalAmount
               }))
             }
           } 
@@ -1102,9 +1122,28 @@ useEffect(()=>{
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Fee")} (OMR):</span>
                                 <span className="body-small text-gray-900">
-                                  {convertedFees[program.id] ||
-                                    (Number.parseFloat(safeRenderText(program.fee || "0")) * 0.385).toFixed(3)}{" "}
-                                  OMR
+                                  {convertedFees[program.id]}
+                                  {/* //  ||
+                                  //   (Number.parseFloat(safeRenderText(program.fee || "0")) * 0.385).toFixed(3)}{" "} */}
+                                 {convertedFees[program.id]?"OMR":"..."}
+                                </span>
+                              </div>
+                            </div>
+                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600 caption">{t("Vat")} (OMR):</span>
+                                <span className="body-small text-gray-900">
+                                  {convertedFees?.Vat }
+                                {convertedFees?.Vat?"OMR":"..."}
+                                </span>
+                              </div>
+                            </div>
+                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600 caption">{t("Total")} (OMR):</span>
+                                <span className="body-small text-gray-900">
+                                  {convertedFees?.TotalOMR}
+                                  {convertedFees?.TotalOMR?"OMR":"..."}
                                 </span>
                               </div>
                             </div>

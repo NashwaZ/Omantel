@@ -706,8 +706,10 @@ if(isLoading){
     <>
       
     <div className={`${calendarOpen? "adjust-h-size":""} min-h-screen  flex flex-col justify-center bg-hayyak-background py-10 relative`}
-  //    style={{
+   
   //   height: calendarOpen ? "150vh" : "100vh"
+  //   style={{
+  // overflow: calendarOpen ? "visible" : "hidden"
   // }}
   >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">

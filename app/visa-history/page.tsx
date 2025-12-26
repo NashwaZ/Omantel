@@ -36,6 +36,7 @@ export default  function VisaHistory() {
     const [iframeLink,setIframeLink]=useState("");
     const [iframeOpen,setIframeOpen]=useState(false);
     const [iframeLoading,setIframeLoading]=useState(false);
+    const [paymentLoading,setPaymentLoading]=useState(false);
     const iframe_base_url= config.IFRAME_BASE_URL;
 
        useEffect(()=>{
@@ -116,9 +117,10 @@ export default  function VisaHistory() {
           return <Loading />
         }
 
- if(iframeLoading){
+ if(iframeLoading || paymentLoading){
           return <LoadingIndicator fullScreen text={t("Loading...")} size="large" />
         }
+
 
         const handleBack=()=>{
           router.back();
@@ -241,7 +243,68 @@ const handleCollapseRows=(id:any)=>{
 
             
         }
-        
+
+        const handlePayment=async(e:any,orderId:any,applicationId:any)=>{ 
+          e.preventDefault();
+    
+         if(!orderId || !vendorKey){
+               console.error("Order ID is missing");
+               return;
+          }
+             setPaymentLoading(true);
+         
+            try{
+             
+             const order_id={
+               order_id:orderId
+             } 
+               const response =await fetch( base_url+"/omantel_payment_payload",{
+                 method:"POST",
+                 headers:{
+                   Authorization:"Bearer "+vendorKey,
+                   "Content-Type":"application/json"
+                 },
+                 body:JSON.stringify(order_id)
+               })
+               if(!response.ok){
+                 throw new Error("Error at payment...");
+               }
+               const data =await response.json();
+               if(data.message==="success"){
+               //  var payment_id=JSON.stringify(data.result);
+                   // const eventDetails = {
+                   //   sub_type: "proceed_payment",
+                   //   description: "Initiate the payment for visa."
+                   // };
+               
+               // await sendEventMsgToCEPApp(eventDetails, userInfo, accessToken);
+               
+               if (
+                 typeof window !== 'undefined' &&
+                 window.ReactNativeWebView &&
+                 typeof window.ReactNativeWebView.postMessage === 'function'
+               ) {
+                 const user_local_data = localStorage.getItem("user_info_cep");
+                 const user_details = user_local_data ? JSON.parse(user_local_data) : "";
+            
+                 if (user_details) {
+                   
+                   const payload=data.result;
+                   window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+                   console.log('Message posted to React Native app:', payload);
+                 }
+               } else {
+                 console.warn('Not running inside React Native WebView.');
+               }
+             }
+         }
+         catch(err){
+           console.error(err);
+         }
+         finally{
+           setPaymentLoading(false)
+         }
+        }
    
     return (
        
@@ -463,6 +526,8 @@ const handleCollapseRows=(id:any)=>{
    <CardFooter className="mt-4" >
          
    
+   {
+   history?.application_status==="success" && history?.payment_status && history?.payment_status.toLowerCase() ==="success"?
               <Button className="px-4 " name={`history_${history.id}`}
               disabled={history?.order_status.toLowerCase()==="completed"?false:true}
               onClick={(e)=>{openIframe(history.email,JSON.parse(history.applications)[0].id)}}
@@ -470,9 +535,20 @@ const handleCollapseRows=(id:any)=>{
                 Download
                  
                 </Button>
-              
-
-            
+              :
+              history?.application_status==="success" && history?.payment_status!=="success" ?
+<Button className="px-4 " name={`payment_${history.id}`}
+             
+              onClick={(e)=>{
+                debugger;
+                handlePayment(e,history.order_id,JSON.parse(history.applications)[0].id)}}
+                 >
+                Payment
+                 
+                </Button>
+                :
+                <></>
+}
                 </CardFooter>
                       :<></>
 }
