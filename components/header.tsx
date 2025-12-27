@@ -43,6 +43,7 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   },[])
 
  const handleNavigateHistory=()=>{
+  sessionStorage.setItem("prevUrl",location.href);
   router.push("/visa-history")
  }
 
@@ -138,9 +139,21 @@ let parse_user_data;
 
   
 
-  const handleBack = () => {
-    router.back()
+const handleBack = () => {
+  debugger
+  if(location.pathname.includes("visa-history")){
+  const prevUrl = sessionStorage.getItem("prevUrl");
+
+  debugger
+
+  if (prevUrl){
+    router.replace(prevUrl);
   }
+}else{{
+  router.back();
+}}
+};
+
 
   const toggleLanguage=()=>{
     
