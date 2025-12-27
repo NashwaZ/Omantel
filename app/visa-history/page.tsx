@@ -57,6 +57,9 @@ export default  function VisaHistory() {
             callVendorApi();
         },[])
 
+     
+
+
 
         // useEffect(()=>{
         //     const get_cart_data=localStorage.getItem("added_cart_details");
@@ -121,10 +124,13 @@ export default  function VisaHistory() {
           return <LoadingIndicator fullScreen text={t("Loading...")} size="large" />
         }
 
-
-        const handleBack=()=>{
-          router.back();
-        }
+       
+const handleBack = () => {
+  const prevUrl = sessionStorage.getItem("prevUrl");
+  if (prevUrl){
+    router.replace(prevUrl);
+  }
+};
 
 const handleExpandRows=(id:any)=>{
 
