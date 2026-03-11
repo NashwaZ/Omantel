@@ -4,8 +4,9 @@ import { LanguagesIcon } from "lucide-react"
 // import { useLanguage } from "@/contexts/language-context" // Import useLanguage
 import { Button } from "@/components/ui/button" // Import Button
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation"
-import { usePathname } from "next/navigation";
+// import { useRouter, useSearchParams } from "next/navigation"
+// import { usePathname } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n'
 
@@ -42,10 +43,14 @@ const getDirection = (lang: string): "ltr" | "rtl" => {
   }
   },[])
 
- const handleNavigateHistory=()=>{
-  sessionStorage.setItem("prevUrl",location.href);
-  router.push("/visa-history")
- }
+//  const handleNavigateHistory=()=>{
+//   sessionStorage.setItem("prevUrl",location.href);
+//   router.push("/visa-history")
+//  }
+const handleNavigateHistory = () => {
+  sessionStorage.setItem("prevUrl", window.location.href);
+  router.push("/visa-history");
+};
 
 
 
@@ -139,19 +144,20 @@ let parse_user_data;
 
   
 
-const handleBack = () => {
-  debugger
-  if(location.pathname.includes("visa-history")){
-  const prevUrl = sessionStorage.getItem("prevUrl");
+  const handleBack = () => {
+  
+  // if (pathname.includes("visa-history")) {
+//     const prevUrl = sessionStorage.getItem("prevUrl");
+// debugger
+//     if (prevUrl) {
+//       router.replace(prevUrl);
+      // sessionStorage.removeItem("prevUrl"); // optional cleanup
+    //   return;
+    // }
+  // }
+   
 
-  debugger
-
-  if (prevUrl){
-    router.replace(prevUrl);
-  }
-}else{{
   router.back();
-}}
 };
 
 

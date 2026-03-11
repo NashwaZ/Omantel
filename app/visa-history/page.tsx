@@ -125,11 +125,12 @@ export default  function VisaHistory() {
         }
 
        
-const handleBack = () => {
-  const prevUrl = sessionStorage.getItem("prevUrl");
-  if (prevUrl){
-    router.replace(prevUrl);
-  }
+  const handleBack = () => {
+  router.back();
+  // const prevUrl = sessionStorage.getItem("prevUrl");
+  // if (prevUrl){
+  //   router.replace(prevUrl);
+  // }
 };
 
 const handleExpandRows=(id:any)=>{
@@ -204,7 +205,8 @@ const handleCollapseRows=(id:any)=>{
         // }
       
         const openIframe=async(email:any,application_id:any)=>{
-        try{
+          try {
+           setPaymentLoading(true); 
           
           const emails ={email:email}
           const response= await fetch(base_url+"/visa_download_iframe_link",{
@@ -245,7 +247,9 @@ const handleCollapseRows=(id:any)=>{
         }
         catch(err){
           console.error("error at download iframe link : "+err);
-        }
+        }finally{
+           setPaymentLoading(false)
+         }
 
             
         }

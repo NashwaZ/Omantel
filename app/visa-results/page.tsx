@@ -440,23 +440,35 @@ useEffect(()=>{
         if (!amountInOMR1) {
           throw new Error('amountConvertionOMR returned undefined');
         }
-
-        const amount = parseFloat(amountInOMR1);
-        const roundedAmount = Number(amount.toFixed(3));
+              const amount = parseFloat(data.result);
 
         const vatPercent = 5;
         const vatValue = amount * (vatPercent / 100);
-        const roundedVat = Number(vatValue.toFixed(3));
+        const totalAmount = amount + vatValue;
 
-        const totalAmount = Number((roundedAmount + roundedVat).toFixed(3));
+        setConvertedFees((prev) => ({
+          ...prev,
+          [programId]: amount.toFixed(3),     // ✅ "10.000"
+          Vat: vatValue.toFixed(3),            // ✅ "0.500"
+          TotalOMR: totalAmount.toFixed(3),    // ✅ "10.500"
+        }));  
+
+        // const amount = parseFloat(amountInOMR1);
+        // const roundedAmount = Number(amount.toFixed(3));
+
+        // const vatPercent = 5;
+        // const vatValue = amount * (vatPercent / 100);
+        // const roundedVat = Number(vatValue.toFixed(3));
+
+        // const totalAmount = Number((roundedAmount + roundedVat).toFixed(3));
 
 
-              setConvertedFees((prev) => ({
-                ...prev,
-                [programId]: Number(data.result).toFixed(3),
-                Vat: roundedVat,
-                TotalOMR: totalAmount
-              }))
+        //       setConvertedFees((prev) => ({
+        //         ...prev,
+        //         [programId]: Number(data.result).toFixed(3),
+        //         Vat: roundedVat,
+        //         TotalOMR: totalAmount
+        //       }))
             }
           } 
         } catch (error) {
@@ -718,7 +730,7 @@ useEffect(()=>{
     };
 
           // await sendEventMsgToCEPApp(eventDetails,userInfo,accessToken)
-setIsSubmitLoad(false)
+    setIsSubmitLoad(false);
     // Navigate to the application page
     router.push(`/visa-application?programId=${encodeURIComponent(programId)}`)
   }
@@ -1125,7 +1137,7 @@ useEffect(()=>{
                                   {convertedFees[program.id]}
                                   {/* //  ||
                                   //   (Number.parseFloat(safeRenderText(program.fee || "0")) * 0.385).toFixed(3)}{" "} */}
-                                 {convertedFees[program.id]?"OMR":"..."}
+                                 {convertedFees[program.id]?" OMR":"..."}
                                 </span>
                               </div>
                             </div>
@@ -1134,7 +1146,7 @@ useEffect(()=>{
                                 <span className="text-gray-600 caption">{t("Vat")} (OMR):</span>
                                 <span className="body-small text-gray-900">
                                   {convertedFees?.Vat }
-                                {convertedFees?.Vat?"OMR":"..."}
+                                {convertedFees?.Vat?" OMR":"..."}
                                 </span>
                               </div>
                             </div>
@@ -1143,7 +1155,7 @@ useEffect(()=>{
                                 <span className="text-gray-600 caption">{t("Total")} (OMR):</span>
                                 <span className="body-small text-gray-900">
                                   {convertedFees?.TotalOMR}
-                                  {convertedFees?.TotalOMR?"OMR":"..."}
+                                  {convertedFees?.TotalOMR?" OMR":"..."}
                                 </span>
                               </div>
                             </div>
