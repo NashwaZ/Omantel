@@ -886,10 +886,10 @@ useEffect(()=>{
           </p>
             </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
 
             {/* Travel Date */}
-            <div className="bg-slate-100 p-4 rounded-xl flex items-center">
+            <div className="bg-slate-100 p-4 rounded-xl flex items-center md:col-span-2">
               <div className="bg-orange-100 p-2.5 rounded-full me-4">
                  <svg className="w-5 h-5 text-[#ea6e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -1000,7 +1000,7 @@ useEffect(()=>{
                 </Button>
             </div>
           ) : safeVisaPrograms.length === 0 ? (
-            <div className="bg-amber-50 border border-amber-200 text-amber-700 p-8 rounded-2xl text-center shadow-sm">
+            <div className="bg-amber-50 border border-amber-200 text-amber-700 p-8 rounded-2xl text-center shadow-sm mx-4">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-4">
                 <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -1040,27 +1040,28 @@ useEffect(()=>{
 
                     
                       {/* Image */}
-                       <div className="w-full aspect-[3/2] md:aspect-auto md:w-2/5 relative p-0 flex items-center justify-center bg-slate-50 md:border-r border-slate-200 overflow-hidden md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none">
+                       <div className="w-full md:w-1/3 relative p-3 flex items-center justify-center bg-slate-50 md:border-r border-slate-200 md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none">
                         {countryFlags.to ? (
                           <Image
                             src={countryFlags.to || "/placeholder.svg"}
                             alt={`${destination} Flag`}
-                            fill
-                            // style={{ objectFit: "cover" }}
-                             className="md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none object-contain"
+                            width={150}
+                            height={100}
+                            className="object-contain w-[150px] h-[100px]"
                           />
                         ) : (
                           <Image
                             src={countryImages[destination] || getPlaceholderImageUrl(destination)}
                             alt={`${destination} Tourism`}
-                            fill
-                            className="md:rounded-l-2xl rounded-t-2xl md:rounded-tr-none object-contain"
+                            width={150}
+                            height={100}
+                            className="object-contain w-[150px] h-[100px]"
                           />
                         )}
                       </div>
 
                       {/* Content */}
-                      <div className="p-6 md:w-3/5 flex flex-col items-center text-start" style={{marginBottom:"20px"}} >
+                      <div className="p-3 md:w-2/3 flex flex-col items-center text-start">
                         <div className="mb-2 flex items-center">
                            {/* <h2 className="mb-2 text-[20px] font-semibold" > {destination}&nbsp;&nbsp; </h2> */}
                           {program.available !== false ? (
@@ -1114,15 +1115,15 @@ useEffect(()=>{
 
                         {/* Visa details */}
                         {(program.available===true && program?.required===true)
-                         && <div className="w-full  mb-4">
-                          <div className="border border-gray-200 rounded-xl p-4 mb-4">
-                            <div className="flex items-center text-orange-600 font-semibold mb-3">
+                         && <div className="w-full mb-2">
+                          <div className="border border-gray-200 rounded-xl p-3 mb-2">
+                            <div className="flex items-center text-orange-600 font-semibold mb-2">
                         <Info size={18} className="me-2" />
                           {t("Visa")} {t("Details")}
                       </div>
 
                             {/* Fee information with currency conversion */}
-                            <div className="mb-3 pb-1.5 border-b border-gray-200">
+                            <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center mb-1">
                                 <span className="text-gray-600 caption">{t("Fee")} ({program.currency}):</span>
                                 <span className="body-small font-medium text-gray-900">
@@ -1130,7 +1131,7 @@ useEffect(()=>{
                                 </span>
                               </div>
                               </div>
-                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Fee")} (OMR):</span>
                                 <span className="body-small text-gray-900">
@@ -1141,7 +1142,7 @@ useEffect(()=>{
                                 </span>
                               </div>
                             </div>
-                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Vat")} (OMR):</span>
                                 <span className="body-small text-gray-900">
@@ -1150,7 +1151,7 @@ useEffect(()=>{
                                 </span>
                               </div>
                             </div>
-                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Total")} (OMR):</span>
                                 <span className="body-small text-gray-900">
@@ -1161,7 +1162,7 @@ useEffect(()=>{
                             </div>
 
                             {/* Time-related information */}
-                            <div className="mb-3 pb-1.5 border-b border-gray-200">
+                            <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center   ">
                                 <span className="text-gray-600 caption">{t("Processing")}:</span>
                                 <span className="body-small text-gray-900">
@@ -1171,7 +1172,7 @@ useEffect(()=>{
                                 </span>
                               </div>
                               </div>
-                              <div className="mb-3 pb-1.5 border-b border-gray-200">
+                              <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center ">
                                 <span className="text-gray-600 caption">{t("Max")} {t("Stay")}:</span>
                                 <span className="body-small text-gray-900">
@@ -1181,7 +1182,7 @@ useEffect(()=>{
                                 </span>
                               </div>
                               </div>
-                               <div className="mb-3 pb-1.5 border-b border-gray-200">
+                               <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Validity")}:</span>
                                 <span className="body-small text-gray-900">
@@ -1193,7 +1194,7 @@ useEffect(()=>{
                             </div>
 
                             {/* Entry information */}
-                            <div className="mb-3 pb-1.5 border-b border-gray-200">
+                            <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center">
                                 <span className="text-gray-600 caption">{t("Entries")}:</span>
                                 <span className="body-small text-gray-900">
@@ -1227,7 +1228,7 @@ useEffect(()=>{
                         <div>
                         {
                         program.required===false && 
-                        <div style={{textAlign:"start"}}>
+                        <div className="w-full">
                         <div className="mb-2">{t("A visa is not required for your visit.")}</div>
 
                          {program.label && <div>{program.label}</div>}
