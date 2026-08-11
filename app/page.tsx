@@ -724,7 +724,7 @@ if(isLoading){
               <form onSubmit={handleSubmit} className="space-y-5 w-full relative" autoComplete="off">
                 <div className="space-y-2">
                   <Label htmlFor="destination" className="label font-medium">
-                     {t('Destination')} {t("Country")}
+                     {t('Destination Country')}
                   </Label>
                   <div className="relative">
                     <CustomInput
@@ -842,7 +842,7 @@ if(isLoading){
 
                 <div className="space-y-2">
                   <Label htmlFor="citizenship" className="label font-medium">
-                     {t("Your")} {t("Citizenship")}
+                     {t('Your Citizenship')}
                   </Label>
                   <div className="relative">
                     <CustomInput
@@ -960,19 +960,21 @@ if(isLoading){
 
                 <div className="space-y-2">
                   <Label htmlFor="travel-date" className="label font-medium">
-                      {t('Travel')} {t("Date")}
+                    {t('Travel Date')}
                   </Label>
                   <div className="relative">
                     <button
                       type="button"
                       id="travel-date"
-                      className="w-full h-12 px-4 text-left flex items-center body-small border border-gray-200 rounded-lg bg-white text-gray-700 hover:border-[#ea6e00] transition-colors"
+                      className="w-full h-12 px-4 flex items-center body-small border border-gray-200 rounded-lg bg-white text-gray-700 hover:border-[#ea6e00] transition-colors"
                       onClick={() => setCalendarOpen(!calendarOpen)}
                     >
-                    <CalendarIcon className={`mr-3 h-5 w-5 text-[#ea6e00] ml-[15px]`} />
+                    <CalendarIcon className="me-3 h-5 w-5 text-[#ea6e00] flex-shrink-0" />
 
-                        {date ? format(date, "PPP" ,{ locale: i18n.language !== "en" ? arSA : enUS }) : t("When are you traveling?")} 
-                    
+                        <span className="text-start flex-1">
+                          {date ? format(date, "PPP" ,{ locale: i18n.language !== "en" ? arSA : enUS }) : t("When are you traveling?")}
+                        </span>
+
                     </button>
 
                     {calendarOpen && (

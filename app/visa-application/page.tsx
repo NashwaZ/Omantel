@@ -916,7 +916,7 @@ const checkPhoneCodeFormat=(e:any)=>{
                 {/* Personal Information */}
                 <div>
                    <div  className="flex"><Info className="h-5 w-5 me-2 text-[#ea6e00] " style={{position:"relative",top:"4px"}} />
-                  <h3 className="heading-4 mb-4">{t("Personal")} {t("Information")}</h3></div>
+                  <h3 className="heading-4 mb-4">{t("Personal Information")}</h3></div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="firstName" className="label">

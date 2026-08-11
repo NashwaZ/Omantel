@@ -319,6 +319,11 @@ Usage Examples:
     @apply text-sm font-medium;
   }
 
+  .leading-none {
+    line-height: 1;
+    padding-right: 5px;
+  }
+
   /* Font Weight Utilities */
   .font-regular {
     font-weight: 400;

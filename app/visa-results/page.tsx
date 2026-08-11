@@ -736,7 +736,8 @@ useEffect(()=>{
   }
 
   const getPlaceholderImageUrl = (destination: string) => {
-    return `https://source.unsplash.com/400x300/?${destination}`
+    // return `https://source.unsplash.com/400x300/?${destination}`
+   return `https://flags.restcountries.com/v5/svg/${destination.toLowerCase().slice(0, 2)}.svg`
   }
 
   // useEffect(()=>{
@@ -1164,7 +1165,7 @@ useEffect(()=>{
                             {/* Time-related information */}
                             <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center   ">
-                                <span className="text-gray-600 caption">{t("Processing")}:</span>
+                                <span className="text-gray-600 caption">{t("Processing Time")}:</span>
                                 <span className="body-small text-gray-900">
                                 {program.suggested_processing_time
                                     ? `${safeRenderText(program.suggested_processing_time)} ${t("days")}`
@@ -1174,7 +1175,7 @@ useEffect(()=>{
                               </div>
                               <div className="mb-2 pb-1 border-b border-gray-200">
                               <div className="flex justify-between items-center ">
-                                <span className="text-gray-600 caption">{t("Max")} {t("Stay")}:</span>
+                                <span className="text-gray-600 caption">{t("Max Stay")}:</span>
                                 <span className="body-small text-gray-900">
                                   {program.max_stay
                                     ? `${safeRenderText(program.max_stay).replace(".0", "")} ${t("days")}`
