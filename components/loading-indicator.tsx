@@ -73,7 +73,7 @@ export default function LoadingIndicator({
           />
         </div>
       </div>
-      {text && <p className="mt-3 text-gray-600 text-sm font-medium">{text}</p>}
+      {text && <p suppressHydrationWarning className="mt-3 text-gray-600 text-sm font-medium">{text}</p>}
     </div>
   )
 }

@@ -131,7 +131,11 @@ export default  function VisaHistory() {
   // if (prevUrl){
   //   router.replace(prevUrl);
   // }
-};
+  };
+    const getPlaceholderImageUrl = (destination: string) => {
+    
+   return `https://flags.restcountries.com/v5/svg/${destination.toLowerCase().slice(0, 2)}.svg`
+  }
 
 const handleExpandRows=(id:any)=>{
 
@@ -350,7 +354,7 @@ const handleCollapseRows=(id:any)=>{
         
            </div>
             <div className=" w-[30%] flex justify-end">
-             <img src={history.country_flags?.to} className="w-[80px] h-[40px]" alt="destination"/>
+             <img src={history.country_flags?.to|| getPlaceholderImageUrl(history.destination_code)} className="w-[80px] h-[40px]" alt="destination"/>
             </div>
           </div>
         </CardHeader>
@@ -424,109 +428,90 @@ const handleCollapseRows=(id:any)=>{
               
                  </td>
                 </tr>
-                </tbody>
-              <tbody >  {
-  moreBtnClicked.length> 0 && moreBtnClicked.includes(history.id)?
-       <>
-
-                    
-                       <tr >
-                         <td  className="pt-4">
-                <p>{t("First Name")}</p>
-                </td>
-                <td  className="pt-4">
-              : &nbsp; {history?.first_name.substring(0,1).toUpperCase()+history?.first_name.substring(1)}
-                </td>
-                </tr>
-
-                 <tr>
-                         <td>
-                <p>{t("Last Name")}</p>
-                </td>
-                <td>
-              : &nbsp; {history?.last_name.substring(0,1).toUpperCase()+history?.last_name.substring(1)}
-                </td>
-                </tr>
-
-                
-
-                        <tr>
-                         <td>
-                <p>{t("Destination")}</p>
-                </td>
-                <td>
-              : &nbsp; {t(history?.destination.substring(0,1).toUpperCase()+history?.destination.substring(1))}
-                </td>
-                </tr>
-
-              
-
-                 <tr>
-                 <td>
-                <p>{t("Citizenship")}</p>
-                </td>
-                <td>
-              : &nbsp; {t(history?.citizenship.substring(0,1).toUpperCase()+history?.citizenship.substring(1))}
-                </td>
-                </tr>
-
- <tr>
-                         <td>
-                <p>{t("email")}</p>
-                </td>
-                <td>
-              : &nbsp; {history?.email}
-                </td>
-                </tr>
-                {/*  */}
-                 <tr>
-                 <td>
-                <p>{t("Travel Date")}</p>
-                </td>
-                <td>
-              : &nbsp; {history?.travel_date}
-                </td>
-                </tr>
-
-             
-            
-                 <tr>
-                  <td>
-                <p>{t("Payment Status")} </p>
-                </td>
-                <td>
-              : &nbsp; {t(history?.payment_status.split("_")[0].substring(0,1).toUpperCase()+history?.payment_status.split("_")[0].substring(1))}
-                </td>
-                </tr>
-              
-                 <tr>
-                  <td>
-                <p>{`${t("Fee")}`} </p>
-                </td>
-                <td>
-              : &nbsp; {history?.fee_omr+" OMR"}
-                </td>
-                </tr>
-                <tr>
-                  <td>
-                <p>{`${t("VAT")}`} </p>
-                </td>
-                <td>
-              : &nbsp; {history?.tax+" OMR"}
-                </td>
-                </tr>
-                <tr>
-                  <td>
-                <p>{`${t("Total")}`} </p>
-                </td>
-                <td>
-              : &nbsp; {history?.total+" OMR"}
-                </td>
-                </tr>
-                </>
-                :<></>
-}
-            
+                {moreBtnClicked.length > 0 && moreBtnClicked.includes(history.id) ? (
+                  <>
+                    <tr>
+                      <td className="pt-4">
+                        <p>{t("First Name")}</p>
+                      </td>
+                      <td className="pt-4">
+                        : &nbsp; {history?.first_name.substring(0,1).toUpperCase()+history?.first_name.substring(1)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Last Name")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.last_name.substring(0,1).toUpperCase()+history?.last_name.substring(1)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Destination")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {t(history?.destination.substring(0,1).toUpperCase()+history?.destination.substring(1))}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Citizenship")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {t(history?.citizenship.substring(0,1).toUpperCase()+history?.citizenship.substring(1))}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("email")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.email}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Travel Date")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.travel_date}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Payment Status")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {t(history?.payment_status.split("_")[0].substring(0,1).toUpperCase()+history?.payment_status.split("_")[0].substring(1))}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Fee")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.fee_omr+" OMR"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("VAT")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.tax+" OMR"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>{t("Total")}</p>
+                      </td>
+                      <td>
+                        : &nbsp; {history?.total+" OMR"}
+                      </td>
+                    </tr>
+                  </>
+                ) : null}
                     </tbody>
                 </table>
             </CardContent>
@@ -550,7 +535,7 @@ const handleCollapseRows=(id:any)=>{
 <Button className="px-4 " name={`payment_${history.id}`}
              
               onClick={(e)=>{
-                debugger;
+            
                 handlePayment(e,history.order_id,JSON.parse(history.applications)[0].id)}}
                  >
                 Payment

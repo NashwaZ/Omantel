@@ -28,6 +28,9 @@ import  "@/lib/i18n"
 
 export default  function VisaHistory() {
 
+  const getPlaceholderImageUrl = (destination: string) =>
+    `https://flags.restcountries.com/v5/svg/${destination?.toLowerCase().slice(0, 2)}.svg`
+
     const [locale,setLocale]=useState("en");
     
     const { t,i18n } = useTranslation();
@@ -92,7 +95,8 @@ export default  function VisaHistory() {
                  throw new Error("visa history Api :"+response.statusText)
             }
             const data = await response.json();
-            if(data.message==="success"){
+                if (data.message === "success") {
+                   
                 setVisaHistory(data.result);
             }
         }
@@ -208,7 +212,7 @@ export default  function VisaHistory() {
           }`} key={index}>
         <CardHeader className="w-full mb-[10px]">
             <div className="flex justify-between w-full">
-           <CardTitle> Order #{history.program_id.split("-")[0]}</CardTitle>
+           <CardTitle>{t("Order")} #{history.program_id.split("-")[0]}</CardTitle>
              <div  onClick={(e)=>{handleDeleteVisaHistory(e,history?.id)}} style={{cursor:"pointer"}}>
          <span style={{color:"red"}} 
       >
@@ -272,7 +276,14 @@ export default  function VisaHistory() {
             </div>
            
             <div className=" w-[40%]">
-             <img src={history.country_flags?.to} alt="destination"/>
+            <img
+              src = {history.country_flags?.toString() || getPlaceholderImageUrl(history?.destination_code)}
+              //  src={history.country_flags?.to}
+               alt="destination"
+               onError={(e) => {
+                 (e.target as HTMLImageElement).src = getPlaceholderImageUrl(history?.destination_code)
+               }}
+             />
             </div>
             </div>
             <div className="h-[50px]"></div>

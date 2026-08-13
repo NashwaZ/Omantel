@@ -502,7 +502,7 @@ finally{
         const vatValue = amount * (vatPercent / 100);
         const  roundedVat= Number(vatValue.toFixed(3)); 
         const totalAmount = roundedAmount + roundedVat;
-        debugger
+        
           const v_details = {
             destinationCountry: destination,
             passportCountry: passportCountry,

@@ -25,6 +25,11 @@ const VisaResultsPage = () => {
   const [visaPrograms, setVisaPrograms] = useState<any[]>([])
   const [usingMockData, setUsingMockData] = useState(false)
   const [countryFlags, setCountryFlags] = useState<{ from?: string; to?: string }>({})
+  const [destinationFlag, setDestinationFlag] = useState<string>("")
+  const [citizenshipFlag, setCitizenshipFlag] = useState<string>("")
+  const [destinationcode, setDestinationCode] = useState<string>("")
+  const [citizenshipcode, setCitizenshipCode] = useState<string>("")
+  const [header,setHeader]=useState<any>({});
     const [locale,setLocale]=useState("en");
 const hasRun = useRef(false);
 
@@ -243,6 +248,7 @@ useEffect(()=>{
             // console.log("Found programs in nested structure:", response.result.programs)
             const sanitizedPrograms = processPrograms(response.result.programs)
             setVisaPrograms(sanitizedPrograms)
+            setDestinationCode(response?.result?.programs[0]?.destination || "")
 
             // Store country flags if available
             if (response.country_flags) {
@@ -275,6 +281,7 @@ useEffect(()=>{
 
               localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
               // console.log("Stored program IDs:", programIds)
+               setDestinationCode(response?.result?.programs[0]?.destination || "")
             }
 
             setUsingMockData(false)
@@ -295,6 +302,7 @@ useEffect(()=>{
               if (programIds.length > 0) {
                 localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
                 // console.log("Stored program IDs from extracted programs:", programIds)
+                 setDestinationCode(response?.result?.programs[0]?.destination || "")
               }
 
               setUsingMockData(false)
@@ -315,6 +323,7 @@ useEffect(()=>{
               if (programIds.length > 0) {
                 localStorage.setItem("visa_program_ids", JSON.stringify(programIds))
                 // console.log("Stored program IDs from response programs:", programIds)
+                setDestinationCode(response?.result?.programs[0]?.destination || "")
               }
 
               setUsingMockData(false)
@@ -879,11 +888,11 @@ useEffect(()=>{
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                   />
                 </svg>
-                <span className="text-gray-800 caption font-medium">{t(citizenship)} {t("Citizen")}</span>
+                <span className="text-gray-800 caption font-medium">{t("Citizen")} {t(citizenship)}</span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">{t("Visa Options for")} {t(destination)}</h1>
               <p className="text-slate-600 text-center text-md md:text-lg mb-8">
-              {t("Discover available visa programs for your trip to ")}{t(destination)}
+              {t("Discover available visa programs for your trip to ")} {t(destination)}
           </p>
             </div>
 
@@ -902,7 +911,7 @@ useEffect(()=>{
                   </svg>
               </div>
               <div className="text-left">
-                <p className="text-sm text-slate-500 ">{t("Travel")} {t("Date")}</p>
+                <p className="text-sm text-slate-500 ">{t("Travel Date")}</p>
                 <p className="font-semibold text-slate-700">{travelDate}</p>
               </div>
             </div>
@@ -957,8 +966,7 @@ useEffect(()=>{
             <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center shadow-sm">
               <AlertCircle className="h-5 w-5 mr-3 flex-shrink-0" />
               <p className="body-small">
-               {t(`We're showing estimated visa information. For the most accurate and up-to-date requirements, please
-                verify with the embassy or consulate.`)}
+               {t("We're showing estimated visa information. For the most accurate and up-to-date requirements, please verify with the embassy or consulate.")}
              
               </p>
             </div>
@@ -1052,7 +1060,7 @@ useEffect(()=>{
                           />
                         ) : (
                           <Image
-                            src={countryImages[destination] || getPlaceholderImageUrl(destination)}
+                            src={countryImages[destination] || getPlaceholderImageUrl(destinationcode)}
                             alt={`${destination} Tourism`}
                             width={150}
                             height={100}
@@ -1120,7 +1128,7 @@ useEffect(()=>{
                           <div className="border border-gray-200 rounded-xl p-3 mb-2">
                             <div className="flex items-center text-orange-600 font-semibold mb-2">
                         <Info size={18} className="me-2" />
-                          {t("Visa")} {t("Details")}
+                          {t("Visa Details")}
                       </div>
 
                             {/* Fee information with currency conversion */}
@@ -1235,7 +1243,7 @@ useEffect(()=>{
                          {program.label && <div>{program.label}</div>}
                        <div className="p-4 mt-4 rounded-2xl shadow-md bg-[#fff2e6]">
                          {program.required===false  && program.available===true && <div className="mb-2"><b>{t("You are good to go!")}</b> </div>}
-                        {program.required===false && <div>{t("You don't need a Visa for")} {t(destination)} {t("if you have a passport from")} {t(citizenship)}</div>}
+                        {program.required===false && <div>{t("You don't need a Visa for")} {t(destination)}{i18n.language === "ar" ? " " : " "}{t("if you have a passport from")} {t(citizenship)}</div>}
                         </div>
                         </div>
                         }
@@ -1271,7 +1279,7 @@ useEffect(()=>{
 
                               {program.embassy_info && (
                                 <div className="mb-3 pb-2 border-b border-gray-200">
-                                  <p className="caption font-medium text-gray-900 mb-1">{t("Embassy")} {"Information"}:</p>
+                                  <p className="caption font-medium text-gray-900 mb-1">{t("Embassy Information")}:</p>
                                   <p className="caption text-gray-600">{safeRenderText(program.embassy_info)}</p>
                                 </div>
                               )}
