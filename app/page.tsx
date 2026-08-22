@@ -714,7 +714,7 @@ if(isLoading){
   >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center max-w-3xl">
         <div className="text-center mb-5xl">
-          <h1 className=" heading-1 mb-4">{t('E-Visa')} {t('Application')} {t('Service')}</h1>
+          <h1 className=" heading-1 mb-4">{t('E-Visa Application Service')}</h1>
           <p className="body-large text-gray-600">{t("Check your visa eligibility and apply online in minutes")}</p>
         </div>
 
@@ -724,7 +724,7 @@ if(isLoading){
               <form onSubmit={handleSubmit} className="space-y-5 w-full relative" autoComplete="off">
                 <div className="space-y-2">
                   <Label htmlFor="destination" className="label font-medium">
-                     {t('Destination')} {t("Country")}
+                    {t('Destination Country')}
                   </Label>
                   <div className="relative">
                     <CustomInput
@@ -842,7 +842,7 @@ if(isLoading){
 
                 <div className="space-y-2">
                   <Label htmlFor="citizenship" className="label font-medium">
-                     {t("Your")} {t("Citizenship")}
+                     {t('Your Citizenship')}
                   </Label>
                   <div className="relative">
                     <CustomInput
@@ -960,19 +960,21 @@ if(isLoading){
 
                 <div className="space-y-2">
                   <Label htmlFor="travel-date" className="label font-medium">
-                      {t('Travel')} {t("Date")}
+                    {t('Travel Date')}
                   </Label>
                   <div className="relative">
                     <button
                       type="button"
                       id="travel-date"
-                      className="w-full h-12 px-4 text-left flex items-center body-small border border-gray-200 rounded-lg bg-white text-gray-700 hover:border-[#ea6e00] transition-colors"
+                      className="w-full h-12 px-4 flex items-center body-small border border-gray-200 rounded-lg bg-white text-gray-700 hover:border-[#ea6e00] transition-colors"
                       onClick={() => setCalendarOpen(!calendarOpen)}
                     >
-                    <CalendarIcon className={`mr-3 h-5 w-5 text-[#ea6e00] ml-[15px]`} />
+                    <CalendarIcon className="me-3 h-5 w-5 text-[#ea6e00] flex-shrink-0" />
 
-                        {date ? format(date, "PPP" ,{ locale: i18n.language !== "en" ? arSA : enUS }) : t("When are you traveling?")} 
-                    
+                        <span className="text-start flex-1">
+                          {date ? format(date, "PPP" ,{ locale: i18n.language !== "en" ? arSA : enUS }) : t("When are you traveling?")}
+                        </span>
+
                     </button>
 
                     {calendarOpen && (

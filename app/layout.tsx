@@ -44,6 +44,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
+        suppressHydrationWarning
         className={`font-normal text-base leading-normal text-foreground bg-background overflow-x-hidden `}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
