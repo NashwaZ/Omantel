@@ -1079,6 +1079,8 @@ useEffect(()=>{
                           <CheckCircle2 size={14} />
                         {  t("Available")}
                         </div>
+                          ) : program.required === false ? (
+                            <></>
                           ) : (
                              <div className="inline-flex items-center gap-1.5 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
                        
